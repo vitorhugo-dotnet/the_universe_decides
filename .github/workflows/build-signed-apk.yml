@@ -1,4 +1,4 @@
-name: Build signed Android APKs
+name: Build signed Android APKs and AAB
 
 on:
   push:
@@ -17,7 +17,7 @@ permissions:
   contents: write
 
 jobs:
-  build-signed-apk:
+  build-signed-android-artifacts:
     runs-on: ubuntu-latest
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref_name }}
@@ -78,11 +78,21 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
+      - name: Build signed Android App Bundle
+        run: flutter build appbundle --release
+
       - name: Build signed universal release APK
         run: flutter build apk --release
 
       - name: Build signed split-per-ABI release APKs
         run: flutter build apk --release --split-per-abi
+
+      - name: Upload Android App Bundle artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
 
       - name: Upload universal release APK artifact
         uses: actions/upload-artifact@v7.0.1
@@ -101,7 +111,7 @@ jobs:
             build/app/outputs/flutter-apk/app-x86_64-release.apk
           if-no-files-found: error
 
-      - name: Publish APKs to GitHub Releases
+      - name: Publish Android artifacts to GitHub Releases
         uses: softprops/action-gh-release@v3.0.0
         with:
           tag_name: ${{ env.RELEASE_TAG }}
@@ -109,6 +119,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           generate_release_notes: true
           files: |
+            build/app/outputs/bundle/release/app-release.aab
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
