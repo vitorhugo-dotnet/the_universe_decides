@@ -11,6 +11,7 @@ permissions:
 
 env:
   FLUTTER_VERSION: "3.38.1"
+  ANDROID_VERSION_CODE_OFFSET: "100000"
 
 jobs:
   analyze:
@@ -77,11 +78,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Resolve Android version code
+        id: android_version
+        run: echo "version_code=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+
       - name: Build release APK
-        run: flutter build apk --release --build-number "${{ github.run_number }}"
+        run: flutter build apk --release --build-number "${{ steps.android_version.outputs.version_code }}"
 
       - name: Build release AAB
-        run: flutter build appbundle --release --build-number "${{ github.run_number }}"
+        run: flutter build appbundle --release --build-number "${{ steps.android_version.outputs.version_code }}"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -112,9 +117,11 @@ jobs:
         id: version
         run: |
           VERSION_NAME=$(grep '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//' | cut -d'+' -f1)
-          TAG="v${VERSION_NAME}+${{ github.run_number }}"
+          VERSION_CODE=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))
+          TAG="v${VERSION_NAME}+${VERSION_CODE}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
 
       - name: Download APK artifact
         uses: actions/download-artifact@v4
