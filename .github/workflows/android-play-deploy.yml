@@ -21,6 +21,7 @@ permissions:
 env:
   FLUTTER_VERSION: "3.38.1"
   ANDROID_PACKAGE_NAME: "com.hugo.theuniversedecides"
+  ANDROID_VERSION_CODE_OFFSET: "100000"
   INTERNAL_PLAY_TRACK: "internal"
   CLOSED_TESTING_PLAY_TRACK: "alpha"
 
@@ -113,9 +114,10 @@ jobs:
         run: printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > play-service-account.json
 
       - name: Build signed Android App Bundle
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
-        run: flutter build appbundle --release --build-number "$BUILD_NUMBER"
+        run: |
+          BUILD_NUMBER=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))
+          echo "Using Android versionCode: $BUILD_NUMBER"
+          flutter build appbundle --release --build-number "$BUILD_NUMBER"
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
