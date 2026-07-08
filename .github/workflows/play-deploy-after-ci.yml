@@ -1,0 +1,26 @@
+name: Trigger Play Deploy After CI/CD
+
+on:
+  workflow_run:
+    workflows: ["CI/CD"]
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  trigger-play-deploy:
+    name: Trigger Android Play Deploy
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'master'
+    steps:
+      - name: Trigger Android Play Deploy workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run android-play-deploy.yml --repo "$GITHUB_REPOSITORY" --ref master -f play_target=internal
+          gh workflow run android-play-deploy.yml --repo "$GITHUB_REPOSITORY" --ref master -f play_target=closed
