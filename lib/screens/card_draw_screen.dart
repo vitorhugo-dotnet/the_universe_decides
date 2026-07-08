@@ -75,7 +75,7 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen>
                         transform: Matrix4.identity()
                           ..setEntry(3, 2, 0.001)
                           ..rotateZ(tilt)
-                          ..scale(scale),
+                          ..scaleByDouble(scale, scale, 1, 1),
                         child: _PlayingCardView(card: card),
                       );
                     },
