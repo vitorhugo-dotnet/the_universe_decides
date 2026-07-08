@@ -34,6 +34,8 @@ When `android/key.properties` is present, release builds use that keystore autom
 
 The repository includes `.github/workflows/build-signed-apk.yml`, named `CI/CD`, to run Flutter analyze, tests, Android release APK/AAB builds, and GitHub Release publishing.
 
+Pull requests run analyze and tests only. Release APK/AAB builds, GitHub Releases, and Google Play deploys run only after a successful `push` to `master`.
+
 On every push to `master`, the workflow publishes:
 
 - `the-universe-decides-v<version>+<versionCode>.apk`
@@ -41,7 +43,7 @@ On every push to `master`, the workflow publishes:
 
 The repository also includes Google Play deployment workflows:
 
-- `.github/workflows/android-play-deploy.yml`: builds and uploads a signed AAB to Google Play.
+- `.github/workflows/android-play-deploy.yml`: builds and uploads a signed AAB to Google Play, restricted to manual dispatches on `master`.
 - `.github/workflows/play-deploy-after-ci.yml`: triggers Play deploy after successful `CI/CD` runs on `master`.
 
 Supported Play targets:
