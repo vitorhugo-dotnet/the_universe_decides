@@ -331,33 +331,51 @@ class _TarotBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: const Color(0xFFF2D480)),
-          const SizedBox(width: 6),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 132),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+    const horizontalPadding = 8.0;
+    const iconSize = 14.0;
+    const gap = 4.0;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final labelMaxWidth = constraints.maxWidth.isFinite
+            ? math.max(
+                0.0,
+                constraints.maxWidth - (horizontalPadding * 2) - iconSize - gap,
+              )
+            : 132.0;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 6,
           ),
-        ],
-      ),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: iconSize, color: const Color(0xFFF2D480)),
+              const SizedBox(width: gap),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: labelMaxWidth),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
