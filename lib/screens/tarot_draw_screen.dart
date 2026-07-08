@@ -343,7 +343,8 @@ class _TarotBadge extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: const Color(0xFFF2D480)),
           const SizedBox(width: 6),
-          Flexible(
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 132),
             child: Text(
               label,
               maxLines: 1,
