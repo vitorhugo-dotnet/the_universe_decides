@@ -331,51 +331,58 @@ class _TarotBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const horizontalPadding = 8.0;
-    const iconSize = 14.0;
-    const gap = 4.0;
+    const unconstrainedTextMaxWidth = 132.0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final labelMaxWidth = constraints.maxWidth.isFinite
-            ? math.max(
-                0.0,
-                constraints.maxWidth - (horizontalPadding * 2) - iconSize - gap,
-              )
-            : 132.0;
+        final hasBoundedWidth = constraints.maxWidth.isFinite;
 
         return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: 6,
-          ),
+          width: hasBoundedWidth ? constraints.maxWidth : null,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: hasBoundedWidth ? MainAxisSize.max : MainAxisSize.min,
             children: [
-              Icon(icon, size: iconSize, color: const Color(0xFFF2D480)),
-              const SizedBox(width: gap),
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: labelMaxWidth),
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
+              Icon(icon, size: 14, color: const Color(0xFFF2D480)),
+              const SizedBox(width: 4),
+              if (hasBoundedWidth)
+                Expanded(child: _TarotBadgeLabel(label: label))
+              else
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: unconstrainedTextMaxWidth,
                   ),
+                  child: _TarotBadgeLabel(label: label),
                 ),
-              ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _TarotBadgeLabel extends StatelessWidget {
+  const _TarotBadgeLabel({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      softWrap: false,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+      ),
     );
   }
 }
