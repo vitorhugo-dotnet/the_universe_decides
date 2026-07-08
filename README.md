@@ -30,34 +30,42 @@ storeFile=upload-keystore.jks
 
 When `android/key.properties` is present, release builds use that keystore automatically. Otherwise, the project falls back to the debug signing config for local-only release runs.
 
-## GitHub Actions signed APK workflow
+## GitHub Actions CI/CD
 
-The repository includes `.github/workflows/build-signed-apk.yml` to generate signed Android release APKs, upload them as workflow artifacts, and publish them to this repository's GitHub Releases.
+The repository includes `.github/workflows/build-signed-apk.yml`, named `CI/CD`, to run Flutter analyze, tests, Android release APK/AAB builds, and GitHub Release publishing.
 
-Configure these repository secrets before running the workflow:
+On every push to `master`, the workflow publishes:
+
+- `the-universe-decides-v<version>+<run>.apk`
+- `the-universe-decides-v<version>+<run>.aab`
+
+The repository also includes Google Play deployment workflows:
+
+- `.github/workflows/android-play-deploy.yml`: builds and uploads a signed AAB to Google Play.
+- `.github/workflows/play-deploy-after-ci.yml`: triggers Play deploy after successful `CI/CD` runs on `master`.
+
+Supported Play targets:
+
+- `internal`: Google Play internal testing.
+- `closed`: Google Play closed testing through the `alpha` track.
+
+See [`docs/google-play-cicd.md`](docs/google-play-cicd.md) for setup details, required secrets, and track behavior.
+
+## Required Android signing secrets
+
+Configure these repository secrets before running Play deploy or signed release workflows:
 
 - `ANDROID_KEYSTORE_BASE64`: base64-encoded contents of your `.jks` or `.keystore` file
 - `ANDROID_KEYSTORE_PASSWORD`: keystore password
 - `ANDROID_KEY_ALIAS`: key alias inside the keystore
 - `ANDROID_KEY_PASSWORD`: key password
+- `PLAY_SERVICE_ACCOUNT_JSON`: raw Google Play service account JSON credentials
 
 Example command to prepare the keystore secret value:
 
 ```bash
 base64 -w 0 android/upload-keystore.jks
 ```
-
-Each workflow run now produces:
-
-- `app-release.apk` as the universal fat APK
-- `app-armeabi-v7a-release.apk` for 32-bit ARM devices
-- `app-arm64-v8a-release.apk` for 64-bit ARM devices
-- `app-x86_64-release.apk` for x86_64 devices and emulators
-
-After the secrets are configured, you can:
-
-- push a tag such as `v1.0.0` to build all APK variants and publish them to the matching GitHub Release
-- run the workflow manually and provide a `release_tag` value so the workflow creates or updates that GitHub Release before attaching all APK variants
 
 ## Icon workflow
 
