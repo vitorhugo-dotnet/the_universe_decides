@@ -4,15 +4,14 @@ This repository publishes the Android Flutter app to Google Play testing tracks 
 
 ## Workflow behavior
 
-- `push` to `master` runs the `CI/CD` workflow.
-- `pull_request` to `master` runs analyze, tests, and Android build validation.
-- Successful `push` runs on `master` publish the APK and AAB to this repository's GitHub Releases.
-- After a successful `CI/CD` run on `master`, `.github/workflows/play-deploy-after-ci.yml` triggers Google Play deploys for:
+- `pull_request` to `master` runs analyze and tests only.
+- `push` to `master` runs analyze, tests, Android APK/AAB release builds, and GitHub Release publishing.
+- After a successful `CI/CD` run caused by a `push` on `master`, `.github/workflows/play-deploy-after-ci.yml` triggers Google Play deploys for:
   - `internal`: Google Play internal testing.
   - `closed`: Google Play closed testing through the `alpha` track.
-- `push` with a tag matching `v*` uploads a signed Android App Bundle to Google Play internal testing.
-- `workflow_dispatch` lets you manually choose either `internal` or `closed`.
-- The workflow builds `build/app/outputs/bundle/release/app-release.aab` with `flutter build appbundle --release`.
+- `.github/workflows/android-play-deploy.yml` has only a `workflow_dispatch` trigger and its deploy job is restricted to `refs/heads/master`.
+- Pull requests must never build release APK/AAB artifacts or upload anything to Google Play.
+- The Play deploy workflow builds `build/app/outputs/bundle/release/app-release.aab` with `flutter build appbundle --release`.
 - The Android `versionCode` is calculated as `ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER`.
 - The default offset is `100000`, which avoids accidentally generating a lower versionCode than previous local/manual builds.
 - Metadata, images, screenshots, and changelogs are intentionally skipped. The workflow uploads only the binary.
