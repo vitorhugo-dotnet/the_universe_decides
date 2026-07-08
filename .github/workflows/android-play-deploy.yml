@@ -1,9 +1,6 @@
 name: Android Play Deploy
 
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
     inputs:
       play_target:
@@ -29,6 +26,7 @@ jobs:
   deploy-google-play:
     name: Deploy signed AAB to Google Play
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
 
     steps:
       - name: Checkout
@@ -37,7 +35,7 @@ jobs:
       - name: Resolve Google Play track
         id: play_track
         env:
-          PLAY_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.play_target || 'internal' }}
+          PLAY_TARGET: ${{ github.event.inputs.play_target }}
         run: |
           case "$PLAY_TARGET" in
             internal)
