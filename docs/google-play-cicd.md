@@ -13,7 +13,8 @@ This repository publishes the Android Flutter app to Google Play testing tracks 
 - `push` with a tag matching `v*` uploads a signed Android App Bundle to Google Play internal testing.
 - `workflow_dispatch` lets you manually choose either `internal` or `closed`.
 - The workflow builds `build/app/outputs/bundle/release/app-release.aab` with `flutter build appbundle --release`.
-- The Android `versionCode` is overridden with `github.run_number`, keeping Play uploads unique across CI runs.
+- The Android `versionCode` is calculated as `ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER`.
+- The default offset is `100000`, which avoids accidentally generating a lower versionCode than previous local/manual builds.
 - Metadata, images, screenshots, and changelogs are intentionally skipped. The workflow uploads only the binary.
 
 ## Google Play tracks
