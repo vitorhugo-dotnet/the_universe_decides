@@ -56,7 +56,9 @@ jobs:
 
   build-android:
     name: Build Android APK and AAB
+    needs: [analyze, test]
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -104,7 +106,7 @@ jobs:
 
   release:
     name: Publish GitHub Release
-    needs: [analyze, test, build-android]
+    needs: [build-android]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
