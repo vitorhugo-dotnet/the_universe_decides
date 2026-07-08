@@ -150,134 +150,174 @@ class _TarotCardFace extends StatelessWidget {
 
     return AspectRatio(
       aspectRatio: 2 / 3,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: LinearGradient(
-            colors: isRevealed
-                ? const [
-                    Color(0xFF1D1234),
-                    Color(0xFF3E216E),
-                    Color(0xFF8E6B2B),
-                  ]
-                : const [
-                    Color(0xFF0F091A),
-                    Color(0xFF281443),
-                    Color(0xFF5E3A12),
-                  ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(
-            color: const Color(0xFFE6C26A).withValues(alpha: 0.72),
-            width: 1.6,
-          ),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x99000000),
-              blurRadius: 34,
-              offset: Offset(0, 22),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxHeight < 400;
+          final cardPadding = isCompact ? 16.0 : 22.0;
+          final iconSize = isCompact ? 42.0 : 54.0;
+          final mainGap = isCompact ? 10.0 : 20.0;
+          final secondaryGap = isCompact ? 8.0 : 14.0;
+          final contentWidth = constraints.maxWidth.isFinite
+              ? math.max(120.0, constraints.maxWidth - (cardPadding * 2))
+              : 220.0;
+
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              gradient: LinearGradient(
+                colors: isRevealed
+                    ? const [
+                        Color(0xFF1D1234),
+                        Color(0xFF3E216E),
+                        Color(0xFF8E6B2B),
+                      ]
+                    : const [
+                        Color(0xFF0F091A),
+                        Color(0xFF281443),
+                        Color(0xFF5E3A12),
+                      ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              border: Border.all(
+                color: const Color(0xFFE6C26A).withValues(alpha: 0.72),
+                width: 1.6,
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x99000000),
+                  blurRadius: 34,
+                  offset: Offset(0, 22),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(0x66F8D26D),
-                      Colors.transparent,
-                    ],
-                    radius: isRevealed ? 0.95 : 0.75,
-                    center: Alignment.topCenter,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0x66F8D26D),
+                          Colors.transparent,
+                        ],
+                        radius: isRevealed ? 0.95 : 0.75,
+                        center: Alignment.topCenter,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                children: [
-                  Row(
+                Padding(
+                  padding: EdgeInsets.all(cardPadding),
+                  child: Column(
                     children: [
-                      _TarotBadge(
-                        icon: isRevealed
-                            ? Icons.visibility_rounded
-                            : Icons.auto_awesome,
-                        label: isRevealed
-                            ? (card!.isMajorArcana
-                                  ? l10n.tarotMajorArcana
-                                  : l10n.tarotMinorArcana)
-                            : l10n.navTarot,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: _TarotBadge(
+                              icon: isRevealed
+                                  ? Icons.visibility_rounded
+                                  : Icons.auto_awesome,
+                              label: isRevealed
+                                  ? (card!.isMajorArcana
+                                        ? l10n.tarotMajorArcana
+                                        : l10n.tarotMinorArcana)
+                                  : l10n.navTarot,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _TarotBadge(
+                            icon: Icons.stars_rounded,
+                            label: '#${card?.deckNumber ?? '--'}',
+                          ),
+                        ],
                       ),
-                      const Spacer(),
-                      _TarotBadge(
-                        icon: Icons.stars_rounded,
-                        label: '#${card?.deckNumber ?? '--'}',
+                      Expanded(
+                        child: Center(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: SizedBox(
+                              width: contentWidth,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    isRevealed
+                                        ? Icons.brightness_3
+                                        : Icons.auto_awesome,
+                                    size: iconSize,
+                                    color: const Color(0xFFF6D98B),
+                                  ),
+                                  SizedBox(height: mainGap),
+                                  Text(
+                                    isRevealed ? card!.title : l10n.tarotPrompt,
+                                    style:
+                                        (isCompact
+                                                ? theme.textTheme.titleLarge
+                                                : theme.textTheme.headlineSmall)
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                              height: 1.15,
+                                            ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: secondaryGap),
+                                  Text(
+                                    isRevealed
+                                        ? l10n.tarotDeckPosition(
+                                            card!.deckNumber,
+                                          )
+                                        : l10n.tarotTapPrompt,
+                                    style:
+                                        (isCompact
+                                                ? theme.textTheme.bodyMedium
+                                                : theme.textTheme.bodyLarge)
+                                            ?.copyWith(
+                                              color: const Color(0xE6F4E7FF),
+                                              height: 1.35,
+                                            ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isCompact ? 12 : 16,
+                          vertical: isCompact ? 10 : 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.08),
+                          ),
+                        ),
+                        child: Text(
+                          isRevealed
+                              ? (card!.isMajorArcana
+                                    ? l10n.tarotMajorArcana
+                                    : l10n.tarotMinorArcana)
+                              : l10n.tarotTapPrompt,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.86),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ],
                   ),
-                  const Spacer(),
-                  Icon(
-                    isRevealed ? Icons.brightness_3 : Icons.auto_awesome,
-                    size: 54,
-                    color: const Color(0xFFF6D98B),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    isRevealed ? card!.title : l10n.tarotPrompt,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      height: 1.15,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    isRevealed
-                        ? l10n.tarotDeckPosition(card!.deckNumber)
-                        : l10n.tarotTapPrompt,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: const Color(0xE6F4E7FF),
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const Spacer(),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.08),
-                      ),
-                    ),
-                    child: Text(
-                      isRevealed
-                          ? (card!.isMajorArcana
-                                ? l10n.tarotMajorArcana
-                                : l10n.tarotMinorArcana)
-                          : l10n.tarotTapPrompt,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.86),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -303,11 +343,16 @@ class _TarotBadge extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: const Color(0xFFF2D480)),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
