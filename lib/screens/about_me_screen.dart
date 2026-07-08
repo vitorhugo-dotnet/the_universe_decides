@@ -10,7 +10,7 @@ import 'package:theuniversedecides/widgets/mystic_screen_scaffold.dart';
 class AboutMeScreen extends ConsumerStatefulWidget {
   const AboutMeScreen({super.key});
 
-  static const _githubUsername = 'vitorhugo-java';
+  static const _githubUsername = 'vitorhugo-dotnet';
 
   @override
   ConsumerState<AboutMeScreen> createState() => _AboutMeScreenState();
