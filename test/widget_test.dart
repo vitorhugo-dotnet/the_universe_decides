@@ -35,7 +35,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -69,7 +69,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -107,7 +107,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -143,7 +143,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -185,7 +185,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -213,7 +213,7 @@ void main() {
     final randomService = _FakeRandomOrgService(const []);
     final githubService = _FakeGitHubProfileService(
       const GitHubProfile(
-        login: 'vitorhugo-java',
+        login: 'vitorhugo-dotnet',
         avatarUrl: '',
         name: 'Vitor Hugo',
         bio: 'Developer',
@@ -237,12 +237,12 @@ void main() {
 
     expect(find.byType(AppBar), findsNothing);
     expect(find.text('Vitor Hugo'), findsOneWidget);
-    expect(find.text('@vitorhugo-java'), findsOneWidget);
+    expect(find.text('@vitorhugo-dotnet'), findsOneWidget);
     expect(find.text('Add coin'), findsOneWidget);
     expect(find.text('Add d20'), findsOneWidget);
     expect(find.byIcon(Icons.monetization_on), findsOneWidget);
     expect(find.byIcon(Icons.casino), findsOneWidget);
-    expect(githubService.usernames, ['vitorhugo-java']);
+    expect(githubService.usernames, ['vitorhugo-dotnet']);
   });
 
   testWidgets('quick dice action opens dice and rolls d20 by default', (
@@ -259,7 +259,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -294,7 +294,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -330,7 +330,7 @@ void main() {
           githubProfileServiceProvider.overrideWith(
             (ref) => _FakeGitHubProfileService(
               const GitHubProfile(
-                login: 'vitorhugo-java',
+                login: 'vitorhugo-dotnet',
                 avatarUrl: '',
                 name: 'Vitor Hugo',
               ),
@@ -363,7 +363,7 @@ void main() {
             githubProfileServiceProvider.overrideWith(
               (ref) => _FakeGitHubProfileService(
                 const GitHubProfile(
-                  login: 'vitorhugo-java',
+                  login: 'vitorhugo-dotnet',
                   avatarUrl: '',
                   name: 'Vitor Hugo',
                 ),
