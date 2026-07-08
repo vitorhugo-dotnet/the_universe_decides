@@ -36,8 +36,8 @@ The repository includes `.github/workflows/build-signed-apk.yml`, named `CI/CD`,
 
 On every push to `master`, the workflow publishes:
 
-- `the-universe-decides-v<version>+<run>.apk`
-- `the-universe-decides-v<version>+<run>.aab`
+- `the-universe-decides-v<version>+<versionCode>.apk`
+- `the-universe-decides-v<version>+<versionCode>.aab`
 
 The repository also includes Google Play deployment workflows:
 
