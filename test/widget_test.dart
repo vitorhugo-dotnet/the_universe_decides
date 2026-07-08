@@ -122,7 +122,7 @@ void main() {
     );
     await tester.tap(find.text('Cards'));
     await tester.pumpAndSettle();
-    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Draw a card'));
+    await _tapVisible(tester, find.text('Draw a card'));
 
     expect(find.text('K♠'), findsWidgets);
     expect(find.byIcon(CupertinoIcons.suit_spade_fill), findsWidgets);
@@ -200,7 +200,7 @@ void main() {
     );
     await tester.tap(find.text('Tarot'));
     await tester.pumpAndSettle();
-    await _tapVisible(tester, find.widgetWithText(FilledButton, 'Draw a card'));
+    await _tapVisible(tester, find.text('Draw a card'));
 
     expect(find.text('Ace of Wands'), findsWidgets);
     expect(find.text('Minor Arcana'), findsWidgets);
