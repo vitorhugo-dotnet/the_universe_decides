@@ -18,9 +18,8 @@ jobs:
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_branch == 'master'
     steps:
-      - name: Trigger Android Play Deploy workflows
+      - name: Trigger Android Play Deploy workflow
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh workflow run android-play-deploy.yml --repo "$GITHUB_REPOSITORY" --ref master -f play_target=internal
-          gh workflow run android-play-deploy.yml --repo "$GITHUB_REPOSITORY" --ref master -f play_target=closed
