@@ -19,13 +19,22 @@ class CoinFlipScreen extends ConsumerStatefulWidget {
 class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final Animation<double> _spinCurve;
+  late final Animation<double> _landingBounce;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1900),
+    );
+    // Eased spin so the toss decelerates into a satisfying landing instead
+    // of stopping abruptly, with a small pop right as the coin settles.
+    _spinCurve = CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    _landingBounce = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.82, 1.0, curve: Curves.easeOutBack),
     );
   }
 
@@ -80,7 +89,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
                         animation: _controller,
                         builder: (context, child) {
                           final spin = state.isLoading
-                              ? _controller.value * math.pi * 8
+                              ? _spinCurve.value * math.pi * 10
                               : (state.result ?? 0) == 1
                               ? math.pi
                               : 0.0;
@@ -88,6 +97,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
                           final faceValue = state.isLoading
                               ? (showingFront ? 0 : 1)
                               : (state.result ?? 0);
+                          final scale = 1 + (_landingBounce.value * 0.08);
 
                           // Perspective plus X/Y rotation keeps the coin toss feeling 3D while
                           // still landing on the resolved Riverpod state after the fetch finishes.
@@ -101,7 +111,8 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
                                           0.18
                                     : 0.0,
                               )
-                              ..rotateY(spin),
+                              ..rotateY(spin)
+                              ..scaleByDouble(scale, scale, 1, 1),
                             child: _CoinFace(value: faceValue),
                           );
                         },
