@@ -135,7 +135,10 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
                   AnimatedBuilder(
                     animation: _controller,
                     builder: (context, child) {
-                      if (!state.isLoading) {
+                      // Keep tumbling until the animation itself finishes, not just
+                      // the network fetch, so a fast response can't cut it short.
+                      final isRolling = state.isLoading || _controller.isAnimating;
+                      if (!isRolling) {
                         return child!;
                       }
                       return _TumblingDiceGrid(
