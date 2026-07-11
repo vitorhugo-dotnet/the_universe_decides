@@ -13,7 +13,11 @@ import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
 
+import 'support/fake_webview_platform.dart';
+
 void main() {
+  setUp(FakeWebViewPlatform.register);
+
   testWidgets('coin screen uses the random service', (
     WidgetTester tester,
   ) async {
@@ -58,6 +62,13 @@ void main() {
   testWidgets('dice screen requests the selected dice configuration', (
     WidgetTester tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1080, 2400);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final service = _FakeRandomOrgService([
       [2, 3],
     ]);
@@ -249,6 +260,13 @@ void main() {
   testWidgets('quick dice action opens dice and rolls d20 by default', (
     WidgetTester tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1080, 2400);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final randomService = _FakeRandomOrgService([
       [17],
     ]);
