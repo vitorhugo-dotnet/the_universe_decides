@@ -140,11 +140,23 @@ abstract class AppLocalizations {
   /// **'About me'**
   String get navAboutMe;
 
-  /// No description provided for @coinSubtitle.
+  /// No description provided for @coinEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'An enchanted coin that checks Random.org and falls back to local randomness whenever needed.'**
-  String get coinSubtitle;
+  /// **'Ritual Seal'**
+  String get coinEyebrow;
+
+  /// No description provided for @coinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heads or Tails'**
+  String get coinTitle;
+
+  /// No description provided for @coinRitualSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A mystic seal lights up to confirm: the result comes from pure chance.'**
+  String get coinRitualSubtitle;
 
   /// No description provided for @coinHeads.
   ///
@@ -158,23 +170,29 @@ abstract class AppLocalizations {
   /// **'TAILS'**
   String get coinTails;
 
-  /// No description provided for @coinPrompt.
+  /// No description provided for @coinResultCaption.
   ///
   /// In en, this message translates to:
-  /// **'Hand the choice over to the universe'**
-  String get coinPrompt;
+  /// **'The universe decided — not the processor.'**
+  String get coinResultCaption;
 
-  /// No description provided for @coinTapPrompt.
+  /// No description provided for @coinHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap to discover the verdict.'**
-  String get coinTapPrompt;
+  /// **'Tap the button or drag the coin to flip'**
+  String get coinHint;
 
-  /// No description provided for @coinResolved.
+  /// No description provided for @coinHintDrag.
   ///
   /// In en, this message translates to:
-  /// **'The universe chose your side.'**
-  String get coinResolved;
+  /// **'Release to flip — pull further for more force'**
+  String get coinHintDrag;
+
+  /// No description provided for @coinDragHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'or drag and flick the coin to throw it'**
+  String get coinDragHelper;
 
   /// No description provided for @coinButton.
   ///
@@ -311,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @tarotTapPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Draw a card to reveal the universe's symbol.'**
+  /// **'Draw a card to reveal the universe\'s symbol.'**
   String get tarotTapPrompt;
 
   /// No description provided for @tarotButton.

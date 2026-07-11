@@ -30,8 +30,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get navAboutMe => 'Sobre mim';
 
   @override
-  String get coinSubtitle =>
-      'Uma moeda encantada que consulta o Random.org e cai de volta no acaso local quando necessário.';
+  String get coinEyebrow => 'Selo Ritual';
+
+  @override
+  String get coinTitle => 'Cara ou Coroa';
+
+  @override
+  String get coinRitualSubtitle =>
+      'Um selo místico se acende para confirmar: o resultado vem do acaso puro.';
 
   @override
   String get coinHeads => 'CARA';
@@ -40,16 +46,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get coinTails => 'COROA';
 
   @override
-  String get coinPrompt => 'Entregue a decisao ao universo';
+  String get coinResultCaption => 'O universo decidiu — não o processador.';
 
   @override
-  String get coinTapPrompt => 'Toque para descobrir o veredito.';
+  String get coinHint => 'Toque no botão ou arraste a moeda para lançar';
 
   @override
-  String get coinResolved => 'O universo escolheu o seu lado.';
+  String get coinHintDrag => 'Solte para lançar — puxe mais para mais força';
 
   @override
-  String get coinButton => 'Jogar uma moeda';
+  String get coinDragHelper => 'ou arraste e solte a moeda para lançar';
+
+  @override
+  String get coinButton => 'Lançar a moeda';
 
   @override
   String get diceSubtitle =>

@@ -30,8 +30,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navAboutMe => 'About me';
 
   @override
-  String get coinSubtitle =>
-      'An enchanted coin that checks Random.org and falls back to local randomness whenever needed.';
+  String get coinEyebrow => 'Ritual Seal';
+
+  @override
+  String get coinTitle => 'Heads or Tails';
+
+  @override
+  String get coinRitualSubtitle =>
+      'A mystic seal lights up to confirm: the result comes from pure chance.';
 
   @override
   String get coinHeads => 'HEADS';
@@ -40,13 +46,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coinTails => 'TAILS';
 
   @override
-  String get coinPrompt => 'Hand the choice over to the universe';
+  String get coinResultCaption => 'The universe decided — not the processor.';
 
   @override
-  String get coinTapPrompt => 'Tap to discover the verdict.';
+  String get coinHint => 'Tap the button or drag the coin to flip';
 
   @override
-  String get coinResolved => 'The universe chose your side.';
+  String get coinHintDrag => 'Release to flip — pull further for more force';
+
+  @override
+  String get coinDragHelper => 'or drag and flick the coin to throw it';
 
   @override
   String get coinButton => 'Flip a coin';
@@ -123,8 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tarotPrompt => 'The deck is waiting';
 
   @override
-  String get tarotTapPrompt =>
-      'Draw a card to reveal the universe\'s symbol.';
+  String get tarotTapPrompt => 'Draw a card to reveal the universe\'s symbol.';
 
   @override
   String get tarotButton => 'Draw a card';
