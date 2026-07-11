@@ -69,13 +69,18 @@ class RitualButton extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                       ],
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.2,
-                          color: AppColors.goldText,
+                      Flexible(
+                        child: Text(
+                          label,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.2,
+                            color: AppColors.goldText,
+                          ),
                         ),
                       ),
                     ],

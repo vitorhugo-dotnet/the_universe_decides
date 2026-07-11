@@ -46,5 +46,20 @@ Branch: `feat/coin-ritual-redesign`
 - [x] All new keys + removed unused + regenerated
 - [x] Update `widget_test.dart` (disableAnimations, labels, copy)
 - [x] `flutter test` pass (16) + analyze clean + format
-- [ ] Visual verification vs prototype
+- [x] Visual verification vs prototype (all six tabs captured and reviewed)
+- [x] Reduced-motion guard added to Tarot card switcher so visual tests can settle without animation
 - [ ] Commit + open PR (no merge, no manual close)
+
+### Continuation note — 2026-07-10
+
+- Generated and reviewed visual captures for all six tabs through the existing
+  `test/_capture_test.dart` harness; the screenshots are currently untracked and
+  were preserved for review.
+- `TarotDrawScreen` now uses zero switch duration when
+  `MediaQuery.disableAnimations` is enabled, allowing reduced-motion visual
+  tests to settle.
+- Fixed two responsive layout overflows found by the visual suite: the Coin
+  result block now has enough vertical space, and `RitualButton` wraps long
+  localized labels safely.
+- Verification completed: `flutter test` passed all 22 tests, and the visual
+  capture suite passed all 6 captures after refreshing its local goldens.

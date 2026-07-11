@@ -641,7 +641,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     }
 
     return SizedBox(
-      height: 74,
+      height: 92,
       child: Center(
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),

@@ -19,6 +19,9 @@ class TarotDrawScreen extends ConsumerWidget {
     final state = ref.watch(tarotDrawProvider);
     final controller = ref.read(tarotDrawProvider.notifier);
     final cardKey = ValueKey<int>(state.drawCount);
+    final animationDuration = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : const Duration(milliseconds: 900);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
@@ -35,7 +38,7 @@ class TarotDrawScreen extends ConsumerWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 220),
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 900),
+                duration: animationDuration,
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
                 layoutBuilder: (currentChild, previousChildren) {
