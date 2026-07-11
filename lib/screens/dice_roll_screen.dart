@@ -10,6 +10,8 @@ import 'package:theuniversedecides/dice/dice_web_view.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
+import 'package:theuniversedecides/widgets/ritual_button.dart';
+import 'package:theuniversedecides/widgets/ritual_header.dart';
 
 typedef DiceWebViewBuilder = Widget Function(DiceWebViewController controller);
 
@@ -84,7 +86,6 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(diceRollProvider);
     final controller = ref.read(diceRollProvider.notifier);
@@ -112,102 +113,64 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
       _startRoll();
     });
 
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.scaffoldBackground,
-            AppColors.backgroundGradientMiddle,
-            AppColors.scaffoldBackground,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(32, 32, 32, 36),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Dice Ritual',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: AppColors.whiteMuted,
-              fontStyle: FontStyle.italic,
-              letterSpacing: 1.1,
-            ),
+          RitualHeader(
+            eyebrow: l10n.diceEyebrow,
+            title: l10n.diceTitle,
+            titleSize: 22,
           ),
-          const SizedBox(height: 12),
-          Text(
-            'RPG Dice',
-            style: theme.textTheme.headlineLarge?.copyWith(
-              color: AppColors.whiteStrong,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 34),
-          _SectionLabel(label: l10n.diceCount),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          _SectionLabel(l10n.diceCountLabel),
+          const SizedBox(height: 8),
           Row(
-            children: List.generate(5, (index) {
-              final count = index + 1;
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(right: index == 4 ? 0 : 10),
-                  child: _RitualChoiceButton(
-                    key: Key('dice-count-$count'),
-                    label: '$count',
-                    selected: state.diceCount == count,
-                    onPressed: isBusy
-                        ? null
-                        : () => controller.setDiceCount(count),
+            children: [
+              for (var n = 1; n <= 5; n++) ...[
+                if (n > 1) const SizedBox(width: 8),
+                Expanded(
+                  child: _PillButton(
+                    key: Key('dice-count-$n'),
+                    label: '$n',
+                    selected: state.diceCount == n,
+                    height: 40,
+                    onTap: isBusy ? null : () => controller.setDiceCount(n),
                   ),
                 ),
-              );
-            }),
+              ],
+            ],
           ),
-          const SizedBox(height: 24),
-          _SectionLabel(label: l10n.diceSides),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          _SectionLabel(l10n.diceSidesLabel),
+          const SizedBox(height: 8),
           Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: _availableSides.map((sides) {
-              return SizedBox(
-                width: 112,
-                child: _RitualChoiceButton(
-                  key: Key('dice-side-$sides'),
-                  label: 'd$sides',
-                  selected: state.selectedSides == sides,
-                  onPressed: isBusy
-                      ? null
-                      : () => controller.setSelectedSides(sides),
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final sides in _availableSides)
+                SizedBox(
+                  width: 64,
+                  child: _PillButton(
+                    key: Key('dice-side-$sides'),
+                    label: 'd$sides',
+                    selected: state.selectedSides == sides,
+                    height: 40,
+                    onTap: isBusy
+                        ? null
+                        : () => controller.setSelectedSides(sides),
+                  ),
                 ),
-              );
-            }).toList(),
+            ],
           ),
-          const SizedBox(height: 28),
-          SizedBox(
-            height: 80,
-            child: FilledButton(
-              key: const Key('dice-roll-button'),
-              onPressed: isBusy ? null : _startRoll,
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFFFC653),
-                disabledBackgroundColor: const Color(0xFF75603A),
-                foregroundColor: const Color(0xFF21192C),
-                disabledForegroundColor: AppColors.whiteMuted,
-                textStyle: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-              ),
-              child: Text(
-                state.isFetching ? 'Summoning dice…' : l10n.diceRollButton,
-              ),
-            ),
+          const SizedBox(height: 18),
+          RitualButton(
+            key: const Key('dice-roll-button'),
+            label: l10n.diceRollButton,
+            onPressed: isBusy ? null : _startRoll,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
           _DiceAnimationRegion(
             child:
                 widget.diceWebViewBuilder?.call(_diceWebViewController) ??
@@ -218,41 +181,36 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
             Text(
               state.animationError!,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFFFFC9C9),
-              ),
+              style: const TextStyle(fontSize: 13, color: Color(0xFFFFC9C9)),
             ),
           ],
-          const SizedBox(height: 12),
-          if (state.results.isEmpty)
-            Text(
-              l10n.diceEmptyState,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppColors.whiteMuted,
-              ),
-            )
-          else ...[
-            _DiceResults(results: state.results),
-            const SizedBox(height: 20),
-            Text(
-              state.results.join(' + '),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.whiteMuted,
-              ),
+          const SizedBox(height: 18),
+          if (state.results.isNotEmpty)
+            Column(
+              children: [
+                _DiceResults(results: state.results),
+                const SizedBox(height: 16),
+                Text(
+                  state.results.join('  +  '),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textCaption,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.diceTotal(state.total),
+                  key: const Key('dice-total'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              l10n.diceTotal(state.total),
-              key: const Key('dice-total'),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: AppColors.whiteStrong,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -260,61 +218,81 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
 }
 
 class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
+  const _SectionLabel(this.text);
 
-  final String label;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      label.toUpperCase(),
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: AppColors.whiteMuted,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 1.2,
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.6,
+        color: AppColors.textCaption,
       ),
     );
   }
 }
 
-class _RitualChoiceButton extends StatelessWidget {
-  const _RitualChoiceButton({
+class _PillButton extends StatelessWidget {
+  const _PillButton({
     super.key,
     required this.label,
     required this.selected,
-    required this.onPressed,
+    required this.onTap,
+    this.height = 40,
   });
 
   final String label;
   final bool selected;
-  final VoidCallback? onPressed;
+  final VoidCallback? onTap;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(54),
-        backgroundColor: selected
-            ? const Color(0xFFFFC653)
-            : Colors.transparent,
-        foregroundColor: selected
-            ? const Color(0xFF21192C)
-            : AppColors.whiteMuted,
-        disabledForegroundColor: AppColors.whiteMuted.withValues(alpha: 0.45),
-        side: BorderSide(
-          color: selected ? const Color(0xFFFFD985) : AppColors.whiteBorder,
+    return Opacity(
+      opacity: onTap == null ? 0.5 : 1,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Container(
+            height: height,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: selected
+                  ? const LinearGradient(
+                      colors: [AppColors.gold1, AppColors.gold2],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: selected ? null : const Color(0x0DFFFFFF),
+              border: Border.all(
+                color: selected ? Colors.transparent : const Color(0x24FFFFFF),
+              ),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: selected ? AppColors.goldText : AppColors.whiteMuted,
+              ),
+            ),
+          ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
-        textStyle: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
       ),
-      child: Text(label),
     );
   }
 }
 
+/// The transparent dice renderer sits over the shell's cosmic background, with
+/// a soft ritual glow to anchor it inside the composition.
 class _DiceAnimationRegion extends StatelessWidget {
   const _DiceAnimationRegion({required this.child});
 
@@ -323,18 +301,18 @@ class _DiceAnimationRegion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
+      height: 230,
       child: Stack(
         alignment: Alignment.center,
         children: [
           const DecoratedBox(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.fromBorderSide(
-                BorderSide(color: AppColors.whiteBorder),
+              gradient: RadialGradient(
+                colors: [AppColors.ritualGlow, Colors.transparent],
               ),
             ),
-            child: SizedBox(width: 200, height: 200),
+            child: SizedBox(width: 220, height: 220),
           ),
           Positioned.fill(child: child),
         ],
@@ -343,6 +321,7 @@ class _DiceAnimationRegion extends StatelessWidget {
   }
 }
 
+/// Ivory dice faces with gold pips, echoing the prototype's settled 3D dice.
 class _DiceResults extends StatelessWidget {
   const _DiceResults({required this.results});
 
@@ -356,27 +335,49 @@ class _DiceResults extends StatelessWidget {
       itemCount: results.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
         childAspectRatio: 1,
       ),
-      itemBuilder: (context, index) {
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F7FC),
-            borderRadius: BorderRadius.circular(24),
+      itemBuilder: (context, index) => _DieFace(value: results[index]),
+    );
+  }
+}
+
+class _DieFace extends StatelessWidget {
+  const _DieFace({required this.value});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFEFEFE), Color(0xFFF1F0F6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: const Color(0x14000000)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x40000000),
+            blurRadius: 16,
+            offset: Offset(0, 8),
           ),
-          child: Center(
-            child: Text(
-              '${results[index]}',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: const Color(0xFF21192C),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          '$value',
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w900,
+            color: AppColors.goldText,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

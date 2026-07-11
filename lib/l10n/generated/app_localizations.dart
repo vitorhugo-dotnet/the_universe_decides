@@ -137,14 +137,26 @@ abstract class AppLocalizations {
   /// No description provided for @navAboutMe.
   ///
   /// In en, this message translates to:
-  /// **'About me'**
+  /// **'About'**
   String get navAboutMe;
 
-  /// No description provided for @coinSubtitle.
+  /// No description provided for @coinEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'An enchanted coin that checks Random.org and falls back to local randomness whenever needed.'**
-  String get coinSubtitle;
+  /// **'Ritual Seal'**
+  String get coinEyebrow;
+
+  /// No description provided for @coinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heads or Tails'**
+  String get coinTitle;
+
+  /// No description provided for @coinRitualSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A mystic seal lights up to confirm: the result comes from pure chance.'**
+  String get coinRitualSubtitle;
 
   /// No description provided for @coinHeads.
   ///
@@ -158,23 +170,29 @@ abstract class AppLocalizations {
   /// **'TAILS'**
   String get coinTails;
 
-  /// No description provided for @coinPrompt.
+  /// No description provided for @coinResultCaption.
   ///
   /// In en, this message translates to:
-  /// **'Hand the choice over to the universe'**
-  String get coinPrompt;
+  /// **'The universe decided — not the processor.'**
+  String get coinResultCaption;
 
-  /// No description provided for @coinTapPrompt.
+  /// No description provided for @coinHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap to discover the verdict.'**
-  String get coinTapPrompt;
+  /// **'Tap the button or drag the coin to flip'**
+  String get coinHint;
 
-  /// No description provided for @coinResolved.
+  /// No description provided for @coinHintDrag.
   ///
   /// In en, this message translates to:
-  /// **'The universe chose your side.'**
-  String get coinResolved;
+  /// **'Release to flip — pull further for more force'**
+  String get coinHintDrag;
+
+  /// No description provided for @coinDragHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'or drag and flick the coin to throw it'**
+  String get coinDragHelper;
 
   /// No description provided for @coinButton.
   ///
@@ -182,23 +200,29 @@ abstract class AppLocalizations {
   /// **'Flip a coin'**
   String get coinButton;
 
-  /// No description provided for @diceSubtitle.
+  /// No description provided for @diceEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'Roll your RPG dice with multiple sides and let destiny add up the final result.'**
-  String get diceSubtitle;
+  /// **'Dice Ritual'**
+  String get diceEyebrow;
 
-  /// No description provided for @diceCount.
+  /// No description provided for @diceTitle.
   ///
   /// In en, this message translates to:
-  /// **'Number of dice'**
-  String get diceCount;
+  /// **'RPG Dice'**
+  String get diceTitle;
 
-  /// No description provided for @diceSides.
+  /// No description provided for @diceCountLabel.
   ///
   /// In en, this message translates to:
-  /// **'Dice sides'**
-  String get diceSides;
+  /// **'QUANTITY'**
+  String get diceCountLabel;
+
+  /// No description provided for @diceSidesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SIDES'**
+  String get diceSidesLabel;
 
   /// No description provided for @diceRollButton.
   ///
@@ -206,47 +230,29 @@ abstract class AppLocalizations {
   /// **'Roll dice'**
   String get diceRollButton;
 
-  /// No description provided for @diceEmptyState.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose your setup and roll to see each value and the final total.'**
-  String get diceEmptyState;
-
-  /// No description provided for @diceResults.
-  ///
-  /// In en, this message translates to:
-  /// **'Results'**
-  String get diceResults;
-
   /// No description provided for @diceTotal.
   ///
   /// In en, this message translates to:
   /// **'Total: {total}'**
   String diceTotal(int total);
 
-  /// No description provided for @cardDrawSubtitle.
+  /// No description provided for @cardEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'Draw a true-random playing card and let the universe reveal a modern tarot-free sign from a full 52-card deck.'**
-  String get cardDrawSubtitle;
+  /// **'Card Ritual'**
+  String get cardEyebrow;
 
-  /// No description provided for @cardDrawPrompt.
+  /// No description provided for @cardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Draw a card from the cosmic deck'**
-  String get cardDrawPrompt;
+  /// **'Full Deck'**
+  String get cardTitle;
 
-  /// No description provided for @cardDrawTapPrompt.
+  /// No description provided for @cardSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Tap below to reveal your next card.'**
-  String get cardDrawTapPrompt;
-
-  /// No description provided for @cardDrawResolved.
-  ///
-  /// In en, this message translates to:
-  /// **'The universe has revealed your card.'**
-  String get cardDrawResolved;
+  /// **'52 cards. One fate per tap.'**
+  String get cardSubtitle;
 
   /// No description provided for @cardDrawButton.
   ///
@@ -254,40 +260,40 @@ abstract class AppLocalizations {
   /// **'Draw a card'**
   String get cardDrawButton;
 
+  /// No description provided for @listEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choice Ritual'**
+  String get listEyebrow;
+
+  /// No description provided for @listTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'List Draw'**
+  String get listTitle;
+
   /// No description provided for @listSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Write down possibilities, invite the universe, and highlight a single destination for your next decision.'**
+  /// **'Add options and let chance decide.'**
   String get listSubtitle;
-
-  /// No description provided for @listAddOptionLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Add option'**
-  String get listAddOptionLabel;
 
   /// No description provided for @listAddOptionHint.
   ///
   /// In en, this message translates to:
-  /// **'E.g. Travel, sleep, order pizza...'**
+  /// **'New option…'**
   String get listAddOptionHint;
-
-  /// No description provided for @listAddButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Add'**
-  String get listAddButton;
 
   /// No description provided for @listChooseButton.
   ///
   /// In en, this message translates to:
-  /// **'Choose for me'**
+  /// **'Let the universe choose'**
   String get listChooseButton;
 
   /// No description provided for @listEmptyState.
   ///
   /// In en, this message translates to:
-  /// **'Add items to the list and let the universe decide for you.'**
+  /// **'Add at least two options to begin.'**
   String get listEmptyState;
 
   /// No description provided for @listChosenByUniverse.
@@ -296,29 +302,41 @@ abstract class AppLocalizations {
   /// **'Chosen by the universe'**
   String get listChosenByUniverse;
 
+  /// No description provided for @tarotEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tarot Ritual'**
+  String get tarotEyebrow;
+
+  /// No description provided for @tarotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tarot Reading'**
+  String get tarotTitle;
+
   /// No description provided for @tarotSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Draw a single Tarot card from the full 78-card deck and let true randomness reveal the archetype guiding this moment.'**
+  /// **'One card, revealed by pure chance.'**
   String get tarotSubtitle;
-
-  /// No description provided for @tarotPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'The deck is waiting'**
-  String get tarotPrompt;
-
-  /// No description provided for @tarotTapPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Draw a card to reveal the universe\'s symbol.'**
-  String get tarotTapPrompt;
 
   /// No description provided for @tarotButton.
   ///
   /// In en, this message translates to:
-  /// **'Draw a card'**
+  /// **'Reveal card'**
   String get tarotButton;
+
+  /// No description provided for @tarotWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'The card awaits'**
+  String get tarotWaiting;
+
+  /// No description provided for @tarotTapReveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to reveal'**
+  String get tarotTapReveal;
 
   /// No description provided for @tarotMajorArcana.
   ///
@@ -338,35 +356,29 @@ abstract class AppLocalizations {
   /// **'Card {number} of 78'**
   String tarotDeckPosition(int number);
 
-  /// No description provided for @aboutSubtitle.
+  /// No description provided for @aboutEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'A small corner with the creator profile, loading the avatar straight from the GitHub API.'**
-  String get aboutSubtitle;
+  /// **'The Oracle'**
+  String get aboutEyebrow;
 
-  /// No description provided for @aboutProfileLoadError.
+  /// No description provided for @aboutTitle.
   ///
   /// In en, this message translates to:
-  /// **'Could not load the profile right now.'**
-  String get aboutProfileLoadError;
+  /// **'About me'**
+  String get aboutTitle;
 
-  /// No description provided for @aboutRetryButton.
+  /// No description provided for @aboutBioFallback.
   ///
   /// In en, this message translates to:
-  /// **'Try again'**
-  String get aboutRetryButton;
+  /// **'Creator of The Universe Decides — a decision app powered by real randomness.'**
+  String get aboutBioFallback;
 
-  /// No description provided for @aboutQuickAccessTitle.
+  /// No description provided for @aboutShortcutsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Quick access in the panel'**
-  String get aboutQuickAccessTitle;
-
-  /// No description provided for @aboutQuickAccessDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Add coin and d20 shortcuts to the Android quick settings panel to open the app and run the action immediately.'**
-  String get aboutQuickAccessDescription;
+  /// **'Quick shortcuts'**
+  String get aboutShortcutsTitle;
 
   /// No description provided for @aboutAddCoinButton.
   ///
@@ -385,6 +397,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Buy me a coffee'**
   String get aboutDonationButton;
+
+  /// No description provided for @aboutRandomnessCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How does real randomness work?'**
+  String get aboutRandomnessCardTitle;
+
+  /// No description provided for @aboutRandomnessCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why the app avoids pseudo-random numbers'**
+  String get aboutRandomnessCardSubtitle;
+
+  /// No description provided for @aboutProfileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the profile right now.'**
+  String get aboutProfileLoadError;
+
+  /// No description provided for @aboutRetryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get aboutRetryButton;
 
   /// No description provided for @quickTileCoinAdded.
   ///
@@ -433,6 +469,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your Android version cannot add this shortcut from the app.'**
   String get quickTileDiceUnsupported;
+
+  /// No description provided for @randomnessSheetEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'What lies behind chance'**
+  String get randomnessSheetEyebrow;
+
+  /// No description provided for @randomnessSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Real chance vs. pseudo-random'**
+  String get randomnessSheetTitle;
+
+  /// No description provided for @randomnessCard1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Computers don\'t create true randomness'**
+  String get randomnessCard1Title;
+
+  /// No description provided for @randomnessCard1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Most apps use PRNGs (pseudo-random generators): deterministic math formulas that start from a \"seed\". Given the same seed, the result is always the same — it looks random, but it is 100% predictable if you know the algorithm and its internal state.'**
+  String get randomnessCard1Body;
+
+  /// No description provided for @randomnessCard2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'When available, this app uses physical entropy'**
+  String get randomnessCard2Title;
+
+  /// No description provided for @randomnessCard2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'When Random.org is available, a draw consumes real atmospheric noise collected from radio static — a chaotic physical phenomenon, not a calculation. There is no seed or formula: the result does not exist until the instant it is measured.'**
+  String get randomnessCard2Body;
+
+  /// No description provided for @randomnessCard3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Why it matters in practice'**
+  String get randomnessCard3Title;
+
+  /// No description provided for @randomnessCard3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'For decisions you want to be fair and indisputable — draws, tie-breaks, friendly bets — physical entropy provides an independently sourced result. If Random.org is unavailable, the app uses local pseudo-randomness instead and shows a fallback notice.'**
+  String get randomnessCard3Body;
+
+  /// No description provided for @randomnessSheetButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get randomnessSheetButton;
 
   /// No description provided for @randomOrgFallbackNotice.
   ///

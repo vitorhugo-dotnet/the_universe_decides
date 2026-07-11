@@ -6,7 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:theuniversedecides/controllers/tarot_draw_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
-import 'package:theuniversedecides/widgets/mystic_screen_scaffold.dart';
+import 'package:theuniversedecides/widgets/ritual_button.dart';
+import 'package:theuniversedecides/widgets/ritual_header.dart';
 
 class TarotDrawScreen extends ConsumerWidget {
   const TarotDrawScreen({super.key});
@@ -18,118 +19,107 @@ class TarotDrawScreen extends ConsumerWidget {
     final state = ref.watch(tarotDrawProvider);
     final controller = ref.read(tarotDrawProvider.notifier);
     final cardKey = ValueKey<int>(state.drawCount);
+    final animationDuration = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : const Duration(milliseconds: 900);
 
-    return MysticScreenScaffold(
-      title: l10n.navTarot,
-      subtitle: l10n.tarotSubtitle,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 280),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 900),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      layoutBuilder: (currentChild, previousChildren) {
-                        return Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ...previousChildren,
-                            ?currentChild,
-                          ],
-                        );
-                      },
-                      transitionBuilder: (child, animation) {
-                        final isIncoming = child.key == cardKey;
-                        final rotation = Tween<double>(
-                          begin: isIncoming ? math.pi : -math.pi,
-                          end: 0,
-                        ).animate(animation);
+          RitualHeader(
+            eyebrow: l10n.tarotEyebrow,
+            title: l10n.tarotTitle,
+            subtitle: l10n.tarotSubtitle,
+          ),
+          const SizedBox(height: 22),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: AnimatedSwitcher(
+                duration: animationDuration,
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                layoutBuilder: (currentChild, previousChildren) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [...previousChildren, ?currentChild],
+                  );
+                },
+                transitionBuilder: (child, animation) {
+                  final isIncoming = child.key == cardKey;
+                  final rotation = Tween<double>(
+                    begin: isIncoming ? math.pi : -math.pi,
+                    end: 0,
+                  ).animate(animation);
 
-                        return AnimatedBuilder(
-                          animation: rotation,
-                          child: child,
-                          builder: (context, child) {
-                            final angle = rotation.value;
-                            final needsMirror = angle.abs() > (math.pi / 2);
-                            final displayChild = needsMirror
-                                ? Transform(
-                                    alignment: Alignment.center,
-                                    transform: Matrix4.identity()
-                                      ..rotateY(math.pi),
-                                    child: child,
-                                  )
-                                : child;
-
-                            return Transform(
+                  return AnimatedBuilder(
+                    animation: rotation,
+                    child: child,
+                    builder: (context, child) {
+                      final angle = rotation.value;
+                      final needsMirror = angle.abs() > (math.pi / 2);
+                      final displayChild = needsMirror
+                          ? Transform(
                               alignment: Alignment.center,
-                              transform: Matrix4.identity()
-                                ..setEntry(3, 2, 0.0018)
-                                ..rotateY(angle),
-                              child: displayChild,
-                            );
-                          },
-                        );
-                      },
-                      child: _TarotCardFace(
-                        key: cardKey,
-                        card: state.card,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: state.isLoading
-                        ? const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: CircularProgressIndicator(),
-                          )
-                        : Column(
-                            key: ValueKey(state.card?.deckNumber ?? 0),
-                            children: [
-                              Text(
-                                state.card?.title ?? l10n.tarotPrompt,
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                state.card == null
-                                    ? l10n.tarotTapPrompt
-                                    : state.card!.isMajorArcana
-                                    ? l10n.tarotMajorArcana
-                                    : l10n.tarotMinorArcana,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: AppColors.whiteMuted,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: state.isLoading ? null : controller.drawCard,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                      ),
-                      icon: const Icon(Icons.auto_awesome),
-                      label: Text(l10n.tarotButton),
-                    ),
-                  ),
-                ],
+                              transform: Matrix4.identity()..rotateY(math.pi),
+                              child: child,
+                            )
+                          : child;
+
+                      return Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()
+                          ..setEntry(3, 2, 0.0018)
+                          ..rotateY(angle),
+                        child: displayChild,
+                      );
+                    },
+                  );
+                },
+                child: _TarotCardFace(key: cardKey, card: state.card),
               ),
             ),
+          ),
+          const SizedBox(height: 22),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: state.isLoading
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : Column(
+                    key: ValueKey(state.card?.deckNumber ?? 0),
+                    children: [
+                      Text(
+                        state.card?.title ?? l10n.tarotWaiting,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        state.card == null
+                            ? l10n.tarotTapReveal
+                            : state.card!.isMajorArcana
+                            ? l10n.tarotMajorArcana
+                            : l10n.tarotMinorArcana,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: AppColors.whiteMuted,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+          ),
+          const SizedBox(height: 20),
+          RitualButton(
+            label: l10n.tarotButton,
+            onPressed: state.isLoading ? null : controller.drawCard,
+            maxWidth: double.infinity,
           ),
         ],
       ),
@@ -198,10 +188,7 @@ class _TarotCardFace extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
                       gradient: RadialGradient(
-                        colors: [
-                          const Color(0x66F8D26D),
-                          Colors.transparent,
-                        ],
+                        colors: [const Color(0x66F8D26D), Colors.transparent],
                         radius: isRevealed ? 0.95 : 0.75,
                         center: Alignment.topCenter,
                       ),
@@ -251,7 +238,9 @@ class _TarotCardFace extends StatelessWidget {
                                   ),
                                   SizedBox(height: mainGap),
                                   Text(
-                                    isRevealed ? card!.title : l10n.tarotPrompt,
+                                    isRevealed
+                                        ? card!.title
+                                        : l10n.tarotWaiting,
                                     style:
                                         (isCompact
                                                 ? theme.textTheme.titleLarge
@@ -269,7 +258,7 @@ class _TarotCardFace extends StatelessWidget {
                                         ? l10n.tarotDeckPosition(
                                             card!.deckNumber,
                                           )
-                                        : l10n.tarotTapPrompt,
+                                        : l10n.tarotTapReveal,
                                     style:
                                         (isCompact
                                                 ? theme.textTheme.bodyMedium
@@ -304,7 +293,7 @@ class _TarotCardFace extends StatelessWidget {
                               ? (card!.isMajorArcana
                                     ? l10n.tarotMajorArcana
                                     : l10n.tarotMinorArcana)
-                              : l10n.tarotTapPrompt,
+                              : l10n.tarotTapReveal,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.white.withValues(alpha: 0.86),
                           ),

@@ -90,34 +90,21 @@ Future<void> _pumpDiceScreen(WidgetTester tester, ProviderContainer container) {
 }
 
 void _expectControlsDisabled(WidgetTester tester) {
-  expect(
-    tester
-        .widget<OutlinedButton>(
-          find.descendant(
-            of: find.byKey(const Key('dice-count-1')),
-            matching: find.byType(OutlinedButton),
-          ),
-        )
-        .onPressed,
-    isNull,
-  );
-  expect(
-    tester
-        .widget<OutlinedButton>(
-          find.descendant(
-            of: find.byKey(const Key('dice-side-20')),
-            matching: find.byType(OutlinedButton),
-          ),
-        )
-        .onPressed,
-    isNull,
-  );
-  expect(
-    tester
-        .widget<FilledButton>(find.byKey(const Key('dice-roll-button')))
-        .onPressed,
-    isNull,
-  );
+  for (final key in const [
+    Key('dice-count-1'),
+    Key('dice-side-20'),
+    Key('dice-roll-button'),
+  ]) {
+    expect(
+      tester
+          .widget<InkWell>(
+            find.descendant(of: find.byKey(key), matching: find.byType(InkWell)),
+          )
+          .onTap,
+      isNull,
+      reason: '$key should be disabled while busy',
+    );
+  }
 }
 
 ProviderContainer _containerFor(_PendingClient client) {

@@ -6,12 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
+import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/screens/about_me_screen.dart';
 import 'package:theuniversedecides/screens/card_draw_screen.dart';
 import 'package:theuniversedecides/screens/coin_flip_screen.dart';
 import 'package:theuniversedecides/screens/dice_roll_screen.dart';
 import 'package:theuniversedecides/screens/list_picker_screen.dart';
 import 'package:theuniversedecides/screens/tarot_draw_screen.dart';
+import 'package:theuniversedecides/widgets/ritual_background.dart';
+import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
 import 'package:theuniversedecides/widgets/snack_bar_custom.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -104,49 +107,45 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final navItems = <RitualNavItem>[
+      (id: 'coin', label: l10n.navCoin),
+      (id: 'dice', label: l10n.navDice),
+      (id: 'cards', label: l10n.navCards),
+      (id: 'lists', label: l10n.navLists),
+      (id: 'tarot', label: l10n.navTarot),
+      (id: 'about', label: l10n.navAboutMe),
+    ];
+
     return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(index: _selectedIndex, children: _screens),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.monetization_on_outlined),
-            selectedIcon: const Icon(Icons.monetization_on),
-            label: l10n.navCoin,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.casino_outlined),
-            selectedIcon: const Icon(Icons.casino),
-            label: l10n.navDice,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.style_outlined),
-            selectedIcon: const Icon(Icons.style),
-            label: l10n.navCards,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.auto_awesome_outlined),
-            selectedIcon: const Icon(Icons.auto_awesome),
-            label: l10n.navLists,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.style_outlined),
-            selectedIcon: const Icon(Icons.style),
-            label: l10n.navTarot,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
-            label: l10n.navAboutMe,
-          ),
-        ],
+      backgroundColor: AppColors.scaffoldBackground,
+      body: RitualBackground(
+        child: Stack(
+          children: [
+            const ShellRuneRings(),
+            Column(
+              children: [
+                Expanded(
+                  child: SafeArea(
+                    bottom: false,
+                    child: IndexedStack(
+                      index: _selectedIndex,
+                      children: _screens,
+                    ),
+                  ),
+                ),
+                RitualBottomNav(
+                  items: navItems,
+                  selectedIndex: _selectedIndex,
+                  onSelected: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
