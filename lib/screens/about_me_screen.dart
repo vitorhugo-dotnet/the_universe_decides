@@ -5,7 +5,9 @@ import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
-import 'package:theuniversedecides/widgets/mystic_screen_scaffold.dart';
+import 'package:theuniversedecides/widgets/how_randomness_sheet.dart';
+import 'package:theuniversedecides/widgets/ritual_button.dart';
+import 'package:theuniversedecides/widgets/ritual_header.dart';
 
 class AboutMeScreen extends ConsumerStatefulWidget {
   const AboutMeScreen({super.key});
@@ -51,143 +53,67 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final profileAsync = ref.watch(
       githubProfileProvider(AboutMeScreen._githubUsername),
     );
 
-    return MysticScreenScaffold(
-      title: l10n.navAboutMe,
-      subtitle: l10n.aboutSubtitle,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: profileAsync.when(
-                data: (profile) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _Avatar(avatarUrl: profile.avatarUrl),
-                        const SizedBox(width: 18),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                profile.name ?? 'Vitor Hugo',
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                '@${profile.login}',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (profile.bio case final bio?) ...[
-                      const SizedBox(height: 20),
-                      Text(
-                        bio,
-                        style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: AppColors.panelBackground,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        profile.profileUrl ??
-                            'https://github.com/${profile.login}',
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 36),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (error, _) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.aboutProfileLoadError,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text('$error', style: theme.textTheme.bodyMedium),
-                    const SizedBox(height: 18),
-                    FilledButton.icon(
-                      onPressed: () {
-                        ref.invalidate(
-                          githubProfileProvider(AboutMeScreen._githubUsername),
-                        );
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: Text(l10n.aboutRetryButton),
-                    ),
-                  ],
-                ),
+          RitualHeader(eyebrow: l10n.aboutEyebrow, title: l10n.aboutTitle),
+          const SizedBox(height: 20),
+          profileAsync.when(
+            data: (profile) => _ProfileBlock(profile: profile, l10n: l10n),
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 36),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (error, _) => _ErrorBlock(
+              message: l10n.aboutProfileLoadError,
+              detail: '$error',
+              retryLabel: l10n.aboutRetryButton,
+              onRetry: () => ref.invalidate(
+                githubProfileProvider(AboutMeScreen._githubUsername),
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.aboutQuickAccessTitle,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.aboutQuickAccessDescription,
-                    style: theme.textTheme.bodyLarge?.copyWith(height: 1.45),
-                  ),
-                  const SizedBox(height: 18),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: [
-                      FilledButton.icon(
-                        onPressed: () => _requestTile(QuickAccessAction.coin),
-                        icon: const Icon(Icons.monetization_on),
-                        label: Text(l10n.aboutAddCoinButton),
-                      ),
-                      FilledButton.icon(
-                        onPressed: () => _requestTile(QuickAccessAction.dice),
-                        icon: const Icon(Icons.casino),
-                        label: Text(l10n.aboutAddDiceButton),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+          const SizedBox(height: 24),
+          Text(
+            l10n.aboutShortcutsTitle,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
             ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _ShortcutButton(
+                  icon: Icons.monetization_on,
+                  label: l10n.aboutAddCoinButton,
+                  onTap: () => _requestTile(QuickAccessAction.coin),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _ShortcutButton(
+                  icon: Icons.casino,
+                  label: l10n.aboutAddDiceButton,
+                  onTap: () => _requestTile(QuickAccessAction.dice),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _RandomnessCard(
+            title: l10n.aboutRandomnessCardTitle,
+            subtitle: l10n.aboutRandomnessCardSubtitle,
+            onTap: () => showHowRandomnessSheet(context),
           ),
         ],
       ),
@@ -195,36 +121,303 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
   }
 }
 
-class _Avatar extends StatelessWidget {
-  const _Avatar({required this.avatarUrl});
+class _ProfileBlock extends StatelessWidget {
+  const _ProfileBlock({required this.profile, required this.l10n});
 
-  final String avatarUrl;
+  final GitHubProfile profile;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    final hasAvatar = avatarUrl.isNotEmpty;
+    final bio = profile.bio ?? l10n.aboutBioFallback;
+    final link = (profile.profileUrl ?? 'https://github.com/${profile.login}')
+        .replaceFirst('https://', '');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Avatar(avatarUrl: profile.avatarUrl, login: profile.login),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profile.name ?? 'Vitor Hugo',
+                      style: const TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '@${profile.login}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFB7A6FF),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Text(
+          bio,
+          style: const TextStyle(
+            fontSize: 13.5,
+            height: 1.55,
+            color: AppColors.textSoft,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: const Color(0x0AFFFFFF),
+            border: Border.all(color: const Color(0x14FFFFFF)),
+          ),
+          child: Text(
+            link,
+            style: const TextStyle(fontSize: 13, color: AppColors.textCaption),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorBlock extends StatelessWidget {
+  const _ErrorBlock({
+    required this.message,
+    required this.detail,
+    required this.retryLabel,
+    required this.onRetry,
+  });
+
+  final String message;
+  final String detail;
+  final String retryLabel;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          message,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(detail, style: const TextStyle(color: AppColors.textSoft)),
+        const SizedBox(height: 16),
+        RitualButton(
+          label: retryLabel,
+          onPressed: onRetry,
+          maxWidth: 220,
+          height: 46,
+        ),
+      ],
+    );
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.avatarUrl, required this.login});
+
+  final String avatarUrl;
+  final String login;
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = login.isNotEmpty
+        ? login.substring(0, 1).toUpperCase()
+        : '?';
 
     return Container(
-      width: 92,
-      height: 92,
+      width: 76,
+      height: 76,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.whiteBorder, width: 2),
+        gradient: const LinearGradient(
+          colors: [
+            AppColors.listResultGradientStart,
+            AppColors.listResultGradientEnd,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: const Color(0x24FFFFFF), width: 2),
       ),
       child: ClipOval(
-        child: hasAvatar
+        child: avatarUrl.isNotEmpty
             ? Image.network(
                 avatarUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => const ColoredBox(
-                  color: AppColors.panelBackground,
-                  child: Icon(Icons.person, size: 44),
-                ),
+                errorBuilder: (_, _, _) =>
+                    _InitialsFallback(initials: initials),
               )
-            : const ColoredBox(
-                color: AppColors.panelBackground,
-                child: Icon(Icons.person, size: 44),
+            : _InitialsFallback(initials: initials),
+      ),
+    );
+  }
+}
+
+class _InitialsFallback extends StatelessWidget {
+  const _InitialsFallback({required this.initials});
+
+  final String initials;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        initials,
+        style: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class _ShortcutButton extends StatelessWidget {
+  const _ShortcutButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: AppColors.gold2.withValues(alpha: 0.1),
+            border: Border.all(color: AppColors.gold2.withValues(alpha: 0.5)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: AppColors.gold1),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.gold1,
+                  ),
+                ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RandomnessCard extends StatelessWidget {
+  const _RandomnessCard({
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: const Color(0x1A7A4FFF),
+            border: Border.all(color: const Color(0x597A4FFF)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.runePurple.withValues(alpha: 0.7),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  size: 16,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textCaption,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.textDim),
+            ],
+          ),
+        ),
       ),
     );
   }

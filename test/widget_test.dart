@@ -14,6 +14,22 @@ import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
 
 void main() {
+  // The redesigned shell has always-on rune-ring animations; disabling
+  // animations keeps pumpAndSettle finite and exercises the reduced-motion
+  // paths the app must support.
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized()
+        .platformDispatcher
+        .accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(
+      disableAnimations: true,
+    );
+  });
+
+  tearDown(() {
+    TestWidgetsFlutterBinding.instance.platformDispatcher
+        .clearAccessibilityFeaturesTestValue();
+  });
+
   testWidgets('coin screen uses the random service', (
     WidgetTester tester,
   ) async {
@@ -159,12 +175,12 @@ void main() {
     await tester.tap(find.text('Lists'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Chá');
-    await tester.tap(find.text('Add'));
+    await tester.tap(find.text('+'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Café');
-    await tester.tap(find.text('Add'));
+    await tester.tap(find.text('+'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Choose for me'));
+    await tester.tap(find.text('Let the universe choose'));
     await tester.pumpAndSettle();
 
     expect(find.text('Café'), findsWidgets);
@@ -200,7 +216,7 @@ void main() {
     );
     await tester.tap(find.text('Tarot'));
     await tester.pumpAndSettle();
-    await _tapVisible(tester, find.text('Draw a card'));
+    await _tapVisible(tester, find.text('Reveal card'));
 
     expect(find.text('Ace of Wands'), findsWidgets);
     expect(find.text('Minor Arcana'), findsWidgets);
@@ -232,7 +248,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('About me'));
+    await tester.tap(find.text('About'));
     await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsNothing);
@@ -311,8 +327,8 @@ void main() {
 
     expect(find.text('Moeda'), findsWidgets);
     expect(find.text('Cartas'), findsOneWidget);
-    expect(find.text('Jogar uma moeda'), findsOneWidget);
-    expect(find.text('Sobre mim'), findsOneWidget);
+    expect(find.text('Lançar a moeda'), findsOneWidget);
+    expect(find.text('Sobre'), findsOneWidget);
   });
 
   testWidgets('app shows english labels for en locale', (
@@ -348,7 +364,7 @@ void main() {
     expect(find.text('Coin'), findsWidgets);
     expect(find.text('Cards'), findsOneWidget);
     expect(find.text('Flip a coin'), findsOneWidget);
-    expect(find.text('About me'), findsOneWidget);
+    expect(find.text('About'), findsWidgets);
   });
 
   testWidgets(

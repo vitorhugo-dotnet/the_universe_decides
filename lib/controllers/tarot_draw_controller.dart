@@ -9,11 +9,7 @@ final tarotDrawProvider = NotifierProvider<TarotDrawController, TarotDrawState>(
 );
 
 class TarotDrawState {
-  const TarotDrawState({
-    this.card,
-    this.isLoading = false,
-    this.drawCount = 0,
-  });
+  const TarotDrawState({this.card, this.isLoading = false, this.drawCount = 0});
 
   final TarotCard? card;
   final bool isLoading;
