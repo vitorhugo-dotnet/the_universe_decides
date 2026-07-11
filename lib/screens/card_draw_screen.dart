@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/card_draw_controller.dart';
@@ -27,6 +28,10 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
     }
     setState(() => _flipCount++);
     await controller.drawCard();
+    if (!mounted) {
+      return;
+    }
+    HapticFeedback.mediumImpact();
   }
 
   @override

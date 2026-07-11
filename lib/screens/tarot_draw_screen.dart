@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/tarot_draw_controller.dart';
@@ -118,7 +119,12 @@ class TarotDrawScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           RitualButton(
             label: l10n.tarotButton,
-            onPressed: state.isLoading ? null : controller.drawCard,
+            onPressed: state.isLoading
+                ? null
+                : () async {
+                    await controller.drawCard();
+                    HapticFeedback.mediumImpact();
+                  },
             maxWidth: double.infinity,
           ),
         ],

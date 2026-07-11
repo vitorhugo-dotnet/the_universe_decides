@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/list_picker_controller.dart';
@@ -34,6 +35,13 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
     final state = ref.watch(listPickerProvider);
     final controller = ref.read(listPickerProvider.notifier);
     final canPick = state.items.length >= 2 && !state.isLoading;
+
+    ref.listen<ListPickerState>(listPickerProvider, (previous, next) {
+      if (next.selectedIndex != null &&
+          next.selectedIndex != previous?.selectedIndex) {
+        HapticFeedback.mediumImpact();
+      }
+    });
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),

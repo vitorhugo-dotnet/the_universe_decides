@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/dice_roll_controller.dart';
@@ -61,7 +62,12 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
 
   void _completeDiceAnimation(DiceBridgeMessage message) {
     _animationTimer?.cancel();
+    final wasActive =
+        ref.read(diceRollProvider).activeRequestId == message.requestId;
     ref.read(diceRollProvider.notifier).completeAnimation(message.requestId);
+    if (wasActive) {
+      HapticFeedback.mediumImpact();
+    }
   }
 
   Future<void> _animateRequest(DiceRollRequest request) async {
