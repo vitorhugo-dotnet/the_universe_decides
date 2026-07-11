@@ -216,18 +216,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Most apps use PRNGs (pseudo-random generators): deterministic math formulas that start from a \"seed\". Given the same seed, the result is always the same — it looks random, but it is 100% predictable if you know the algorithm and its internal state.';
 
   @override
-  String get randomnessCard2Title => 'This app uses real physical entropy';
+  String get randomnessCard2Title =>
+      'When available, this app uses physical entropy';
 
   @override
   String get randomnessCard2Body =>
-      'Every draw consumes real atmospheric noise, collected by Random.org from radio static — a chaotic physical phenomenon, not a calculation. There is no seed, no formula: the result does not exist until the instant it is measured.';
+      'When Random.org is available, a draw consumes real atmospheric noise collected from radio static — a chaotic physical phenomenon, not a calculation. There is no seed or formula: the result does not exist until the instant it is measured.';
 
   @override
   String get randomnessCard3Title => 'Why it matters in practice';
 
   @override
   String get randomnessCard3Body =>
-      'For decisions you want to be fair and indisputable — draws, tie-breaks, friendly bets — a PRNG could, in theory, be reproduced or manipulated. Real physical entropy removes that doubt: nobody, not even the app itself, can predict or repeat the result.';
+      'For decisions you want to be fair and indisputable — draws, tie-breaks, friendly bets — physical entropy provides an independently sourced result. If Random.org is unavailable, the app uses local pseudo-randomness instead and shows a fallback notice.';
 
   @override
   String get randomnessSheetButton => 'Got it';

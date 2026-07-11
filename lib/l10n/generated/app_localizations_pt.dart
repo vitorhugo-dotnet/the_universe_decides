@@ -217,18 +217,19 @@ class AppLocalizationsPt extends AppLocalizations {
       'A maioria dos apps usa PRNGs (geradores pseudoaleatórios): fórmulas matemáticas determinísticas que partem de uma \"semente\" (seed). Dado o mesmo seed, o resultado é sempre o mesmo — parece aleatório, mas é 100% previsível se você souber o algoritmo e o estado interno.';
 
   @override
-  String get randomnessCard2Title => 'Este app usa entropia física real';
+  String get randomnessCard2Title =>
+      'Quando disponível, este app usa entropia física';
 
   @override
   String get randomnessCard2Body =>
-      'Cada lançamento consome ruído atmosférico real, coletado pelo Random.org a partir de rádio-estática — um fenômeno físico caótico, não um cálculo. Não há semente, não há fórmula: o resultado não existe até o instante em que é medido.';
+      'Quando o Random.org está disponível, cada lançamento consome ruído atmosférico real, coletado a partir de rádio-estática — um fenômeno físico caótico, não um cálculo. Não há semente nem fórmula: o resultado não existe até o instante em que é medido.';
 
   @override
   String get randomnessCard3Title => 'Por que isso importa na prática';
 
   @override
   String get randomnessCard3Body =>
-      'Em decisões que você quer que sejam justas e incontestáveis — sorteios, desempates, apostas amistosas — um PRNG pode, em teoria, ser reproduzido ou manipulado. Entropia física real remove essa dúvida: ninguém, nem o próprio app, pode prever ou repetir o resultado.';
+      'Em decisões que você quer que sejam justas e incontestáveis — sorteios, desempates, apostas amistosas — a entropia física fornece um resultado de fonte independente. Se o Random.org estiver indisponível, o app usa aleatoriedade pseudoaleatória local e mostra um aviso de fallback.';
 
   @override
   String get randomnessSheetButton => 'Entendi';

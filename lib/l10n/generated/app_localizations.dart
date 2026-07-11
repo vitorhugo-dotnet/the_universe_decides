@@ -491,13 +491,13 @@ abstract class AppLocalizations {
   /// No description provided for @randomnessCard2Title.
   ///
   /// In en, this message translates to:
-  /// **'This app uses real physical entropy'**
+  /// **'When available, this app uses physical entropy'**
   String get randomnessCard2Title;
 
   /// No description provided for @randomnessCard2Body.
   ///
   /// In en, this message translates to:
-  /// **'Every draw consumes real atmospheric noise, collected by Random.org from radio static — a chaotic physical phenomenon, not a calculation. There is no seed, no formula: the result does not exist until the instant it is measured.'**
+  /// **'When Random.org is available, a draw consumes real atmospheric noise collected from radio static — a chaotic physical phenomenon, not a calculation. There is no seed or formula: the result does not exist until the instant it is measured.'**
   String get randomnessCard2Body;
 
   /// No description provided for @randomnessCard3Title.
@@ -509,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @randomnessCard3Body.
   ///
   /// In en, this message translates to:
-  /// **'For decisions you want to be fair and indisputable — draws, tie-breaks, friendly bets — a PRNG could, in theory, be reproduced or manipulated. Real physical entropy removes that doubt: nobody, not even the app itself, can predict or repeat the result.'**
+  /// **'For decisions you want to be fair and indisputable — draws, tie-breaks, friendly bets — physical entropy provides an independently sourced result. If Random.org is unavailable, the app uses local pseudo-randomness instead and shows a fallback notice.'**
   String get randomnessCard3Body;
 
   /// No description provided for @randomnessSheetButton.
