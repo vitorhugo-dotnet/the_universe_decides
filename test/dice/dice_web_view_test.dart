@@ -1,0 +1,34 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:theuniversedecides/dice/dice_roll_request.dart';
+import 'package:theuniversedecides/dice/dice_web_view.dart';
+
+void main() {
+  test('roll is a no-op before the local bridge is ready', () async {
+    final controller = DiceWebViewController();
+
+    await controller.roll(
+      DiceRollRequest(
+        requestId: 'request-42',
+        notation: '2d6',
+        results: [3, 5],
+      ),
+    );
+
+    expect(controller.activeRequestId, isNull);
+  });
+
+  test('ignores malformed and stale bridge messages', () async {
+    final completedRequestIds = <String>[];
+    final controller = DiceWebViewController(
+      onRollCompleted: (message) => completedRequestIds.add(message.requestId),
+    );
+
+    await controller.handleBridgeMessage('{not valid json');
+    await controller.handleBridgeMessage(
+      '{"event":"rollCompleted","requestId":"stale","results":[3,5]}',
+    );
+
+    expect(completedRequestIds, isEmpty);
+    expect(controller.activeRequestId, isNull);
+  });
+}
