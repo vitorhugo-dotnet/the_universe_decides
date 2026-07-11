@@ -20,17 +20,35 @@
     });
   }
 
+  var diceBox = new DICE.dice_box(document.body);
+  var activeRequestId = null;
+
+  window.addEventListener('resize', function () {
+    diceBox.reinit(document.body);
+  });
+
   window.DiceBridge = {
     roll: function (roll) {
       if (!validRoll(roll)) {
         emit({ type: 'error', requestId: roll && roll.requestId, message: 'Invalid roll' });
         return;
       }
+      if (activeRequestId !== null) {
+        emit({ type: 'error', requestId: roll.requestId, message: 'A roll is already active' });
+        return;
+      }
+      activeRequestId = roll.requestId;
       emit({ type: 'rollStarted', requestId: roll.requestId });
-      emit({ event: 'rollCompleted', requestId: roll.requestId, results: roll.results });
+      diceBox.setDice(roll.notation);
+      diceBox.start_throw(function () {
+        return roll.results;
+      }, function () {
+        activeRequestId = null;
+        emit({ event: 'rollCompleted', requestId: roll.requestId, results: roll.results });
+      });
     },
-    pause: function () {},
-    resume: function () {}
+    pause: function () { diceBox.pause(); },
+    resume: function () { diceBox.resume(); }
   };
 
   document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
