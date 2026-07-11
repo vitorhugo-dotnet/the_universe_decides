@@ -61,7 +61,6 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.byType(GridView), findsOneWidget);
     expect(container.read(diceRollProvider).total, 3);
     expect(find.byKey(const Key('dice-total')), findsOneWidget);
     expect(find.text('Renderer unavailable'), findsWidgets);

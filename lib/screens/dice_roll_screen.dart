@@ -184,33 +184,21 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
               style: const TextStyle(fontSize: 13, color: Color(0xFFFFC9C9)),
             ),
           ],
-          const SizedBox(height: 18),
-          if (state.results.isNotEmpty)
-            Column(
-              children: [
-                _DiceResults(results: state.results),
-                const SizedBox(height: 16),
-                Text(
-                  state.results.join('  +  '),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textCaption,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.diceTotal(state.total),
-                  key: const Key('dice-total'),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+          if (state.results.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              state.results.length > 1
+                  ? '${state.results.join(' + ')} = ${state.total}'
+                  : l10n.diceTotal(state.total),
+              key: const Key('dice-total'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.whiteMuted,
+              ),
             ),
+          ],
         ],
       ),
     );
@@ -301,7 +289,7 @@ class _DiceAnimationRegion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 230,
+      height: 320,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -312,71 +300,10 @@ class _DiceAnimationRegion extends StatelessWidget {
                 colors: [AppColors.ritualGlow, Colors.transparent],
               ),
             ),
-            child: SizedBox(width: 220, height: 220),
+            child: SizedBox(width: 280, height: 280),
           ),
           Positioned.fill(child: child),
         ],
-      ),
-    );
-  }
-}
-
-/// Ivory dice faces with gold pips, echoing the prototype's settled 3D dice.
-class _DiceResults extends StatelessWidget {
-  const _DiceResults({required this.results});
-
-  final List<int> results;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: results.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1,
-      ),
-      itemBuilder: (context, index) => _DieFace(value: results[index]),
-    );
-  }
-}
-
-class _DieFace extends StatelessWidget {
-  const _DieFace({required this.value});
-
-  final int value;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFEFEFE), Color(0xFFF1F0F6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: const Color(0x14000000)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x40000000),
-            blurRadius: 16,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          '$value',
-          style: const TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w900,
-            color: AppColors.goldText,
-          ),
-        ),
       ),
     );
   }
