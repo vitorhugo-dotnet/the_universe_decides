@@ -31,4 +31,24 @@ abstract final class AppColors {
   static const whiteMuted = Color(0xB3FFFFFF);
   static const blackMuted = Color(0xD1000000);
   static const blackSoft = Color(0xBF000000);
+
+  // Ritual redesign tokens (Claude Design "The Universe Decides" prototype).
+  static const ritualGlow = Color(0x477A4FFF); // radial purple glow, ~28% alpha
+  static const gold1 = Color(0xFFFCE38A);
+  static const gold2 = Color(0xFFF9B44C);
+  static const goldText = Color(0xFF1A1030);
+  static const goldShadow = Color(0x8CF9B44C);
+  static const runePurple = Color(0x598B7BFF);
+  static const runeAmber = Color(0x4DF9B44C);
+  static const runePurpleFaint = Color(0x298B7BFF);
+  static const runeAmberFaint = Color(0x24F9B44C);
+  static const coinBorder = Color(0x47FFFFFF); // 28% white
+  static const coinLabel = Color(0xB3000000); // 70% black
+  static const coinDropShadow = Color(0x8C000000);
+  static const impactRing = Color(0x998B7BFF);
+  static const navBarBackground = Color(0xDB0F0A19); // rgba(15,10,25,.86)
+  static const textFaint = Color(0x66FFFFFF); // 40% white
+  static const textDim = Color(0x80FFFFFF); // 50% white
+  static const textSoft = Color(0x9EFFFFFF); // 62% white
+  static const textCaption = Color(0x8CFFFFFF); // 55% white
 }
