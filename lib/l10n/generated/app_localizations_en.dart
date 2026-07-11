@@ -123,8 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tarotPrompt => 'The deck is waiting';
 
   @override
-  String get tarotTapPrompt =>
-      'Draw a card to reveal the universe\'s symbol.';
+  String get tarotTapPrompt => 'Draw a card to reveal the universe\'s symbol.';
 
   @override
   String get tarotButton => 'Draw a card';
@@ -162,6 +161,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutAddDiceButton => 'Add d20';
+
+  @override
+  String get aboutDonationButton => 'Buy me a coffee';
 
   @override
   String get quickTileCoinAdded => 'Coin shortcut added to the panel.';

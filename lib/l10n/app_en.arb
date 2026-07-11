@@ -61,6 +61,7 @@
   "aboutQuickAccessDescription": "Add coin and d20 shortcuts to the Android quick settings panel to open the app and run the action immediately.",
   "aboutAddCoinButton": "Add coin",
   "aboutAddDiceButton": "Add d20",
+  "aboutDonationButton": "Buy me a coffee",
   "quickTileCoinAdded": "Coin shortcut added to the panel.",
   "quickTileCoinAlreadyAdded": "The coin shortcut is already in the panel.",
   "quickTileCoinCancelled": "Coin shortcut request cancelled.",

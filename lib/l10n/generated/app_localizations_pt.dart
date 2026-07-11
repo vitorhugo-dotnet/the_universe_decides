@@ -166,6 +166,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get aboutAddDiceButton => 'Adicionar d20';
 
   @override
+  String get aboutDonationButton => 'Compre-me um café';
+
+  @override
   String get quickTileCoinAdded => 'Atalho da moeda adicionado ao painel.';
 
   @override

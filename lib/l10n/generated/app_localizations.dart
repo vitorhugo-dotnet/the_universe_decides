@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @tarotTapPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Draw a card to reveal the universe's symbol.'**
+  /// **'Draw a card to reveal the universe\'s symbol.'**
   String get tarotTapPrompt;
 
   /// No description provided for @tarotButton.
@@ -379,6 +379,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add d20'**
   String get aboutAddDiceButton;
+
+  /// No description provided for @aboutDonationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy me a coffee'**
+  String get aboutDonationButton;
 
   /// No description provided for @quickTileCoinAdded.
   ///

@@ -61,6 +61,7 @@
   "aboutQuickAccessDescription": "Adicione atalhos da moeda e do d20 ao painel rapido do Android para abrir o app e executar a acao direto.",
   "aboutAddCoinButton": "Adicionar moeda",
   "aboutAddDiceButton": "Adicionar d20",
+  "aboutDonationButton": "Compre-me um café",
   "quickTileCoinAdded": "Atalho da moeda adicionado ao painel.",
   "quickTileCoinAlreadyAdded": "O atalho da moeda ja estava no painel.",
   "quickTileCoinCancelled": "Adicao da moeda cancelada.",
