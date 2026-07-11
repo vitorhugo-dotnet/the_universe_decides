@@ -12,7 +12,7 @@
         typeof roll.notation !== 'string' || !Array.isArray(roll.results)) {
       return false;
     }
-    var match = /^(\d+)d(4|6|8|10|12|20|100)$/.exec(roll.notation);
+    var match = /^([1-9]\d*)d(4|6|8|10|12|20|100)$/.exec(roll.notation);
     if (!match || Number(match[1]) !== roll.results.length) return false;
     var sides = Number(match[2]);
     return roll.results.every(function (result) {

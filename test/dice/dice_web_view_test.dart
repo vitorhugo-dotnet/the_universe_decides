@@ -31,4 +31,26 @@ void main() {
     expect(completedRequestIds, isEmpty);
     expect(controller.activeRequestId, isNull);
   });
+
+  test('keeps the active request when a stale completion arrives', () async {
+    final completedRequestIds = <String>[];
+    final controller = DiceWebViewController(
+      onRollCompleted: (message) => completedRequestIds.add(message.requestId),
+    )..attachJavaScriptRunner((_) async {});
+
+    await controller.handleBridgeMessage('{"type":"ready"}');
+    await controller.roll(
+      DiceRollRequest(
+        requestId: 'request-42',
+        notation: '2d6',
+        results: [3, 5],
+      ),
+    );
+    await controller.handleBridgeMessage(
+      '{"event":"rollCompleted","requestId":"stale","results":[3,5]}',
+    );
+
+    expect(completedRequestIds, isEmpty);
+    expect(controller.activeRequestId, 'request-42');
+  });
 }

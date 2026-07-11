@@ -15,4 +15,15 @@ void main() {
       'results': [3, 5],
     });
   });
+
+  test('rejects a zero-count dice notation', () {
+    expect(
+      () => DiceRollRequest(
+        requestId: 'request-42',
+        notation: '0d6',
+        results: const [],
+      ),
+      throwsArgumentError,
+    );
+  });
 }
