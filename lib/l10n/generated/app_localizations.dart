@@ -392,6 +392,12 @@ abstract class AppLocalizations {
   /// **'Add d20'**
   String get aboutAddDiceButton;
 
+  /// No description provided for @aboutDonationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy me a coffee'**
+  String get aboutDonationButton;
+
   /// No description provided for @aboutRandomnessCardTitle.
   ///
   /// In en, this message translates to:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
@@ -19,6 +20,14 @@ class AboutMeScreen extends ConsumerStatefulWidget {
 }
 
 class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
+  static final _donationUri = Uri.parse(
+    'https://www.buymeacoffee.com/vitorhugo1207',
+  );
+
+  Future<void> _openDonationPage() async {
+    await launchUrl(_donationUri, mode: LaunchMode.externalApplication);
+  }
+
   Future<void> _requestTile(QuickAccessAction action) async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -80,6 +89,11 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 20),
+          _DonationButton(
+            label: l10n.aboutDonationButton,
+            onPressed: _openDonationPage,
+          ),
           const SizedBox(height: 24),
           Text(
             l10n.aboutShortcutsTitle,
@@ -116,6 +130,59 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
             onTap: () => showHowRandomnessSheet(context),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DonationButton extends StatelessWidget {
+  const _DonationButton({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 60,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xFF5F7FFF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 1.5),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x33000000),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('☕', style: TextStyle(fontSize: 24)),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Icon(Icons.favorite, color: Color(0xFFFFDD00), size: 18),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

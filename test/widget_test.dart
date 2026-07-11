@@ -256,6 +256,7 @@ void main() {
     expect(find.text('@vitorhugo-dotnet'), findsOneWidget);
     expect(find.text('Add coin'), findsOneWidget);
     expect(find.text('Add d20'), findsOneWidget);
+    expect(find.text('Buy me a coffee'), findsOneWidget);
     expect(find.byIcon(Icons.monetization_on), findsOneWidget);
     expect(find.byIcon(Icons.casino), findsOneWidget);
     expect(githubService.usernames, ['vitorhugo-dotnet']);

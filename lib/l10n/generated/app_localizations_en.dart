@@ -162,6 +162,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutAddDiceButton => 'Add d20';
 
   @override
+  String get aboutDonationButton => 'Buy me a coffee';
+
+  @override
   String get aboutRandomnessCardTitle => 'How does real randomness work?';
 
   @override

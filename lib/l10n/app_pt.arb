@@ -63,6 +63,7 @@
   "aboutShortcutsTitle": "Atalhos rápidos",
   "aboutAddCoinButton": "Adicionar moeda",
   "aboutAddDiceButton": "Adicionar d20",
+  "aboutDonationButton": "Compre-me um café",
   "aboutRandomnessCardTitle": "Como funciona o acaso real?",
   "aboutRandomnessCardSubtitle": "Por que o app não usa números pseudoaleatórios",
   "aboutProfileLoadError": "Não foi possível carregar o perfil agora.",

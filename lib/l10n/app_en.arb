@@ -63,6 +63,7 @@
   "aboutShortcutsTitle": "Quick shortcuts",
   "aboutAddCoinButton": "Add coin",
   "aboutAddDiceButton": "Add d20",
+  "aboutDonationButton": "Buy me a coffee",
   "aboutRandomnessCardTitle": "How does real randomness work?",
   "aboutRandomnessCardSubtitle": "Why the app avoids pseudo-random numbers",
   "aboutProfileLoadError": "Could not load the profile right now.",
