@@ -406,8 +406,8 @@ const DICE = (function() {
     }
 
     that.dice_box.prototype.resume = function() {
-        if (!this.paused || !this.running) return;
         this.paused = false;
+        if (!this.running) return;
         this.last_time = 0;
         this.__animate(this.running);
     }
@@ -427,8 +427,12 @@ const DICE = (function() {
             vars.use_adapvite_timestep = false;
             var res = this.emulate_throw();
             this.prepare_dices_for_roll(vectors);
-            for (var i in res)
-                shift_dice_faces(this.dices[i], values[i], res[i]);
+            for (var i in res) {
+                if (this.dices[i].dice_type == 'd100')
+                    force_d100_value(this.dices[i], values[i], res[i]);
+                else
+                    shift_dice_faces(this.dices[i], values[i], res[i]);
+            }
         }
         this.callback = callback;
         this.running = (new Date()).getTime();
@@ -834,6 +838,10 @@ const DICE = (function() {
     }
 
     function shift_dice_faces(dice, value, res) {
+        if (dice.dice_type == 'd100') {
+            force_d100_value(dice, value, res);
+            return;
+        }
         var r = CONSTS.dice_face_range[dice.dice_type];
         if (dice.dice_type == 'd10' && value == 10) value = 0;
         if (!(value >= r[0] && value <= r[1])) return;
@@ -853,6 +861,14 @@ const DICE = (function() {
                     create_d4_materials(vars.scale / 2, vars.scale * 2, CONSTS.d4_labels[num]));
         }
         dice.geometry = geom;
+    }
+
+    function force_d100_value(dice, value, res) {
+        if (!Number.isInteger(value) || value < 1 || value > 100) return;
+        var labels = CONSTS.standart_d100_dice_face_labels.slice();
+        labels[Math.floor(res / 10) + 1] = String(value);
+        dice.material = new THREE.MeshFaceMaterial(
+                create_dice_materials(labels, vars.scale / 2, 1.5));
     }
 
     function playSound(outerContainer, soundVolume) {
