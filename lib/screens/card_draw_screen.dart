@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/card_draw_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
-import 'package:theuniversedecides/widgets/mystic_screen_scaffold.dart';
+import 'package:theuniversedecides/theme/app_colors.dart';
+import 'package:theuniversedecides/widgets/ritual_button.dart';
+import 'package:theuniversedecides/widgets/ritual_header.dart';
 
 class CardDrawScreen extends ConsumerStatefulWidget {
   const CardDrawScreen({super.key});
@@ -15,122 +17,95 @@ class CardDrawScreen extends ConsumerStatefulWidget {
   ConsumerState<CardDrawScreen> createState() => _CardDrawScreenState();
 }
 
-class _CardDrawScreenState extends ConsumerState<CardDrawScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 820),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
+  int _flipCount = 0;
 
   Future<void> _drawCard() async {
     final controller = ref.read(cardDrawProvider.notifier);
     if (ref.read(cardDrawProvider).isLoading) {
       return;
     }
-
-    final animation = _controller.forward(from: 0);
+    setState(() => _flipCount++);
     await controller.drawCard();
-    await animation;
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(cardDrawProvider);
-    final card = state.card;
+    final cardKey = ValueKey<int>(_flipCount);
 
-    return MysticScreenScaffold(
-      title: l10n.navCards,
-      subtitle: l10n.cardDrawSubtitle,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 340,
-                child: Center(
-                  child: AnimatedBuilder(
-                    animation: _controller,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RitualHeader(
+            eyebrow: l10n.cardEyebrow,
+            title: l10n.cardTitle,
+            subtitle: l10n.cardSubtitle,
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: SizedBox(
+              width: 210,
+              height: 296,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 800),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                layoutBuilder: (currentChild, previousChildren) => Stack(
+                  alignment: Alignment.center,
+                  children: [...previousChildren, ?currentChild],
+                ),
+                transitionBuilder: (child, animation) {
+                  final isIncoming = child.key == cardKey;
+                  final rotation = Tween<double>(
+                    begin: isIncoming ? math.pi : -math.pi,
+                    end: 0,
+                  ).animate(animation);
+                  return AnimatedBuilder(
+                    animation: rotation,
+                    child: child,
                     builder: (context, child) {
-                      final scale =
-                          1 - (math.sin(_controller.value * math.pi) * 0.06);
-                      final tilt = math.sin(_controller.value * math.pi) * 0.05;
-
+                      final angle = rotation.value;
+                      final needsMirror = angle.abs() > (math.pi / 2);
+                      final display = needsMirror
+                          ? Transform(
+                              alignment: Alignment.center,
+                              transform: Matrix4.identity()..rotateY(math.pi),
+                              child: child,
+                            )
+                          : child;
                       return Transform(
                         alignment: Alignment.center,
                         transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.001)
-                          ..rotateZ(tilt)
-                          ..scaleByDouble(scale, scale, 1, 1),
-                        child: _PlayingCardView(card: card),
+                          ..setEntry(3, 2, 0.0016)
+                          ..rotateY(angle),
+                        child: display,
                       );
                     },
-                  ),
-                ),
+                  );
+                },
+                child: _CardFace(key: cardKey, card: state.card),
               ),
-              const SizedBox(height: 20),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: state.isLoading
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: CircularProgressIndicator(),
-                      )
-                    : Column(
-                        key: ValueKey(card?.shortLabel ?? 'card-empty'),
-                        children: [
-                          Text(
-                            card?.shortLabel ?? l10n.cardDrawPrompt,
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.6,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            card == null
-                                ? l10n.cardDrawTapPrompt
-                                : l10n.cardDrawResolved,
-                            style: theme.textTheme.bodyMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-              ),
-              const SizedBox(height: 28),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: state.isLoading ? null : _drawCard,
-                  icon: const Icon(Icons.style),
-                  label: Text(l10n.cardDrawButton),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(height: 24),
+          RitualButton(
+            label: l10n.cardDrawButton,
+            onPressed: state.isLoading ? null : _drawCard,
+            maxWidth: double.infinity,
+          ),
+        ],
       ),
     );
   }
 }
 
-class _PlayingCardView extends StatelessWidget {
-  const _PlayingCardView({required this.card});
+/// A single flipping card: the mystic back before a draw, a playing card after.
+class _CardFace extends StatelessWidget {
+  const _CardFace({super.key, required this.card});
 
   final PlayingCard? card;
 
@@ -139,16 +114,64 @@ class _PlayingCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (card == null) {
+      return _buildBack();
+    }
+    return _buildFront(context, card!);
+  }
+
+  Widget _buildBack() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF241A3D), Color(0xFF3E216E), Color(0xFF1A1030)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: AppColors.gold2.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x80000000),
+            blurRadius: 34,
+            offset: Offset(0, 20),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: AppColors.gold2.withValues(alpha: 0.6),
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Icon(
+              CupertinoIcons.sparkles,
+              color: AppColors.gold1.withValues(alpha: 0.8),
+              size: 24,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFront(BuildContext context, PlayingCard card) {
     final theme = Theme.of(context);
-    final suitColor = card == null
-        ? theme.colorScheme.onSurfaceVariant
-        : (card!.isRed ? _cardRed : _cardDark);
+    final suitColor = card.isRed ? _cardRed : _cardDark;
+    final icon = _suitIcon(card.suit);
 
     return Container(
-      width: 220,
-      height: 312,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(22),
         gradient: const LinearGradient(
           colors: [Color(0xFFFEFEFE), Color(0xFFF4F5F8)],
           begin: Alignment.topLeft,
@@ -157,84 +180,46 @@ class _PlayingCardView extends StatelessWidget {
         border: Border.all(color: const Color(0x14000000), width: 1.2),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x25000000),
-            blurRadius: 28,
+            color: Color(0x40000000),
+            blurRadius: 34,
             offset: Offset(0, 20),
           ),
         ],
       ),
-      child: card == null
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    CupertinoIcons.sparkles,
-                    size: 42,
-                    color: suitColor,
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    '?',
-                    style: theme.textTheme.displayMedium?.copyWith(
-                      color: suitColor,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Stack(
+      child: Stack(
+        children: [
+          Positioned(
+            top: 16,
+            left: 16,
+            child: _Corner(rank: card.rank, color: suitColor, icon: icon),
+          ),
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Transform.rotate(
+              angle: math.pi,
+              child: _Corner(rank: card.rank, color: suitColor, icon: icon),
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Positioned(
-                  top: 18,
-                  left: 18,
-                  child: _CardCorner(
-                    rank: card!.rank,
+                Icon(icon, size: 52, color: suitColor),
+                const SizedBox(height: 12),
+                Text(
+                  card.shortLabel,
+                  style: theme.textTheme.titleLarge?.copyWith(
                     color: suitColor,
-                    icon: _suitIcon(card!.suit),
-                  ),
-                ),
-                Positioned(
-                  right: 18,
-                  bottom: 18,
-                  child: Transform.rotate(
-                    angle: math.pi,
-                    child: _CardCorner(
-                      rank: card!.rank,
-                      color: suitColor,
-                      icon: _suitIcon(card!.suit),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(_suitIcon(card!.suit), size: 54, color: suitColor),
-                      const SizedBox(height: 14),
-                      Text(
-                        card!.rank,
-                        style: theme.textTheme.displayLarge?.copyWith(
-                          color: suitColor,
-                          fontWeight: FontWeight.w900,
-                          height: 0.95,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        card!.shortLabel,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: suitColor.withValues(alpha: 0.82),
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.8,
-                        ),
-                      ),
-                    ],
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -246,12 +231,8 @@ class _PlayingCardView extends StatelessWidget {
   };
 }
 
-class _CardCorner extends StatelessWidget {
-  const _CardCorner({
-    required this.rank,
-    required this.color,
-    required this.icon,
-  });
+class _Corner extends StatelessWidget {
+  const _Corner({required this.rank, required this.color, required this.icon});
 
   final String rank;
   final Color color;
@@ -259,20 +240,20 @@ class _CardCorner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           rank,
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: TextStyle(
             color: color,
             fontWeight: FontWeight.w900,
-            height: 0.95,
+            fontSize: 20,
+            height: 1,
           ),
         ),
-        Icon(icon, size: 20, color: color),
+        Icon(icon, size: 18, color: color),
       ],
     );
   }

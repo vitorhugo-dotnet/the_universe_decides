@@ -7,7 +7,8 @@ import 'package:theuniversedecides/controllers/dice_roll_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
-import 'package:theuniversedecides/widgets/mystic_screen_scaffold.dart';
+import 'package:theuniversedecides/widgets/ritual_button.dart';
+import 'package:theuniversedecides/widgets/ritual_header.dart';
 
 class DiceRollScreen extends ConsumerStatefulWidget {
   const DiceRollScreen({super.key});
@@ -18,7 +19,8 @@ class DiceRollScreen extends ConsumerStatefulWidget {
 
 class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
     with SingleTickerProviderStateMixin {
-  static const _availableSides = [4, 6, 8, 10, 12, 20, 100];
+  // Prototype dice options: counts 1-5, sides d4/d6/d20/d100.
+  static const _availableSides = [4, 6, 20, 100];
   static const _tumbleSteps = 14;
 
   late final AnimationController _controller;
@@ -31,9 +33,10 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
       vsync: this,
       duration: const Duration(milliseconds: 950),
     );
-    // Ticks land closer together as the roll progresses, giving the dice a
-    // tumble-then-settle feel instead of a flat, constant flicker.
-    _tumbleCurve = CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    _tumbleCurve = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -55,7 +58,6 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(diceRollProvider);
     final controller = ref.read(diceRollProvider.notifier);
@@ -71,170 +73,100 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
       _rollDice();
     });
 
-    return MysticScreenScaffold(
-      title: l10n.navDice,
-      subtitle: l10n.diceSubtitle,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.diceCount,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+          RitualHeader(
+            eyebrow: l10n.diceEyebrow,
+            title: l10n.diceTitle,
+            titleSize: 22,
+          ),
+          const SizedBox(height: 16),
+          _SectionLabel(l10n.diceCountLabel),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (var n = 1; n <= 5; n++) ...[
+                if (n > 1) const SizedBox(width: 8),
+                Expanded(
+                  child: _PillButton(
+                    label: '$n',
+                    selected: state.diceCount == n,
+                    height: 36,
+                    onTap: () => controller.setDiceCount(n),
                   ),
-                  const SizedBox(height: 12),
-                  SegmentedButton<int>(
-                    segments: List.generate(
-                      5,
-                      (index) => ButtonSegment<int>(
-                        value: index + 1,
-                        label: Text('${index + 1}'),
-                      ),
-                    ),
-                    selected: {state.diceCount},
-                    onSelectionChanged: (selection) {
-                      controller.setDiceCount(selection.first);
-                    },
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 14),
+          _SectionLabel(l10n.diceSidesLabel),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (var i = 0; i < _availableSides.length; i++) ...[
+                if (i > 0) const SizedBox(width: 8),
+                Expanded(
+                  child: _PillButton(
+                    label: 'd${_availableSides[i]}',
+                    selected: state.selectedSides == _availableSides[i],
+                    height: 40,
+                    onTap: () =>
+                        controller.setSelectedSides(_availableSides[i]),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.diceSides,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: _availableSides
-                        .map(
-                          (sides) => ChoiceChip(
-                            label: Text('d$sides'),
-                            selected: state.selectedSides == sides,
-                            onSelected: (_) {
-                              controller.setSelectedSides(sides);
-                            },
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 18),
+          RitualButton(
+            label: l10n.diceRollButton,
+            onPressed: state.isLoading ? null : _rollDice,
+          ),
+          const SizedBox(height: 22),
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              final isRolling = state.isLoading || _controller.isAnimating;
+              if (!isRolling) {
+                return child!;
+              }
+              return _DiceGrid(
+                diceCount: state.diceCount,
+                sides: state.selectedSides,
+                tumbleProgress: _tumbleCurve.value,
+                tumbleSteps: _tumbleSteps,
+              );
+            },
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: state.results.isEmpty
+                  ? const SizedBox(height: 8)
+                  : Column(
+                      key: ValueKey(state.results.join(',')),
+                      children: [
+                        _DiceGrid.fromResults(state.results),
+                        const SizedBox(height: 18),
+                        Text(
+                          state.results.join('  +  '),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textCaption,
                           ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: state.isLoading ? null : _rollDice,
-                    icon: const Icon(Icons.casino),
-                    label: Text(l10n.diceRollButton),
-                  ),
-                  const SizedBox(height: 24),
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      // Keep tumbling until the animation itself finishes, not just
-                      // the network fetch, so a fast response can't cut it short.
-                      final isRolling = state.isLoading || _controller.isAnimating;
-                      if (!isRolling) {
-                        return child!;
-                      }
-                      return _TumblingDiceGrid(
-                        diceCount: state.diceCount,
-                        sides: state.selectedSides,
-                        tumbleProgress: _tumbleCurve.value,
-                        tumbleSteps: _tumbleSteps,
-                      );
-                    },
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
-                      child: state.results.isEmpty
-                          ? Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: AppColors.panelBackground,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(l10n.diceEmptyState),
-                            )
-                          : Column(
-                            key: ValueKey(state.results.join(',')),
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.diceResults,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: state.results.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: 12,
-                                      crossAxisSpacing: 12,
-                                      childAspectRatio: 1.35,
-                                    ),
-                                itemBuilder: (context, index) {
-                                  final value = state.results[index];
-                                  return TweenAnimationBuilder<double>(
-                                    tween: Tween(begin: 1.18, end: 1.0),
-                                    duration: const Duration(milliseconds: 320),
-                                    curve: Curves.easeOutBack,
-                                    builder: (context, scale, child) {
-                                      return Transform.scale(
-                                        scale: scale,
-                                        child: child,
-                                      );
-                                    },
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            theme.colorScheme.primaryContainer,
-                                            theme.colorScheme.secondaryContainer,
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          '$value',
-                                          style: theme.textTheme.headlineMedium
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w900,
-                                                color: theme
-                                                    .colorScheme
-                                                    .onPrimaryContainer,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 18),
-                              Text(
-                                l10n.diceTotal(total),
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.diceTotal(total),
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
                           ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ),
         ],
@@ -243,66 +175,172 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
   }
 }
 
-class _TumblingDiceGrid extends StatelessWidget {
-  const _TumblingDiceGrid({
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.6,
+        color: AppColors.textCaption,
+      ),
+    );
+  }
+}
+
+class _PillButton extends StatelessWidget {
+  const _PillButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.height = 36,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Container(
+          height: height,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: selected
+                ? const LinearGradient(
+                    colors: [AppColors.gold1, AppColors.gold2],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: selected ? null : const Color(0x0DFFFFFF),
+            border: Border.all(
+              color: selected ? Colors.transparent : const Color(0x24FFFFFF),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: selected ? AppColors.goldText : AppColors.whiteMuted,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Ivory dice faces, matching the prototype's white 3D dice within the SDK-only
+/// tumble animation.
+class _DiceGrid extends StatelessWidget {
+  const _DiceGrid({
     required this.diceCount,
     required this.sides,
     required this.tumbleProgress,
     required this.tumbleSteps,
-  });
+  }) : results = null;
+
+  const _DiceGrid.fromResults(this.results)
+    : diceCount = 0,
+      sides = 0,
+      tumbleProgress = 0,
+      tumbleSteps = 0;
 
   final int diceCount;
   final int sides;
   final double tumbleProgress;
   final int tumbleSteps;
+  final List<int>? results;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final finalResults = results;
+    final count = finalResults?.length ?? diceCount;
     final step = (tumbleProgress * tumbleSteps).floor();
 
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: diceCount,
+      itemCount: count,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 3,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.35,
+        childAspectRatio: 1,
       ),
       itemBuilder: (context, index) {
-        // A fresh pseudo-random face per tumble step gives the illusion of the
-        // die actually rolling instead of just fading between states.
-        final face = 1 + math.Random(step * 97 + index * 31 + sides).nextInt(sides);
-        final wobble = math.sin((tumbleProgress * tumbleSteps - step) * math.pi) * 0.08;
-
+        if (finalResults != null) {
+          return TweenAnimationBuilder<double>(
+            tween: Tween(begin: 1.18, end: 1.0),
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOutBack,
+            builder: (context, scale, child) =>
+                Transform.scale(scale: scale, child: child),
+            child: _DieFace(value: finalResults[index]),
+          );
+        }
+        final face =
+            1 + math.Random(step * 97 + index * 31 + sides).nextInt(sides);
+        final wobble =
+            math.sin((tumbleProgress * tumbleSteps - step) * math.pi) * 0.08;
         return Transform.rotate(
           angle: wobble,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                colors: [
-                  theme.colorScheme.primaryContainer,
-                  theme.colorScheme.secondaryContainer,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                '$face',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: theme.colorScheme.onPrimaryContainer,
-                ),
-              ),
-            ),
-          ),
+          child: _DieFace(value: face),
         );
       },
+    );
+  }
+}
+
+class _DieFace extends StatelessWidget {
+  const _DieFace({required this.value});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFEFEFE), Color(0xFFF1F0F6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: const Color(0x14000000)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x40000000),
+            blurRadius: 16,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          '$value',
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w900,
+            color: AppColors.goldText,
+          ),
+        ),
+      ),
     );
   }
 }

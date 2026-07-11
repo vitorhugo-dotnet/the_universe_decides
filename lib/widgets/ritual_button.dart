@@ -62,7 +62,11 @@ class RitualButton extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (icon != null) ...[
-                        Icon(icon, size: fontSize + 2, color: AppColors.goldText),
+                        Icon(
+                          icon,
+                          size: fontSize + 2,
+                          color: AppColors.goldText,
+                        ),
                         const SizedBox(width: 8),
                       ],
                       Text(

@@ -27,30 +27,24 @@ Branch: `feat/coin-ritual-redesign`
 - [x] analyze clean (commit pending with screens batch)
 
 ## Task 5 — Dice screen restyle
-- [ ] Redesigned chrome, sides [4,6,20,100], keep tumble + provider
-- [ ] analyze + commit
+- [x] Redesigned chrome, sides [4,6,20,100], keep tumble + provider
 
 ## Task 6 — Cards screen restyle
-- [ ] 3D flip mystic card, keep provider
-- [ ] analyze + commit
+- [x] 3D flip mystic card, keep provider
 
 ## Task 7 — Lists screen restyle
-- [ ] Input + choose + selected badge + rows + empty
-- [ ] analyze + commit
+- [x] Input + choose (gated ≥2) + selected badge + rows + empty
 
 ## Task 8 — Tarot screen restyle
-- [ ] RitualHeader + button, align copy, keep flip + provider
-- [ ] analyze + commit
+- [x] RitualHeader + button, aligned copy, keep flip + provider
 
 ## Task 9 — About screen + randomness sheet
-- [ ] About layout (GitHub data + shortcuts + randomness card)
-- [ ] `how_randomness_sheet.dart`
-- [ ] analyze + commit
+- [x] About layout (GitHub data + shortcuts + randomness card)
+- [x] `how_randomness_sheet.dart`
 
 ## Task 10 — l10n, tests, verification
-- [ ] All new keys + remove unused + regenerate
-- [ ] Update `widget_test.dart` (disableAnimations, labels, copy)
-- [ ] `flutter test` pass + analyze + format
+- [x] All new keys + removed unused + regenerated
+- [x] Update `widget_test.dart` (disableAnimations, labels, copy)
+- [x] `flutter test` pass (16) + analyze clean + format
 - [ ] Visual verification vs prototype
 - [ ] Commit + open PR (no merge, no manual close)
-```

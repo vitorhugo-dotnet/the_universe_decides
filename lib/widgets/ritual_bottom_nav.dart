@@ -32,9 +32,7 @@ class RitualBottomNav extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(14, 6, 14, bottomInset + 12),
           decoration: const BoxDecoration(
             color: AppColors.navBarBackground,
-            border: Border(
-              top: BorderSide(color: Color(0x14FFFFFF)),
-            ),
+            border: Border(top: BorderSide(color: Color(0x14FFFFFF))),
           ),
           child: Center(
             child: ConstrainedBox(
@@ -84,7 +82,9 @@ class _NavButton extends StatelessWidget {
           children: [
             SizedBox(
               height: 24,
-              child: Center(child: _NavIcon(id: item.id, color: color)),
+              child: Center(
+                child: _NavIcon(id: item.id, color: color),
+              ),
             ),
             const SizedBox(height: 5),
             Text(
@@ -121,7 +121,10 @@ class _NavIcon extends StatelessWidget {
         return Container(
           width: 20,
           height: 20,
-          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.fromBorderSide(side)),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.fromBorderSide(side),
+          ),
         );
       case 'dice':
         return Container(
@@ -165,7 +168,10 @@ class _NavIcon extends StatelessWidget {
         return Container(
           width: 20,
           height: 20,
-          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.fromBorderSide(side)),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.fromBorderSide(side),
+          ),
         );
     }
   }

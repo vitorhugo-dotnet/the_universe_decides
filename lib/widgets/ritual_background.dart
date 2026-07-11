@@ -83,7 +83,8 @@ class _RuneRingState extends State<RuneRing>
   }
 
   void _syncMotion() {
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     if (reduceMotion) {
       if (_controller.isAnimating) {
         _controller.stop();
@@ -147,8 +148,7 @@ class RuneRingPainter extends CustomPainter {
     final gapLength = dotted ? 7.0 : 7.0;
 
     final rect = Offset.zero & size;
-    final path = Path()
-      ..addOval(rect.deflate(strokeWidth / 2 + 0.5));
+    final path = Path()..addOval(rect.deflate(strokeWidth / 2 + 0.5));
 
     for (final metric in path.computeMetrics()) {
       var distance = 0.0;

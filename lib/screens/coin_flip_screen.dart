@@ -167,7 +167,12 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   /// Smallest rotation continuing in [dir] that is >= [minTurn] beyond [from]
   /// and congruent to [target] (mod 360) — so the coin decelerates onto the
   /// resolved face while still spinning forward.
-  double _nextCongruent(double from, double dir, double target, double minTurn) {
+  double _nextCongruent(
+    double from,
+    double dir,
+    double target,
+    double minTurn,
+  ) {
     if (dir >= 0) {
       final base = from + minTurn;
       final k = ((base - target) / 360).ceil();
@@ -417,7 +422,10 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
               Text(
                 l10n.coinDragHelper,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12, color: AppColors.textFaint),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textFaint,
+                ),
               ),
               const SizedBox(height: 6),
             ],
@@ -506,7 +514,10 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
               height: 190,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.gold2.withValues(alpha: 0.55), width: 2),
+                border: Border.all(
+                  color: AppColors.gold2.withValues(alpha: 0.55),
+                  width: 2,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.gold2.withValues(alpha: 0.35),
@@ -548,7 +559,10 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
               height: 168,
               child: Stack(
                 children: [
-                  Opacity(opacity: isFront ? 1 : 0, child: const _CoinFace(front: true)),
+                  Opacity(
+                    opacity: isFront ? 1 : 0,
+                    child: const _CoinFace(front: true),
+                  ),
                   Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..rotateY(math.pi),
@@ -567,11 +581,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
           IgnorePointer(
             child: Opacity(
               opacity: (0.22 * (1 - impactValue)).clamp(0.0, 0.22),
-              child: Container(
-                width: 300,
-                height: 300,
-                color: Colors.white,
-              ),
+              child: Container(width: 300, height: 300, color: Colors.white),
             ),
           ),
       ],
@@ -586,7 +596,8 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     CoinFlipState state,
     bool busy,
   ) {
-    final showResult = _phase == _Phase.idle && _revealed && state.result != null;
+    final showResult =
+        _phase == _Phase.idle && _revealed && state.result != null;
 
     Widget child;
     if (showResult) {

@@ -1,139 +1,135 @@
-# Coin Ritual Redesign Implementation Plan
+# Full App Redesign Implementation Plan (Claude Design)
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Live progress is mirrored in `docs/progress/2026-07-10-coin-ritual-redesign.md`.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement task-by-task. Steps use checkbox (`- [ ]`) syntax. Live progress is mirrored in `docs/progress/2026-07-10-coin-ritual-redesign.md`.
 
-**Goal:** Rebuild the Coin screen to strictly reproduce the Claude Design "Mystic Coin — ritual" prototype, adding a physical toss animation and a drag-and-flick manual launch, while keeping the Random.org result logic untouched (Issues #16 and #17).
+**Goal:** Redesign the entire app to strictly reproduce the Claude Design "The Universe Decides" prototype — a unified dark ritual shell (background + rotating runes + custom bottom nav), redesigned Coin/Dice/Cards/Lists/Tarot/About screens, and a "real randomness" explainer bottom sheet — while keeping Random.org logic, Riverpod, and all controllers intact. Fulfills Issues #16 and #17 (coin) inside the larger redesign the user requested.
 
-**Architecture:** `CoinFlipScreen` becomes a full-bleed custom screen (no `MysticScreenScaffold`) that paints the ritual background, two counter-rotating rune rings, and a 3D coin. A `Ticker`-driven state machine (`idle → rising → landing`, plus `dragging → returning`) computes the coin transform each frame; the **result is always taken from the existing `coinFlipProvider` (Random.org + local fallback)** and the visual only lands on the resolved face. All continuous animation is gated on `MediaQuery.disableAnimations` for reduced-motion support.
+**Architecture:** Introduce a shared **ritual shell** owned by `MainScreen`: a full-bleed background gradient + faint top rune rings + a custom 6-tab bottom nav with geometric icons; screens render only their content (scrollable) into it, dropping `MysticScreenScaffold`. A shared `RitualHeader` (Fraunces-italic eyebrow + bold title + subtext) and `RitualButton` (gold gradient) unify the screens. The Coin screen is the full "Mystic Coin — ritual" composition with a `Ticker`-driven 3D toss + drag/flick launch, where **the result always comes from `coinFlipProvider`** and the animation only lands on it. All continuous animation is gated on `MediaQuery.disableAnimations`.
 
-**Tech Stack:** Flutter 3.38 SDK only (Material, `Ticker`/`AnimationController`, `Transform`, `GestureDetector`, `CustomPainter`, `HapticFeedback`). Riverpod for state. **No new packages. No physics engine.**
+**Tech Stack:** Flutter 3.38 SDK only. Riverpod. No new packages, no physics engine.
 
-## Global Constraints
+## Global Constraints (still binding from the original brief)
 
-- The Claude Design "Mystic Coin", variant `ritual`, is the ONLY visual source of truth (rendered by `Coin Flip Redesign.dc.html` → `dc-import name="Mystic Coin" variant="ritual"`).
-- Do NOT modify Random.org integration or its local fallback (`lib/services/random_org_service.dart`, `lib/controllers/coin_flip_controller.dart`).
-- Do NOT change state management (Riverpod), add packages, or add a physics engine.
-- Do NOT touch unrelated screens, `MysticScreenScaffold`, themes, native Android, or CI.
-- Do NOT commit to `master`, do NOT merge, do NOT manually close issues. Work on branch `feat/coin-ritual-redesign`; issues close via PR merge.
-- Result values remain exactly `0 = HEADS/CARA`, `1 = TAILS/COROA`; only one launch may run at a time.
-- Reduced-motion (`MediaQuery.disableAnimations`) must skip the flight and rune loops.
+- The Claude Design "The Universe Decides" prototype (`The Universe Decides.dc.html`) + "Mystic Coin" variant `ritual` (`Mystic Coin.dc.html`) are the ONLY visual source of truth.
+- Do NOT modify Random.org integration/fallback (`random_org_service.dart`) or the controllers' result logic.
+- Keep Riverpod. No new packages. No physics engine.
+- Branch `feat/coin-ritual-redesign`. Do NOT commit to `master`, do NOT merge, do NOT manually close issues (PR closes #16 and #17).
+- Reduced motion (`MediaQuery.disableAnimations`) must skip flights and rune loops.
+
+## Forced deviations (documented, unavoidable)
+
+- **Dice 3D physics:** prototype uses `cannon.js`/`three.js` — a physics engine, forbidden. Keep the existing tumble-then-settle animation and roll logic; only restyle the surrounding chrome (header, quantity/sides selectors, button, results) to match.
+- **Dice options:** match the prototype's visible set — counts 1–5, sides d4/d6/d20/d100 (drops d8/d10/d12 from the old chip row).
+- **Nav labels:** adopt the prototype's shorter labels (Moeda/Dados/Cartas/Lista/Tarot/Sobre; EN Coin/Dice/Cards/Lists/Tarot/About). Tests updated accordingly.
+- **About:** keep the live GitHub-driven avatar/name/bio (existing service), laid out per the prototype, plus the new "real randomness" explainer + bottom sheet.
 
 ---
 
-## Prototype → Flutter element map (source of truth)
+## Prototype color tokens (Flutter)
 
-Ritual variant config: `lift:120, duration:1400, spins:4.6, wobble:0.3, wobbleFreq:9, bounce:false, driftMax:10`.
+`bg base` `linear-gradient(180deg,#090611,#12091E,#090611)`; `bg glow` `radial rgba(122,79,255,.28)=0x477A4FFF`; gold `#FCE38A=0xFFFCE38A`→`#F9B44C=0xFFF9B44C`; gold text `#1a1030=0xFF1A1030`; purple accent `#7A4FFF=0xFF7A4FFF`, `#8B7BFF=0xFF8B7BFF`; rune purple `0x598B7BFF`, rune amber `0x4DF9B44C`; text `.5=0x80FFFFFF`, `.62=0x9EFFFFFF`, `.55=0x8CFFFFFF`, `.4=0x66FFFFFF`; card back `#241a3d/#3E216E/#1a1030`; list result `#3E2D73→#7A4FFF` (existing `listResultGradient*`); tarot faces existing.
 
-| Prototype element | Value (verbatim) | Flutter equivalent |
-|---|---|---|
-| Background | `radial-gradient(70% 55% at 50% 35%, rgba(122,79,255,.28), transparent 72%)` over `linear-gradient(180deg,#090611,#12091E,#090611)` | `Stack`: base `LinearGradient` (top→bottom `0xFF090611`,`0xFF12091E`,`0xFF090611`) + overlay `RadialGradient(center: Alignment(0,-0.3), radius: .9, colors:[0x477A4FFF, transparent])` |
-| Eyebrow | `Fraunces` italic, 13px, ls .06em, `rgba(255,255,255,.5)`; text `Selo Ritual` | `Text(l10n.coinEyebrow)` italic, `fontFamily:'serif'`, size 13, `letterSpacing:.78`, color `0x80FFFFFF` |
-| Title | 28px, w800, ls -.01em; `Cara ou Coroa` | `Text(l10n.coinTitle)` size 28 w800 ls -0.3 |
-| Subtext | 14px, line 1.5, `rgba(255,255,255,.62)`, max-width 290; ritual `sub` | `Text(l10n.coinRitualSubtitle)` size 14 height 1.5 color `0x9EFFFFFF`, `ConstrainedBox(maxWidth:290)` |
-| Rune ring A | 260px, `1px dashed rgba(139,123,255,.35)`, spin 22s | `RotationTransition(_runeA 22s)` + `_RuneRingPainter(dashed, 0x598B7BFF, 260)` |
-| Rune ring B | 222px, `1px dotted rgba(249,180,76,.3)`, spin-rev 16s | `RotationTransition(Reverse _runeB 16s)` + `_RuneRingPainter(dotted, 0x4DF9B44C, 222)` |
-| Coin | 168px circle, `transformStyle preserve-3d` | 168 `SizedBox`, `Transform`(perspective 0.002 + rotateX/rotateY) |
-| Front face (CARA) | `linear-gradient(135deg,#FCE38A,#F9B44C)`, border `3px rgba(255,255,255,.28)`, shadow `0 18px 30px rgba(0,0,0,.45)` + inset highlight; dark dot 34px `rgba(0,0,0,.62)`; label `CARA` 15px w800 `rgba(0,0,0,.7)` ls1.5 | `_CoinFace(front)` `LinearGradient` topLeft→bottomRight `coinFrontStart/End`, `Border.all(0x47FFFFFF,3)`, `BoxShadow(0x73000000, blur30, y18)` + top white inner highlight overlay; dot `Container(34, 0x9E000000)`; `Text(l10n.coinHeads)` |
-| Back face (COROA) | `linear-gradient(135deg,#E3D7FF,#8B7BFF)`; crescent = black dot + `#8B7BFF` dot offset `left:9`; label `COROA` | `_CoinFace(back)` `coinBackStart/End`; crescent `Stack`(circle `0x9E000000` + circle `0xFF8B7BFF` at left 9); `Text(l10n.coinTails)` |
-| Drop shadow | 148×32 ellipse `radial rgba(0,0,0,.55)`, `translate(x*.6,96) scale(shadowScale)`, opacity `shadowOpacity`, blur2 | positioned `Container` ellipse `RadialGradient([0x8C000000, transparent])`, `Transform` translate/scale, `ImageFiltered` blur2 |
-| Charge glow (drag, ritual) | 190px ring `2px rgba(249,180,76,.55)`, opacity `.25+dragMag*.6`, glow | `_CoinFace` overlay ring `Border.all(0x8CF9B44C,2)` + `BoxShadow` scaled by drag magnitude |
-| Impact ring (t>0.6) | 130px `1.5px rgba(139,123,255,.6)`, `scale .4→1 opacity .8→0` .5s | `_impact` controller drives scale/opacity ring `0x998B7BFF` |
-| Flash / shake | white overlay `mc-flash .32s`; scene `mc-shake .25s` | `_impact` white overlay opacity + small `Transform` translateX |
-| Result block | label 34px w800 ls.02em; caption 13px `rgba(255,255,255,.55)` `O universo decidiu — não o processador.` | `Text(resultLabel)` 34 w800; `Text(l10n.coinResultCaption)` 13 `0x8CFFFFFF` |
-| Hint | 13.5px `rgba(255,255,255,.5)`; idle `Toque no botão…`, drag `Solte para lançar…` | `Text(l10n.coinHint / coinHintDrag)` 13.5 `0x80FFFFFF` |
-| Button | 100%/max320, h54, radius18, gradient `135deg #FCE38A→#F9B44C`, text `#1a1030` 16 w800, shadow `0 10px 24px -8px rgba(249,180,76,.55)`, disabled opacity .55; `Lançar a moeda` | `_GradientButton` 54h radius18 `LinearGradient` gold, `Color(0xFF1A1030)`, `BoxShadow(0x8CF9B44C, blur24, y10, spread-8)`, `Text(l10n.coinButton)` |
-| Helper | 12px `rgba(255,255,255,.4)`; `ou arraste e solte a moeda para lançar` | `Text(l10n.coinDragHelper)` 12 `0x66FFFFFF` |
-
-Interaction physics (verbatim): auto → `spins=floor(4.6+rand*1.2)`, `spinDir=±1`, `totalRotation=spinDir*(spins*360 + (result==1?180:0))`; drag rubber-band clamp `max=100`; release `speed<0.28` → return (260ms), else throw with `boost=min(1.4, speed/1.2)`. **In this port the `result` comes from `coinFlipProvider`, not `Math.random`.** Landing decelerates onto the face matching that result.
+Add tokens to `AppColors`: `ritualGlow=0x477A4FFF`, `gold1=0xFFFCE38A`, `gold2=0xFFF9B44C`, `goldText=0xFF1A1030`, `runePurple=0x598B7BFF`, `runeAmber=0x4DF9B44C`, `runePurpleFaint=0x298B7BFF`, `runeAmberFaint=0x24F9B44C`.
 
 ---
 
 ## File Structure
 
-- **Modify** `lib/screens/coin_flip_screen.dart` — full rewrite: ritual screen + `_CoinArena` (ticker state machine, drag/flick), `_CoinFace`, `_RuneRingPainter`, `_GradientButton`. Single file (matches repo's one-screen-per-file convention).
-- **Modify** `lib/l10n/app_en.arb`, `lib/l10n/app_pt.arb` — replace coin copy with prototype strings.
-- **Regenerate** `lib/l10n/generated/*` via `flutter gen-l10n`.
-- **Modify** `test/widget_test.dart` — add `disableAnimations` in `setUp` (keeps `pumpAndSettle` valid now that the coin arena is always mounted via `IndexedStack`); update pt button expectation to `Lançar a moeda`.
-
-No other files change.
-
----
-
-### Task 1: Prototype copy in localizations
-
-**Files:**
-- Modify: `lib/l10n/app_en.arb`, `lib/l10n/app_pt.arb`
-- Regenerate: `lib/l10n/generated/app_localizations*.dart`
-
-**Interfaces:**
-- Produces getters on `AppLocalizations`: `coinEyebrow`, `coinTitle`, `coinRitualSubtitle`, `coinHeads`, `coinTails`, `coinResultCaption`, `coinHint`, `coinHintDrag`, `coinDragHelper`, `coinButton`. Removes `coinSubtitle`, `coinPrompt`, `coinTapPrompt`, `coinResolved`.
-
-- [ ] **Step 1: Replace the coin block in `app_en.arb`** (keys above; EN values: `Ritual Seal` / `Heads or Tails` / `A mystic seal lights up to confirm: the result comes from pure chance.` / `HEADS` / `TAILS` / `The universe decided — not the processor.` / `Tap the button or drag the coin to flip` / `Release to flip — pull further for more force` / `or drag and flick the coin to throw it` / `Flip a coin`).
-- [ ] **Step 2: Replace the coin block in `app_pt.arb`** (PT values: `Selo Ritual` / `Cara ou Coroa` / `Um selo místico se acende para confirmar: o resultado vem do acaso puro.` / `CARA` / `COROA` / `O universo decidiu — não o processador.` / `Toque no botão ou arraste a moeda para lançar` / `Solte para lançar — puxe mais para mais força` / `ou arraste e solte a moeda para lançar` / `Lançar a moeda`).
-- [ ] **Step 3: Regenerate** — Run: `flutter gen-l10n`. Expected: new getters present in `lib/l10n/generated/app_localizations.dart`.
-- [ ] **Step 4: Commit** — `git add lib/l10n && git commit -m "feat(coin): prototype copy for ritual redesign"`.
+- **Create** `lib/widgets/ritual_background.dart` — full-bleed background gradient + optional faint top rune rings (shell) or centered ritual runes (coin). Houses `_RuneRingPainter` (dashed/dotted circle via `Path.computeMetrics`).
+- **Create** `lib/widgets/ritual_header.dart` — `RitualHeader({eyebrow, title, subtitle?})`.
+- **Create** `lib/widgets/ritual_button.dart` — `RitualButton({label, onPressed, height})` gold gradient.
+- **Create** `lib/widgets/ritual_bottom_nav.dart` — `RitualBottomNav` custom geometric 6-tab nav.
+- **Create** `lib/widgets/how_randomness_sheet.dart` — `showHowRandomnessSheet(context)` modal bottom sheet.
+- **Modify** `lib/screens/main_screen.dart` — shell: `RitualBackground` + `RitualBottomNav` + scrollable `IndexedStack`.
+- **Rewrite** `lib/screens/coin_flip_screen.dart` — Mystic Coin ritual (physics, drag/flick, `_CoinFace`).
+- **Restyle** `dice_roll_screen.dart`, `card_draw_screen.dart`, `list_picker_screen.dart`, `tarot_draw_screen.dart`, `about_me_screen.dart` — drop `MysticScreenScaffold`, use `RitualHeader`/`RitualButton`, match prototype.
+- **Delete** `lib/widgets/mystic_screen_scaffold.dart` (fully replaced).
+- **Modify** `lib/theme/app_colors.dart` — add ritual tokens.
+- **Modify** `lib/l10n/app_en.arb`, `app_pt.arb` + regenerate — all new copy.
+- **Modify** `test/widget_test.dart` — `disableAnimations` in `setUp`, updated labels/copy.
 
 ---
 
-### Task 2: Ritual screen shell (background, header, rune rings, button, helper)
+## Prototype copy → l10n keys (PT verbatim from prototype; EN translated)
 
-**Files:**
-- Modify: `lib/screens/coin_flip_screen.dart`
-- Test: `test/widget_test.dart` (existing "coin screen uses the random service")
+Coin (done, Task 1): `coinEyebrow/coinTitle/coinRitualSubtitle/coinHeads/coinTails/coinResultCaption/coinHint/coinHintDrag/coinDragHelper/coinButton`.
 
-**Interfaces:**
-- Produces `_RuneRingPainter({required Color color, required double strokeWidth, required double dashLength, required double gapLength, required bool dotted})` and `_GradientButton({required String label, VoidCallback? onPressed})`.
-- Consumes `_runeA`/`_runeB` `AnimationController`s (22s / 16s) started only when `!MediaQuery.disableAnimations`.
+Nav: `navCoin=Moeda/Coin, navDice=Dados/Dice, navCards=Cartas/Cards, navLists=Lista/Lists, navTarot=Tarot/Tarot, navAboutMe=Sobre/About`.
 
-- [ ] **Step 1:** Rewrite the screen scaffold: `DecoratedBox` ritual background (base `LinearGradient` + overlay `RadialGradient`), `SafeArea` already provided by `MainScreen`; `Column` with header (`coinEyebrow` italic serif, `coinTitle`, `coinRitualSubtitle`), `Expanded` coin arena placeholder, result/hint block, `_GradientButton(coinButton)`, helper `coinDragHelper`. Use exact sizes/colors from the element map.
-- [ ] **Step 2:** Add `_RuneRingPainter` (uses `Path.computeMetrics()` to stroke dashes/dots) and place two `RotationTransition`-wrapped `CustomPaint`s (260 dashed purple, 222 dotted amber) centered behind the arena. Start `_runeA.repeat()` / `_runeB.repeat()` only when `!disableAnimations`.
-- [ ] **Step 3:** Run existing coin test — Run: `flutter test test/widget_test.dart -p vm --plain-name "coin screen uses the random service"`. Expected: after `setUp` adds `disableAnimations` (Task 4) it PASSES; before that it may hang, so temporarily assert build via `flutter analyze` only. Expected `flutter analyze`: no errors.
-- [ ] **Step 4: Commit** — `git commit -am "feat(coin): ritual screen shell and rune rings"`.
+Dice: `diceEyebrow=Ritual dos Dados/RPG Dice Ritual`, `diceTitle=Dados RPG/RPG Dice`, `diceCountLabel=QUANTIDADE/QUANTITY`, `diceSidesLabel=LADOS/SIDES`, reuse `diceRollButton/diceTotal`, `diceResultsLine` uses join(" + ").
 
----
+Cards: `cardEyebrow=Ritual das Cartas/Card Ritual`, `cardTitle=Baralho Completo/Full Deck`, `cardSubtitle=52 cartas. Um destino por toque./52 cards. One fate per tap.`, `cardButton=Sacar carta/Draw a card`.
 
-### Task 3: 3D coin, toss physics, and drag-flick launch
+Lists: `listEyebrow=Ritual da Escolha/Choice Ritual`, `listTitle=Sorteio de Lista/List Draw`, `listSubtitle=Adicione opções e deixe o acaso decidir./Add options and let chance decide.`, `listInputHint=Nova opção…/New option…`, `listChooseButton=Deixar o universo escolher/Let the universe choose`, `listChosenByUniverse` (reuse) `ESCOLHIDO PELO UNIVERSO/CHOSEN BY THE UNIVERSE`, `listEmptyTwo=Adicione ao menos duas opções para começar./Add at least two options to begin.`
 
-**Files:**
-- Modify: `lib/screens/coin_flip_screen.dart`
+Tarot: `tarotEyebrow=Ritual do Tarot/Tarot Ritual`, `tarotTitle=Leitura do Tarot/Tarot Reading`, `tarotSubtitleShort=Uma carta, revelada pelo acaso puro./One card, revealed by pure chance.`, `tarotButton=Revelar carta/Reveal card`, `tarotWaiting=A carta aguarda/The card awaits`, `tarotTapReveal=Toque em revelar/Tap to reveal`, reuse `tarotMajorArcana/tarotMinorArcana/tarotDeckPosition`.
 
-**Interfaces:**
-- Produces `_CoinArena` (`ConsumerStatefulWidget` with `TickerProviderStateMixin`) exposing `launchAuto()` (called by button + quick-access trigger) and internal pan handlers.
-- Produces `_CoinFace({required bool front, required String heads, required String tails})`.
-- Consumes `coinFlipProvider` for the authoritative result and `isLoading`.
+About: `aboutEyebrow=O Oráculo/The Oracle`, keep `navAboutMe` as title, `aboutBioFallback=Criador de The Universe Decides — um app de decisões movido a aleatoriedade real./Creator of The Universe Decides — a decision app powered by real randomness.`, `aboutShortcutsTitle=Atalhos rápidos/Quick shortcuts`, reuse `aboutAddCoinButton/aboutAddDiceButton`, `aboutRandomnessCardTitle=Como funciona o acaso real?/How does real randomness work?`, `aboutRandomnessCardSubtitle=Por que o app não usa números pseudoaleatórios/Why the app avoids pseudo-random numbers`.
 
-- [ ] **Step 1:** Implement `_CoinFace` for front (CARA: dark dot + label) and back (COROA: crescent + label) with gradients, border, drop shadow, and inset highlight from the element map.
-- [ ] **Step 2:** Implement the state machine with a single `Ticker`: `idle`, `rising` (arc up + constant-velocity spin while awaiting the result), `landing` (decelerate onto the result face, `arcHeight`/`easeOutCubic`/`easeInOutQuad`, no bounce), `dragging`, `returning`. Compute per-frame `x,y,rotX,rotY,lift,scale,shadow` into a `ValueNotifier<double> _clock`; the coin `AnimatedBuilder` reads it (no per-frame `setState`).
-- [ ] **Step 3:** `launchAuto()`: guard `phase==idle && !isLoading`; pick `spinDir`, `spins`, `driftX`, `omega`; enter `rising`; `await ref.read(coinFlipProvider.notifier).flip()`; read `state.result`; when result ready and min spin elapsed → `landing` onto `result==1?180:0` (mod 360, continuing spin direction). Fire impact (`_impact.forward` + `HapticFeedback.mediumImpact`) at ~90% of landing. On complete → `idle`, reveal result.
-- [ ] **Step 4:** Drag via `GestureDetector.onPanStart/Update/End`: rubber-band clamp (`max=100`), sample recent points for velocity; on end `speed<0.28` → `returning` (260ms spring), else `launchAuto()`-style throw with `boost` scaling spins/lift/drift. `HapticFeedback.lightImpact` on a committed flick. Block all input while `phase!=idle`.
-- [ ] **Step 5:** Wire `_impact` controller into the coin `AnimatedBuilder` for flash (white overlay `.32s`), impact ring (`scale .4→1`, `opacity .8→0`), shake (translateX), and the drag charge glow (amber ring scaled by drag magnitude).
-- [ ] **Step 6: Analyze** — Run: `flutter analyze`. Expected: no errors. **Commit** — `git commit -am "feat(coin): 3D toss physics and drag-flick launch"`.
+Randomness sheet: `randomnessSheetEyebrow=O que há por trás do acaso/What lies behind chance`, `randomnessSheetTitle=Acaso real vs. pseudoaleatório/Real chance vs. pseudo-random`, `randomnessCard1Title/Body`, `randomnessCard2Title/Body`, `randomnessCard3Title/Body` (bodies verbatim PT from prototype; EN translated), `randomnessSheetButton=Entendi/Got it`.
+
+Remove now-unused: `coinSubtitle, coinPrompt, coinTapPrompt, coinResolved` (done), `diceSubtitle, diceCount, diceSides, diceEmptyState, diceResults, cardDrawSubtitle, cardDrawPrompt, cardDrawTapPrompt, cardDrawResolved, listSubtitle, listAddOptionLabel, listAddButton, listEmptyState, tarotSubtitle, tarotPrompt, tarotTapPrompt, aboutSubtitle` — only if no longer referenced after restyle (verify per screen).
 
 ---
 
-### Task 4: Reduced motion, tests, and full verification
+## Tasks
 
-**Files:**
-- Modify: `lib/screens/coin_flip_screen.dart`
-- Modify: `test/widget_test.dart`
+### Task 1 — Coin copy (DONE)
+- [x] EN/PT coin keys, regenerate, commit.
 
-**Interfaces:**
-- Consumes `MediaQuery.of(context).disableAnimations`.
+### Task 2 — Ritual tokens + shared widgets
+- [ ] Add ritual color tokens to `AppColors`.
+- [ ] `RitualBackground` (+ `_RuneRingPainter`): base gradient + glow; `variant: shell` (faint top runes 280/230, 30s/22s) and `variant: coin` (centered runes 260/222, 22s/16s). Loops gated on `disableAnimations`.
+- [ ] `RitualHeader`, `RitualButton`.
+- [ ] `flutter analyze` clean; commit.
 
-- [ ] **Step 1:** Add reduced-motion path: when `disableAnimations`, `launchAuto()` skips the ticker/flight, `await flip()`, and reveals the result via a ≤200ms `AnimatedSwitcher`; rune loops are not started; pan-throw is disabled (coin still tappable = launch). Ambient controllers `.stop()` when `disableAnimations`.
-- [ ] **Step 2:** In `test/widget_test.dart` add a `setUp`/`tearDown` that sets `TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true)` and clears it (keeps `pumpAndSettle` finite since the coin arena is always mounted via `IndexedStack`).
-- [ ] **Step 3:** Update the pt-locale test expectation `find.text('Jogar uma moeda')` → `find.text('Lançar a moeda')`. Keep the en test `Flip a coin` and the `TAILS` assertion.
-- [ ] **Step 4: Run full suite** — Run: `flutter test`. Expected: all tests PASS.
-- [ ] **Step 5: Analyze + format** — Run: `flutter analyze` (no issues) and `dart format .` (no unexpected diffs beyond touched files).
-- [ ] **Step 6: Visual verification** — build/run the coin screen (or `flutter run`/screenshot) to confirm it matches the prototype: eyebrow/title/subtext, rune rings, gold/purple coin, toss arc, drag-flick, result caption, gold button, helper. Fix deviations against the element map.
-- [ ] **Step 7: Commit + open PR** — `git commit -am "feat(coin): reduced motion + tests"`; push branch; open PR referencing `Closes #16` and `Closes #17` (do not merge, do not close issues manually).
+### Task 3 — Shell + custom bottom nav
+- [ ] `RitualBottomNav`: 6 geometric icons + labels, gold active / white40 inactive, blurred bar.
+- [ ] `MainScreen`: `RitualBackground(shell)` behind scrollable `IndexedStack`; keep quick-access + fallback-snackbar wiring.
+- [ ] `flutter analyze`; commit.
+
+### Task 4 — Coin screen (Mystic Coin ritual) — Issues #16/#17
+- [ ] `_CoinFace` front (CARA: dark dot + label) / back (COROA: crescent + label): gradients, 3px border, drop shadow, inner highlight.
+- [ ] `_CoinArena` ticker state machine: `idle/rising/landing/dragging/returning`; per-frame transform via `ValueNotifier` clock; `_impact` controller (flash/ring/shake), charge glow, `HapticFeedback`.
+- [ ] `launchAuto()` — guard single-flight; `await coinFlipProvider.flip()`; land on `result` face; reveal at landing.
+- [ ] Drag rubber-band (max 100) + flick velocity throw (`speed<0.28`→return 260ms; else boost) ; block input while busy.
+- [ ] Reduced-motion path (quick reveal, no ticker, tap-to-flip); rune loops off.
+- [ ] Screen composition: `RitualBackground(coin)` + header (`coinEyebrow/coinTitle/coinRitualSubtitle`) + arena + result/hint + `RitualButton(coinButton)` + helper (`coinDragHelper`).
+- [ ] `flutter analyze`; commit.
+
+### Task 5 — Dice screen restyle
+- [ ] `RitualHeader(diceEyebrow/diceTitle)`, `QUANTIDADE` row (1–5 pill buttons), `LADOS` row (d4/d6/d20/d100 pills), `RitualButton(diceRollButton)`, results line + `Total`. Keep tumble animation + `diceRollProvider`; set sides list `[4,6,20,100]`.
+- [ ] `flutter analyze`; commit.
+
+### Task 6 — Cards screen restyle
+- [ ] `RitualHeader(cardEyebrow/cardTitle/cardSubtitle)`; 3D flip card (mystic back `#241a3d/#3E216E/#1a1030` + amber dashed emblem; front playing card) via `AnimatedSwitcher` rotateY flip keyed on draw; `RitualButton(cardButton)`. Keep `cardDrawProvider`.
+- [ ] `flutter analyze`; commit.
+
+### Task 7 — Lists screen restyle
+- [ ] `RitualHeader(listEyebrow/listTitle/listSubtitle)`; input (`listInputHint`) + gold `+` button; `RitualButton(listChooseButton)`; selected badge gradient (`listChosenByUniverse`); item rows (index dot, label, `×`); empty `listEmptyTwo`. Keep `listPickerProvider`.
+- [ ] `flutter analyze`; commit.
+
+### Task 8 — Tarot screen restyle
+- [ ] `RitualHeader(tarotEyebrow/tarotTitle/tarotSubtitleShort)`; keep existing 3D flip + `_TarotCardFace` (already matches prototype closely — align copy: waiting `tarotWaiting`, `tarotTapReveal`); `RitualButton(tarotButton)`. Keep `tarotDrawProvider`.
+- [ ] `flutter analyze`; commit.
+
+### Task 9 — About screen + randomness sheet
+- [ ] `RitualHeader(aboutEyebrow/navAboutMe)`; avatar+name+handle (GitHub), bio (fallback `aboutBioFallback`), github link chip, `aboutShortcutsTitle` + two gold-outline shortcut buttons, randomness card button → `showHowRandomnessSheet`.
+- [ ] `how_randomness_sheet.dart`: eyebrow/title + 3 cards + `Entendi` button, matching prototype styles.
+- [ ] `flutter analyze`; commit.
+
+### Task 10 — l10n, tests, verification
+- [ ] Add all new keys to `app_en.arb`/`app_pt.arb`; remove verified-unused; `flutter gen-l10n`.
+- [ ] `test/widget_test.dart`: `setUp` sets `disableAnimations`; update nav labels (`Lista/Tarot/Sobre`, `Sobre`), coin pt button `Lançar a moeda`, dice/card/tarot button texts, any changed copy; keep behavior assertions (requests, results).
+- [ ] `flutter test` all pass; `flutter analyze` clean; `dart format .`.
+- [ ] Visual verification vs prototype (build/screenshot each tab + sheet).
+- [ ] Commit; push; open PR (`Closes #16`, `Closes #17`) — no merge, no manual close.
 
 ---
 
 ## Self-Review
 
-- **Spec coverage:** Issue #16 (visual polish, clearer copy/use-case) → Tasks 1–3 (ritual visuals, eyebrow/subtext/caption copy). Issue #17 (physical toss + gesture launch, single launch, reduced motion, controller-owned result) → Task 3 (physics, drag-flick, single-flight guard) + Task 4 (reduced motion). Prototype fidelity → element map + Tasks 2–3.
-- **No physics engine / no packages:** SDK `Ticker`/`Transform`/`GestureDetector`/`CustomPainter`/`HapticFeedback` only. ✔
-- **Result integrity:** result always from `coinFlipProvider`; animation lands on it, never decides it. ✔
-- **Type consistency:** `launchAuto()`, `_CoinFace`, `_RuneRingPainter`, `_GradientButton`, `_clock`, `_impact`, `_runeA/_runeB` used consistently across tasks. ✔
-- **Tests stay green:** `disableAnimations` in `setUp` keeps `pumpAndSettle` finite; pt copy expectation updated. ✔
+- **Spec coverage:** shell/background/runes/nav (T2–T3), coin #16/#17 (T4), dice/cards/lists/tarot/about (T5–T9), randomness sheet (T9), copy+tests (T10). ✔
+- **Constraints:** no packages/engine; Random.org + controllers untouched; reduced motion; branch/PR discipline. ✔
+- **Deviations documented:** dice physics/options, nav labels, About data source. ✔
+- **Type consistency:** `RitualBackground(variant)`, `RitualHeader`, `RitualButton`, `RitualBottomNav`, `launchAuto()`, `_CoinFace`, `showHowRandomnessSheet` used consistently. ✔

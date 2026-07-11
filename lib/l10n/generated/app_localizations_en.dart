@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navTarot => 'Tarot';
 
   @override
-  String get navAboutMe => 'About me';
+  String get navAboutMe => 'About';
 
   @override
   String get coinEyebrow => 'Ritual Seal';
@@ -61,24 +61,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coinButton => 'Flip a coin';
 
   @override
-  String get diceSubtitle =>
-      'Roll your RPG dice with multiple sides and let destiny add up the final result.';
+  String get diceEyebrow => 'Dice Ritual';
 
   @override
-  String get diceCount => 'Number of dice';
+  String get diceTitle => 'RPG Dice';
 
   @override
-  String get diceSides => 'Dice sides';
+  String get diceCountLabel => 'QUANTITY';
+
+  @override
+  String get diceSidesLabel => 'SIDES';
 
   @override
   String get diceRollButton => 'Roll dice';
-
-  @override
-  String get diceEmptyState =>
-      'Choose your setup and roll to see each value and the final total.';
-
-  @override
-  String get diceResults => 'Results';
 
   @override
   String diceTotal(int total) {
@@ -86,56 +81,55 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cardDrawSubtitle =>
-      'Draw a true-random playing card and let the universe reveal a modern tarot-free sign from a full 52-card deck.';
+  String get cardEyebrow => 'Card Ritual';
 
   @override
-  String get cardDrawPrompt => 'Draw a card from the cosmic deck';
+  String get cardTitle => 'Full Deck';
 
   @override
-  String get cardDrawTapPrompt => 'Tap below to reveal your next card.';
-
-  @override
-  String get cardDrawResolved => 'The universe has revealed your card.';
+  String get cardSubtitle => '52 cards. One fate per tap.';
 
   @override
   String get cardDrawButton => 'Draw a card';
 
   @override
-  String get listSubtitle =>
-      'Write down possibilities, invite the universe, and highlight a single destination for your next decision.';
+  String get listEyebrow => 'Choice Ritual';
 
   @override
-  String get listAddOptionLabel => 'Add option';
+  String get listTitle => 'List Draw';
 
   @override
-  String get listAddOptionHint => 'E.g. Travel, sleep, order pizza...';
+  String get listSubtitle => 'Add options and let chance decide.';
 
   @override
-  String get listAddButton => 'Add';
+  String get listAddOptionHint => 'New option…';
 
   @override
-  String get listChooseButton => 'Choose for me';
+  String get listChooseButton => 'Let the universe choose';
 
   @override
-  String get listEmptyState =>
-      'Add items to the list and let the universe decide for you.';
+  String get listEmptyState => 'Add at least two options to begin.';
 
   @override
   String get listChosenByUniverse => 'Chosen by the universe';
 
   @override
-  String get tarotSubtitle =>
-      'Draw a single Tarot card from the full 78-card deck and let true randomness reveal the archetype guiding this moment.';
+  String get tarotEyebrow => 'Tarot Ritual';
 
   @override
-  String get tarotPrompt => 'The deck is waiting';
+  String get tarotTitle => 'Tarot Reading';
 
   @override
-  String get tarotTapPrompt => 'Draw a card to reveal the universe\'s symbol.';
+  String get tarotSubtitle => 'One card, revealed by pure chance.';
 
   @override
-  String get tarotButton => 'Draw a card';
+  String get tarotButton => 'Reveal card';
+
+  @override
+  String get tarotWaiting => 'The card awaits';
+
+  @override
+  String get tarotTapReveal => 'Tap to reveal';
 
   @override
   String get tarotMajorArcana => 'Major Arcana';
@@ -149,27 +143,36 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get aboutSubtitle =>
-      'A small corner with the creator profile, loading the avatar straight from the GitHub API.';
+  String get aboutEyebrow => 'The Oracle';
 
   @override
-  String get aboutProfileLoadError => 'Could not load the profile right now.';
+  String get aboutTitle => 'About me';
 
   @override
-  String get aboutRetryButton => 'Try again';
+  String get aboutBioFallback =>
+      'Creator of The Universe Decides — a decision app powered by real randomness.';
 
   @override
-  String get aboutQuickAccessTitle => 'Quick access in the panel';
-
-  @override
-  String get aboutQuickAccessDescription =>
-      'Add coin and d20 shortcuts to the Android quick settings panel to open the app and run the action immediately.';
+  String get aboutShortcutsTitle => 'Quick shortcuts';
 
   @override
   String get aboutAddCoinButton => 'Add coin';
 
   @override
   String get aboutAddDiceButton => 'Add d20';
+
+  @override
+  String get aboutRandomnessCardTitle => 'How does real randomness work?';
+
+  @override
+  String get aboutRandomnessCardSubtitle =>
+      'Why the app avoids pseudo-random numbers';
+
+  @override
+  String get aboutProfileLoadError => 'Could not load the profile right now.';
+
+  @override
+  String get aboutRetryButton => 'Try again';
 
   @override
   String get quickTileCoinAdded => 'Coin shortcut added to the panel.';
@@ -198,6 +201,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get quickTileDiceUnsupported =>
       'Your Android version cannot add this shortcut from the app.';
+
+  @override
+  String get randomnessSheetEyebrow => 'What lies behind chance';
+
+  @override
+  String get randomnessSheetTitle => 'Real chance vs. pseudo-random';
+
+  @override
+  String get randomnessCard1Title => 'Computers don\'t create true randomness';
+
+  @override
+  String get randomnessCard1Body =>
+      'Most apps use PRNGs (pseudo-random generators): deterministic math formulas that start from a \"seed\". Given the same seed, the result is always the same — it looks random, but it is 100% predictable if you know the algorithm and its internal state.';
+
+  @override
+  String get randomnessCard2Title => 'This app uses real physical entropy';
+
+  @override
+  String get randomnessCard2Body =>
+      'Every draw consumes real atmospheric noise, collected by Random.org from radio static — a chaotic physical phenomenon, not a calculation. There is no seed, no formula: the result does not exist until the instant it is measured.';
+
+  @override
+  String get randomnessCard3Title => 'Why it matters in practice';
+
+  @override
+  String get randomnessCard3Body =>
+      'For decisions you want to be fair and indisputable — draws, tie-breaks, friendly bets — a PRNG could, in theory, be reproduced or manipulated. Real physical entropy removes that doubt: nobody, not even the app itself, can predict or repeat the result.';
+
+  @override
+  String get randomnessSheetButton => 'Got it';
 
   @override
   String get randomOrgFallbackNotice =>
