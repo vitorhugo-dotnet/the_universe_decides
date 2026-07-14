@@ -27,6 +27,9 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
   }
 
   void _addItem() {
+    if (ref.read(listPickerProvider).isLoading) {
+      return;
+    }
     ref.read(listPickerProvider.notifier).addItem(_controller.text);
     _controller.clear();
     _focusNode.requestFocus();
@@ -38,6 +41,7 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
     final state = ref.watch(listPickerProvider);
     final controller = ref.read(listPickerProvider.notifier);
     final canPick = state.items.length >= 2 && !state.isLoading;
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
 
     ref.listen<ListPickerState>(listPickerProvider, (previous, next) {
       if (next.selectedIndex != null &&
@@ -89,19 +93,21 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
                 ),
               ),
               const SizedBox(width: 10),
-              _AddButton(onTap: _addItem),
+              _AddButton(onTap: state.isLoading ? null : _addItem),
             ],
           ),
           const SizedBox(height: 16),
           RitualButton(
             label: l10n.listChooseButton,
-            onPressed: canPick ? controller.pickItem : null,
+            onPressed: canPick
+                ? () => controller.pickItem(reduceMotion: reduceMotion)
+                : null,
             maxWidth: double.infinity,
           ),
           const SizedBox(height: 20),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
-            child: state.isLoading
+            child: state.isLoading && !state.isScanning
                 ? const Padding(
                     key: ValueKey('loading'),
                     padding: EdgeInsets.symmetric(vertical: 28),
@@ -128,7 +134,10 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
                           index: i,
                           label: state.items[i],
                           selected: state.selectedIndex == i,
-                          onRemove: () => controller.removeItem(i),
+                          scanning: state.isScanning && state.scanIndex == i,
+                          onRemove: state.isLoading
+                              ? null
+                              : () => controller.removeItem(i),
                         ),
                       ],
                     ],
@@ -143,33 +152,36 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
 class _AddButton extends StatelessWidget {
   const _AddButton({required this.onTap});
 
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          width: 46,
-          height: 46,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            gradient: const LinearGradient(
-              colors: [AppColors.gold1, AppColors.gold2],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Opacity(
+      opacity: onTap == null ? 0.55 : 1,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Container(
+            width: 46,
+            height: 46,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              gradient: const LinearGradient(
+                colors: [AppColors.gold1, AppColors.gold2],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-          ),
-          child: const Text(
-            '+',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColors.goldText,
+            child: const Text(
+              '+',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColors.goldText,
+              ),
             ),
           ),
         ),
@@ -255,18 +267,20 @@ class _ItemRow extends StatelessWidget {
     required this.index,
     required this.label,
     required this.selected,
+    required this.scanning,
     required this.onRemove,
   });
 
   final int index;
   final String label;
   final bool selected;
-  final VoidCallback onRemove;
+  final bool scanning;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
+      duration: const Duration(milliseconds: 90),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
@@ -278,9 +292,17 @@ class _ItemRow extends StatelessWidget {
                 ],
               )
             : null,
-        color: selected ? null : const Color(0x0AFFFFFF),
+        color: selected
+            ? null
+            : (scanning
+                  ? AppColors.runeAmberFaint
+                  : const Color(0x0AFFFFFF)),
         border: Border.all(
-          color: selected ? AppColors.runePurple : const Color(0x14FFFFFF),
+          color: selected
+              ? AppColors.runePurple
+              : (scanning
+                    ? AppColors.gold2.withValues(alpha: 0.5)
+                    : const Color(0x14FFFFFF)),
         ),
       ),
       child: Row(
@@ -318,9 +340,15 @@ class _ItemRow extends StatelessWidget {
           InkWell(
             onTap: onRemove,
             borderRadius: BorderRadius.circular(13),
-            child: const Padding(
-              padding: EdgeInsets.all(3),
-              child: Icon(Icons.close, size: 18, color: AppColors.textDim),
+            child: Padding(
+              padding: const EdgeInsets.all(3),
+              child: Icon(
+                Icons.close,
+                size: 18,
+                color: onRemove == null
+                    ? AppColors.textDim.withValues(alpha: 0.4)
+                    : AppColors.textDim,
+              ),
             ),
           ),
         ],
