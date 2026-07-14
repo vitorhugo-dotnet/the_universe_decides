@@ -17,16 +17,19 @@ class ListPickerScreen extends ConsumerStatefulWidget {
 
 class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _addItem() {
     ref.read(listPickerProvider.notifier).addItem(_controller.text);
     _controller.clear();
+    _focusNode.requestFocus();
   }
 
   @override
@@ -61,6 +64,7 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
                   height: 46,
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focusNode,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _addItem(),
                     style: const TextStyle(color: Colors.white, fontSize: 14),
