@@ -67,13 +67,16 @@ class ListPickerController extends Notifier<ListPickerState> {
     if (state.isLoading) {
       return;
     }
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) {
+    final newItems = value
+        .split(',')
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty);
+    if (newItems.isEmpty) {
       return;
     }
 
     state = state.copyWith(
-      items: [...state.items, trimmed],
+      items: [...state.items, ...newItems],
       selectedIndex: null,
     );
   }
