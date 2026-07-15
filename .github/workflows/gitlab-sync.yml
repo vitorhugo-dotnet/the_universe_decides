@@ -1,0 +1,46 @@
+name: Sync to GitLab
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - CI/CD
+      - Release
+      - Android Play Deploy
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Mirror successful workflow to GitLab
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the completed workflow revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Mirror branches and tags to GitLab
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_REPOSITORY: ${{ github.event.repository.name }}
+        run: |
+          if [ -z "$GITLAB_TOKEN" ]; then
+            echo "Missing required repository secret: GITLAB_TOKEN" >&2
+            exit 1
+          fi
+
+          git fetch origin             '+refs/heads/*:refs/heads/*'             '+refs/tags/*:refs/tags/*'
+
+          git remote add gitlab             "https://oauth2:${GITLAB_TOKEN}@gitlab.com/hugo.dotnet/${GITLAB_REPOSITORY}.git"
+
+          git push --force --prune gitlab             'refs/heads/*:refs/heads/*'
+
+          git push --force gitlab             'refs/tags/*:refs/tags/*'
