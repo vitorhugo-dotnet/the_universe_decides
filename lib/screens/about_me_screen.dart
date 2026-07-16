@@ -23,9 +23,16 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
   static final _donationUri = Uri.parse(
     'https://www.buymeacoffee.com/vitorhugo1207',
   );
+  static final _privacyPolicyUri = Uri.parse(
+    'https://hugodotnet.dev/the-universe-decides/privacy-policy',
+  );
 
   Future<void> _openDonationPage() async {
     await launchUrl(_donationUri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    await launchUrl(_privacyPolicyUri, mode: LaunchMode.externalApplication);
   }
 
   Future<void> _requestTile(QuickAccessAction action) async {
@@ -63,6 +70,10 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final privacyPolicyLabel =
+        Localizations.localeOf(context).languageCode == 'pt'
+        ? 'Política de Privacidade'
+        : 'Privacy Policy';
     final profileAsync = ref.watch(
       githubProfileProvider(AboutMeScreen._githubUsername),
     );
@@ -128,6 +139,24 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
             title: l10n.aboutRandomnessCardTitle,
             subtitle: l10n.aboutRandomnessCardSubtitle,
             onTap: () => showHowRandomnessSheet(context),
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: TextButton(
+              onPressed: _openPrivacyPolicy,
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textCaption,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              child: Text(privacyPolicyLabel),
+            ),
           ),
         ],
       ),
