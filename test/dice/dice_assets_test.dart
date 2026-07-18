@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,4 +25,17 @@ void main() {
       expect(contents, isNotEmpty, reason: '$asset should be bundled');
     }
   });
+
+  test(
+    'renderer exposes bounded completion and legible orientation markers',
+    () async {
+      final source = await File('assets/dice/dice.js').readAsString();
+      final bridge = await File('assets/dice/bridge.js').readAsString();
+
+      expect(source, contains('dice_box.prototype.finish_roll'));
+      expect(source, contains("context.fillText('--'"));
+      expect(bridge, contains('maximumRollDurationMs'));
+      expect(bridge, contains('finish: function (requestId)'));
+    },
+  );
 }

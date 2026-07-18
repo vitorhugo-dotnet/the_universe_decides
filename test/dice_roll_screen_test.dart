@@ -65,6 +65,39 @@ void main() {
     expect(find.byKey(const Key('dice-total')), findsOneWidget);
     expect(find.text('Renderer unavailable'), findsWidgets);
   });
+
+  testWidgets('timeout completes a roll normally and releases controls', (
+    tester,
+  ) async {
+    final client = _PendingClient();
+    final container = _containerFor(client);
+    addTearDown(container.dispose);
+
+    await _pumpDiceScreen(tester, container);
+
+    final roll = container.read(diceRollProvider.notifier).startRoll();
+    client.complete('3');
+    await roll;
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 12));
+
+    final state = container.read(diceRollProvider);
+    expect(state.isRolling, isFalse);
+    expect(state.animationError, isNull);
+    expect(state.results, [3]);
+    expect(find.text('Dice animation timed out.'), findsNothing);
+    expect(
+      tester
+          .widget<InkWell>(
+            find.descendant(
+              of: find.byKey(const Key('dice-roll-button')),
+              matching: find.byType(InkWell),
+            ),
+          )
+          .onTap,
+      isNotNull,
+    );
+  });
 }
 
 Future<void> _pumpDiceScreen(WidgetTester tester, ProviderContainer container) {
@@ -97,7 +130,10 @@ void _expectControlsDisabled(WidgetTester tester) {
     expect(
       tester
           .widget<InkWell>(
-            find.descendant(of: find.byKey(key), matching: find.byType(InkWell)),
+            find.descendant(
+              of: find.byKey(key),
+              matching: find.byType(InkWell),
+            ),
           )
           .onTap,
       isNull,

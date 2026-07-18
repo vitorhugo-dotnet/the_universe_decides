@@ -22,6 +22,22 @@
 
   var diceBox = new DICE.dice_box(document.body);
   var activeRequestId = null;
+  var activeResults = null;
+  var completionTimer = null;
+  var maximumRollDurationMs = 10000;
+
+  function completeActiveRoll() {
+    if (activeRequestId === null) return;
+    var requestId = activeRequestId;
+    var results = activeResults;
+    activeRequestId = null;
+    activeResults = null;
+    if (completionTimer !== null) {
+      clearTimeout(completionTimer);
+      completionTimer = null;
+    }
+    emit({ event: 'rollCompleted', requestId: requestId, results: results });
+  }
 
   window.addEventListener('resize', function () {
     diceBox.reinit(document.body);
@@ -38,14 +54,24 @@
         return;
       }
       activeRequestId = roll.requestId;
+      activeResults = roll.results;
       emit({ type: 'rollStarted', requestId: roll.requestId });
       diceBox.setDice(roll.notation);
       diceBox.start_throw(function () {
         return roll.results;
       }, function () {
-        activeRequestId = null;
-        emit({ event: 'rollCompleted', requestId: roll.requestId, results: roll.results });
+        completeActiveRoll();
       });
+      completionTimer = setTimeout(function () {
+        if (activeRequestId !== roll.requestId) return;
+        diceBox.finish_roll();
+        completeActiveRoll();
+      }, maximumRollDurationMs);
+    },
+    finish: function (requestId) {
+      if (requestId !== activeRequestId) return;
+      diceBox.finish_roll();
+      completeActiveRoll();
     },
     pause: function () { diceBox.pause(); },
     resume: function () { diceBox.resume(); }

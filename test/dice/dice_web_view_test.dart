@@ -53,4 +53,24 @@ void main() {
     expect(completedRequestIds, isEmpty);
     expect(controller.activeRequestId, 'request-42');
   });
+
+  test('asks the bridge to finish only the active request', () async {
+    final scripts = <String>[];
+    final controller = DiceWebViewController()
+      ..attachJavaScriptRunner((script) async => scripts.add(script));
+
+    await controller.handleBridgeMessage('{"type":"ready"}');
+    await controller.roll(
+      DiceRollRequest(
+        requestId: 'request-42',
+        notation: '2d6',
+        results: [3, 5],
+      ),
+    );
+    await controller.finishRoll('stale-request');
+    await controller.finishRoll('request-42');
+
+    expect(scripts, hasLength(2));
+    expect(scripts.last, 'window.DiceBridge.finish("request-42");');
+  });
 }
