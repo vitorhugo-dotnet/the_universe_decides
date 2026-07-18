@@ -165,6 +165,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutDonationButton => 'Buy me a coffee';
 
   @override
+  String get aboutSoundEffectsTitle => 'Sound effects';
+
+  @override
+  String get aboutSoundEffectsSubtitle =>
+      'Play a subtle sound when a decision is complete.';
+
+  @override
   String get aboutRandomnessCardTitle => 'How does real randomness work?';
 
   @override

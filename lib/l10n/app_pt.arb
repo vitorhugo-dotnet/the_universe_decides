@@ -64,6 +64,8 @@
   "aboutAddCoinButton": "Adicionar moeda",
   "aboutAddDiceButton": "Adicionar d20",
   "aboutDonationButton": "Compre-me um café",
+  "aboutSoundEffectsTitle": "Efeitos sonoros",
+  "aboutSoundEffectsSubtitle": "Reproduzir um som sutil quando uma decisão terminar.",
   "aboutRandomnessCardTitle": "Como funciona o acaso real?",
   "aboutRandomnessCardSubtitle": "Por que o app não usa números pseudoaleatórios",
   "aboutProfileLoadError": "Não foi possível carregar o perfil agora.",

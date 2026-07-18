@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/dice_roll_controller.dart';
+import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/dice/dice_bridge_message.dart';
 import 'package:theuniversedecides/dice/dice_roll_request.dart';
 import 'package:theuniversedecides/dice/dice_web_view.dart';
@@ -67,6 +68,7 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
     ref.read(diceRollProvider.notifier).completeAnimation(message.requestId);
     if (wasActive) {
       HapticFeedback.mediumImpact();
+      ref.read(soundEffectsProvider.notifier).playDecision();
     }
   }
 

@@ -398,6 +398,18 @@ abstract class AppLocalizations {
   /// **'Buy me a coffee'**
   String get aboutDonationButton;
 
+  /// No description provided for @aboutSoundEffectsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound effects'**
+  String get aboutSoundEffectsTitle;
+
+  /// No description provided for @aboutSoundEffectsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Play a subtle sound when a decision is complete.'**
+  String get aboutSoundEffectsSubtitle;
+
   /// No description provided for @aboutRandomnessCardTitle.
   ///
   /// In en, this message translates to:
