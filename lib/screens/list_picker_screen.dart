@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/list_picker_controller.dart';
+import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
@@ -47,6 +48,7 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
       if (next.selectedIndex != null &&
           next.selectedIndex != previous?.selectedIndex) {
         HapticFeedback.mediumImpact();
+        ref.read(soundEffectsProvider.notifier).playDecision();
       }
     });
 
@@ -294,9 +296,7 @@ class _ItemRow extends StatelessWidget {
             : null,
         color: selected
             ? null
-            : (scanning
-                  ? AppColors.runeAmberFaint
-                  : const Color(0x0AFFFFFF)),
+            : (scanning ? AppColors.runeAmberFaint : const Color(0x0AFFFFFF)),
         border: Border.all(
           color: selected
               ? AppColors.runePurple

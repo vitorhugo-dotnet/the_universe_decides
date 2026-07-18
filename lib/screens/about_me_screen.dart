@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
+import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/how_randomness_sheet.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
@@ -77,6 +78,7 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
     final profileAsync = ref.watch(
       githubProfileProvider(AboutMeScreen._githubUsername),
     );
+    final soundEffectsEnabled = ref.watch(soundEffectsProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
@@ -106,6 +108,14 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
             onPressed: _openDonationPage,
           ),
           const SizedBox(height: 24),
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.aboutSoundEffectsTitle),
+            subtitle: Text(l10n.aboutSoundEffectsSubtitle),
+            value: soundEffectsEnabled,
+            onChanged: ref.read(soundEffectsProvider.notifier).setEnabled,
+          ),
+          const SizedBox(height: 12),
           Text(
             l10n.aboutShortcutsTitle,
             style: const TextStyle(

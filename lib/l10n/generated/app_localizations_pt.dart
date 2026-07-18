@@ -165,6 +165,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get aboutDonationButton => 'Compre-me um café';
 
   @override
+  String get aboutSoundEffectsTitle => 'Efeitos sonoros';
+
+  @override
+  String get aboutSoundEffectsSubtitle =>
+      'Reproduzir um som sutil quando uma decisão terminar.';
+
+  @override
   String get aboutRandomnessCardTitle => 'Como funciona o acaso real?';
 
   @override

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/card_draw_controller.dart';
+import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
@@ -32,6 +33,7 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
       return;
     }
     HapticFeedback.mediumImpact();
+    ref.read(soundEffectsProvider.notifier).playDecision();
   }
 
   @override

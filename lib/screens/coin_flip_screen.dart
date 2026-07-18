@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:theuniversedecides/controllers/coin_flip_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
+import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_background.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
@@ -162,6 +164,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     _phaseStart = _now;
     _impactFired = false;
     setState(() {});
+    unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
   }
 
   /// Smallest rotation continuing in [dir] that is >= [minTurn] beyond [from]
