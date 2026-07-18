@@ -31,9 +31,9 @@ const DICE = (function() {
         scale: 100, //dice size
 
         material_options: {
-            specular: 0x2a1f4d,
+            specular: 0x171022,
             color: 0xe4d9ff,
-            shininess: 45,
+            shininess: 20,
             shading: THREE.FlatShading,
         },
         label_color: '#FCE38A', //numbers on dice
@@ -261,10 +261,10 @@ const DICE = (function() {
                 }
                 notation.resultString = res;
 
-                if (after_roll) after_roll(notation);
-
                 box.rolling = false;
                 vars.use_adapvite_timestep = uat;
+
+                if (after_roll) after_roll(notation);
             });
         }
     }
@@ -375,7 +375,10 @@ const DICE = (function() {
         this.last_time = this.last_time ? time : (new Date()).getTime();
         if (this.running == threadid && this.check_if_throw_finished()) {
             this.running = false;
-            if (this.callback) this.callback.call(this, get_dice_values(this.dices));
+            var callback = this.callback;
+            this.callback = null;
+            this.requested_values = null;
+            if (callback) callback.call(this, get_dice_values(this.dices));
         }
         if (this.running == threadid) {
             (function(t, tid, uat) {
@@ -434,10 +437,35 @@ const DICE = (function() {
                     shift_dice_faces(this.dices[i], values[i], res[i]);
             }
         }
+        this.requested_values = values;
         this.callback = callback;
         this.running = (new Date()).getTime();
         this.last_time = 0;
         this.__animate(this.running);
+    }
+
+    that.dice_box.prototype.finish_roll = function() {
+        if (!this.running || !this.requested_values) return;
+
+        var current_values = get_dice_values(this.dices);
+        for (var i = 0; i < this.dices.length; ++i) {
+            var dice = this.dices[i];
+            if (dice.dice_type == 'd100') {
+                force_d100_value(dice, this.requested_values[i], current_values[i]);
+            }
+            else {
+                shift_dice_faces(dice, this.requested_values[i], current_values[i]);
+            }
+            dice.body.velocity.set(0, 0, 0);
+            dice.body.angularVelocity.set(0, 0, 0);
+            dice.dice_stopped = true;
+        }
+
+        this.running = false;
+        this.rolling = false;
+        this.callback = null;
+        this.requested_values = null;
+        this.renderer.render(this.scene, this.camera);
     }
 
     that.dice_box.prototype.search_dice_by_mouse = function(ev) {
@@ -578,7 +606,7 @@ const DICE = (function() {
             context.fillStyle = color;
             context.fillText(text, canvas.width / 2, canvas.height / 2);
             if (text == '6' || text == '9') {
-                context.fillText('  .', canvas.width / 2, canvas.height / 2);
+                context.fillText('--', canvas.width / 2, canvas.height * 0.72);
             }
             var texture = new THREE.Texture(canvas);
             texture.needsUpdate = true;

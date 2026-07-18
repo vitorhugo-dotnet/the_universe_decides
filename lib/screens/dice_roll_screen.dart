@@ -77,11 +77,18 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
       return;
     }
     _animationTimer?.cancel();
-    _animationTimer = Timer(_animationTimeout, () {
+    _animationTimer = Timer(_animationTimeout, () async {
+      if (!mounted ||
+          ref.read(diceRollProvider).activeRequestId != request.requestId) {
+        return;
+      }
+      _animationTimer?.cancel();
+      _animationTimer = null;
+      await _diceWebViewController.finishRoll(request.requestId);
       if (!mounted) {
         return;
       }
-      ref.read(diceRollProvider.notifier).timeoutAnimation(request.requestId);
+      ref.read(diceRollProvider.notifier).completeAnimation(request.requestId);
     });
   }
 

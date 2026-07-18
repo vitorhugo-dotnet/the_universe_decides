@@ -33,6 +33,16 @@ class DiceWebViewController {
 
   Future<void> resume() => _runBridgeMethod('resume');
 
+  Future<void> finishRoll(String requestId) async {
+    if (requestId != _activeRequestId || !_isReady || _runJavaScript == null) {
+      return;
+    }
+
+    await _runJavaScript!(
+      'window.DiceBridge.finish(${jsonEncode(requestId)});',
+    );
+  }
+
   Future<void> handleBridgeMessage(String source) async {
     if (_isReadyMessage(source)) {
       _isReady = true;
