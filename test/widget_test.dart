@@ -388,6 +388,94 @@ void main() {
     expect(find.text('About'), findsWidgets);
   });
 
+  testWidgets('app shows spanish labels for es locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('es'));
+
+    expect(find.text('Moneda'), findsWidgets);
+    expect(find.text('Cartas'), findsOneWidget);
+    expect(find.text('Lanzar moneda'), findsOneWidget);
+    expect(find.text('Acerca'), findsWidgets);
+  });
+
+  testWidgets('app shows hindi labels for hi locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('hi'));
+
+    expect(find.text('सिक्का'), findsWidgets);
+    expect(find.text('कार्ड्स'), findsOneWidget);
+    expect(find.text('सिक्का उछालें'), findsOneWidget);
+    expect(find.text('परिचय'), findsWidgets);
+  });
+
+  testWidgets('app shows german labels for de locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('de'));
+
+    expect(find.text('Münze'), findsWidgets);
+    expect(find.text('Karten'), findsOneWidget);
+    expect(find.text('Münze werfen'), findsOneWidget);
+    expect(find.text('Über'), findsWidgets);
+  });
+
+  testWidgets('app shows turkish labels for tr locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('tr'));
+
+    expect(find.text('Para'), findsWidgets);
+    expect(find.text('Kartlar'), findsOneWidget);
+    expect(find.text('Parayı çevir'), findsOneWidget);
+    expect(find.text('Hakkında'), findsWidgets);
+  });
+
+  testWidgets('app shows italian labels for it locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('it'));
+
+    expect(find.text('Moneta'), findsWidgets);
+    expect(find.text('Carte'), findsOneWidget);
+    expect(find.text('Lancia una moneta'), findsOneWidget);
+    expect(find.text('Info'), findsWidgets);
+  });
+
+  testWidgets('app shows french labels for fr locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('fr'));
+
+    expect(find.text('Pièce'), findsWidgets);
+    expect(find.text('Cartes'), findsOneWidget);
+    expect(find.text('Lancer une pièce'), findsOneWidget);
+    expect(find.text('À propos'), findsWidgets);
+  });
+
+  testWidgets('app shows ukrainian labels for uk locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('uk'));
+
+    expect(find.text('Монета'), findsWidgets);
+    expect(find.text('Карти'), findsOneWidget);
+    expect(find.text('Підкинути монету'), findsOneWidget);
+    expect(find.text('Про додаток'), findsWidgets);
+  });
+
+  testWidgets('app falls back to english for an unsupported locale', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('ja'));
+
+    expect(find.text('Coin'), findsWidgets);
+    expect(find.text('Cards'), findsOneWidget);
+    expect(find.text('Flip a coin'), findsOneWidget);
+    expect(find.text('About'), findsWidgets);
+  });
+
   testWidgets(
     'app shows acrylic fallback notice when random.org is unavailable',
     (WidgetTester tester) async {
@@ -432,6 +520,35 @@ Future<void> _tapVisible(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
   await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _pumpLocalizedApp(WidgetTester tester, Locale locale) async {
+  tester.binding.platformDispatcher.localesTestValue = [locale];
+  addTearDown(tester.binding.platformDispatcher.clearLocalesTestValue);
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        randomOrgServiceProvider.overrideWith(
+          (ref) => _FakeRandomOrgService(const []),
+        ),
+        githubProfileServiceProvider.overrideWith(
+          (ref) => _FakeGitHubProfileService(
+            const GitHubProfile(
+              login: 'vitorhugo-dotnet',
+              avatarUrl: '',
+              name: 'Vitor Hugo',
+            ),
+          ),
+        ),
+        quickAccessServiceProvider.overrideWith(
+          (ref) => _FakeQuickAccessService(),
+        ),
+      ],
+      child: const UniverseDecidesApp(),
+    ),
+  );
   await tester.pumpAndSettle();
 }
 
