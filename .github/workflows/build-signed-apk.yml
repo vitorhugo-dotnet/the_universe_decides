@@ -142,12 +142,23 @@ jobs:
           mv dist/app-release.apk "dist/the-universe-decides-${{ steps.version.outputs.tag }}.apk"
           mv dist/app-release.aab "dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab"
 
+      - name: Extract changelog for this release
+        run: |
+          NOTES_FILE="dist/release-notes.md"
+          awk '/^## Unreleased/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md > "$NOTES_FILE" || true
+          if [ ! -s "$NOTES_FILE" ] || ! grep -q '[^[:space:]]' "$NOTES_FILE"; then
+            echo "No CHANGELOG.md '## Unreleased' entry found; falling back to a minimal note." >&2
+            echo "See CHANGELOG.md for release notes." > "$NOTES_FILE"
+          fi
+          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
+        id: changelog
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
+          body_path: ${{ steps.changelog.outputs.notes_file }}
           files: |
             dist/the-universe-decides-${{ steps.version.outputs.tag }}.apk
             dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab
-          generate_release_notes: true

@@ -14,7 +14,14 @@ This repository publishes the Android Flutter app to Google Play testing tracks 
 - The Play deploy workflow builds `build/app/outputs/bundle/release/app-release.aab` with `flutter build appbundle --release`.
 - The Android `versionCode` is calculated as `ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER`.
 - The default offset is `100000`, which avoids accidentally generating a lower versionCode than previous local/manual builds.
-- Metadata, images, screenshots, and changelogs are intentionally skipped. The workflow uploads only the binary.
+- Metadata, images, screenshots, and Google Play changelogs are intentionally skipped (`--skip_upload_changelogs true` etc. in `android-play-deploy.yml`) — the Play deploy workflow uploads only the binary. Play Store "What's new" text is still pasted into Play Console by hand from `CHANGELOG.md`.
+- The GitHub Release published by `.github/workflows/build-signed-apk.yml`'s `release` job *does* use `CHANGELOG.md`: it extracts the `## Unreleased` section as the release body (see "GitHub Release changelog" below). If that section is empty, it falls back to a one-line pointer to `CHANGELOG.md`.
+
+## GitHub Release changelog
+
+`CHANGELOG.md` at the repo root has one `## Unreleased` section with a subsection per locale the app supports (`### en`, `### pt (Português)`, etc. — see `CLAUDE.md` for the convention). The `release` job in `build-signed-apk.yml` extracts everything between `## Unreleased` and the next `## ` heading (or end of file) and passes it to `softprops/action-gh-release@v2` via `body_path`, so it becomes the GitHub Release description as-is.
+
+This repo does not currently rotate `## Unreleased` into a dated/versioned heading after a release ships — `CHANGELOG.md` is meant to be kept current by each PR (per `CLAUDE.md`), and after a release goes out, a maintainer should manually rename `## Unreleased` to something like `## v1.4.0+100123` and start a fresh empty `## Unreleased` section for the next round of PRs. Automating that rotation would mean the release workflow committing back to `master`, which was deliberately left out of scope here to avoid adding a write-back step to the release pipeline.
 
 ## Google Play tracks
 
