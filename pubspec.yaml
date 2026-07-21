@@ -22,6 +22,7 @@ dependencies:
   webview_flutter: ^4.14.1
   audioplayers: ^6.7.1
   shared_preferences: ^2.5.4
+  flame: ^1.38.0
 
 dev_dependencies:
   flutter_test:
