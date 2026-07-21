@@ -20,6 +20,11 @@ class CardDrawScreen extends ConsumerStatefulWidget {
 }
 
 class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
+  // Matches the AnimatedSwitcher's flip duration below: haptic and sound
+  // must land when the card is visually face-up, not when the network
+  // result arrives.
+  static const _flipDuration = Duration(milliseconds: 800);
+
   int _flipCount = 0;
 
   Future<void> _drawCard() async {
@@ -27,10 +32,17 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
     if (ref.read(cardDrawProvider).isLoading) {
       return;
     }
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
     setState(() => _flipCount++);
     await controller.drawCard();
     if (!mounted) {
       return;
+    }
+    if (!reduceMotion) {
+      await Future.delayed(_flipDuration);
+      if (!mounted) {
+        return;
+      }
     }
     HapticFeedback.mediumImpact();
     ref.read(soundEffectsProvider.notifier).playDecision();
@@ -41,6 +53,7 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(cardDrawProvider);
     final cardKey = ValueKey<int>(_flipCount);
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
@@ -58,7 +71,7 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
               width: 210,
               height: 296,
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 800),
+                duration: reduceMotion ? Duration.zero : _flipDuration,
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
                 layoutBuilder: (currentChild, previousChildren) => Stack(

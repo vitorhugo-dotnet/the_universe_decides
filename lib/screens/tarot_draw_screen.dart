@@ -124,6 +124,13 @@ class TarotDrawScreen extends ConsumerWidget {
                 ? null
                 : () async {
                     await controller.drawCard();
+                    // Wait for the flip reveal so haptic and sound land when
+                    // the card is actually face-up, matching the physics of
+                    // the other decision screens.
+                    await Future.delayed(animationDuration);
+                    if (!context.mounted) {
+                      return;
+                    }
                     HapticFeedback.mediumImpact();
                     ref.read(soundEffectsProvider.notifier).playDecision();
                   },

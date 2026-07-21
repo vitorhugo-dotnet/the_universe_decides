@@ -164,7 +164,6 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     _phaseStart = _now;
     _impactFired = false;
     setState(() {});
-    unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
   }
 
   /// Smallest rotation continuing in [dir] that is >= [minTurn] beyond [from]
@@ -190,6 +189,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   void _fireImpact() {
     _impact.forward(from: 0);
     HapticFeedback.mediumImpact();
+    unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
   }
 
   void _endFlight() {
@@ -263,6 +263,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
       _revealed = true;
     });
     HapticFeedback.selectionClick();
+    unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
   }
 
   // --- drag -------------------------------------------------------------------
