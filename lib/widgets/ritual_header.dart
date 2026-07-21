@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:theuniversedecides/minigame/entropy_drift_unlock_glyph.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 
 /// Screen header from the prototype: a Fraunces-style italic eyebrow, a bold
@@ -23,15 +24,20 @@ class RitualHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          eyebrow,
-          style: const TextStyle(
-            fontFamily: 'serif',
-            fontStyle: FontStyle.italic,
-            fontSize: 13,
-            letterSpacing: 0.8,
-            color: AppColors.textDim,
-          ),
+        Row(
+          children: [
+            const EntropyDriftUnlockGlyph(),
+            Text(
+              eyebrow,
+              style: const TextStyle(
+                fontFamily: 'serif',
+                fontStyle: FontStyle.italic,
+                fontSize: 13,
+                letterSpacing: 0.8,
+                color: AppColors.textDim,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 6),
         Text(
