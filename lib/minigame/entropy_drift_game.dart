@@ -47,11 +47,18 @@ class EntropyDriftGame extends FlameGame with HasCollisionDetection {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    _star = PlayerStarComponent(startPosition: size / 2);
+    _star = PlayerStarComponent(startPosition: size / 2, clampBounds: size);
     await world.addAll([
       PlayfieldDragArea(star: _star)..size = size,
       _star,
     ]);
+  }
+
+  @override
+  void onRemove() {
+    score.dispose();
+    isGameOver.dispose();
+    super.onRemove();
   }
 
   @override
@@ -156,7 +163,7 @@ class EntropyDriftGame extends FlameGame with HasCollisionDetection {
     _fragmentInterval = 2.2;
     _speedMultiplier = 1;
     _nextDifficultyBump = _difficultyStep;
-    _star = PlayerStarComponent(startPosition: size / 2);
+    _star = PlayerStarComponent(startPosition: size / 2, clampBounds: size);
     world.addAll([
       PlayfieldDragArea(star: _star)..size = size,
       _star,

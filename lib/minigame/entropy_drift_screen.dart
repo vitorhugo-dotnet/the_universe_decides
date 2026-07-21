@@ -145,7 +145,7 @@ class _GameOverOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final highScore = ref.watch(entropyDriftHighScoreProvider);
-    final isNewHighScore = score >= highScore && score > 0;
+    final isNewHighScore = score > highScore;
 
     return Positioned.fill(
       child: ColoredBox(

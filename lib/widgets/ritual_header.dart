@@ -27,14 +27,16 @@ class RitualHeader extends StatelessWidget {
         Row(
           children: [
             const EntropyDriftUnlockGlyph(),
-            Text(
-              eyebrow,
-              style: const TextStyle(
-                fontFamily: 'serif',
-                fontStyle: FontStyle.italic,
-                fontSize: 13,
-                letterSpacing: 0.8,
-                color: AppColors.textDim,
+            Flexible(
+              child: Text(
+                eyebrow,
+                style: const TextStyle(
+                  fontFamily: 'serif',
+                  fontStyle: FontStyle.italic,
+                  fontSize: 13,
+                  letterSpacing: 0.8,
+                  color: AppColors.textDim,
+                ),
               ),
             ),
           ],
