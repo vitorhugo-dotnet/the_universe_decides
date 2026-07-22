@@ -185,11 +185,42 @@ class AppLocalizationsDe extends AppLocalizations {
       'Warum die App pseudozufällige Zahlen vermeidet';
 
   @override
+  String get aboutHistoryCardTitle => 'Letzte Ergebnisse';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Deine letzten Ergebnisse ansehen';
+
+  @override
   String get aboutProfileLoadError =>
       'Das Profil konnte gerade nicht geladen werden.';
 
   @override
   String get aboutRetryButton => 'Erneut versuchen';
+
+  @override
+  String get historyTitle => 'Letzte Ergebnisse';
+
+  @override
+  String get historyEmptyState => 'Deine letzten Ergebnisse erscheinen hier.';
+
+  @override
+  String get historyClearButton => 'Verlauf löschen';
+
+  @override
+  String get historyClearDialogTitle => 'Verlauf löschen?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Dadurch werden alle letzten Ergebnisse von diesem Gerät entfernt. Das kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get historyClearDialogCancel => 'Abbrechen';
+
+  @override
+  String get historyClearDialogConfirm => 'Löschen';
+
+  @override
+  String get historyClearedSnackbar => 'Verlauf gelöscht.';
 
   @override
   String get quickTileCoinAdded => 'Münz-Verknüpfung zum Panel hinzugefügt.';

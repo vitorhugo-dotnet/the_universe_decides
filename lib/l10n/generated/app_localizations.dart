@@ -436,6 +436,18 @@ abstract class AppLocalizations {
   /// **'Why the app avoids pseudo-random numbers'**
   String get aboutRandomnessCardSubtitle;
 
+  /// No description provided for @aboutHistoryCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent results'**
+  String get aboutHistoryCardTitle;
+
+  /// No description provided for @aboutHistoryCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your last outcomes'**
+  String get aboutHistoryCardSubtitle;
+
   /// No description provided for @aboutProfileLoadError.
   ///
   /// In en, this message translates to:
@@ -447,6 +459,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get aboutRetryButton;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent History'**
+  String get historyTitle;
+
+  /// No description provided for @historyEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent results will appear here.'**
+  String get historyEmptyState;
+
+  /// No description provided for @historyClearButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get historyClearButton;
+
+  /// No description provided for @historyClearDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history?'**
+  String get historyClearDialogTitle;
+
+  /// No description provided for @historyClearDialogMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes all recent results from this device. This can\'t be undone.'**
+  String get historyClearDialogMessage;
+
+  /// No description provided for @historyClearDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get historyClearDialogCancel;
+
+  /// No description provided for @historyClearDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get historyClearDialogConfirm;
+
+  /// No description provided for @historyClearedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared.'**
+  String get historyClearedSnackbar;
 
   /// No description provided for @quickTileCoinAdded.
   ///

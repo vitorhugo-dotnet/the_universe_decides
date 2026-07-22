@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/card_draw_controller.dart';
+import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
@@ -46,6 +48,17 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
     }
     HapticFeedback.mediumImpact();
     ref.read(soundEffectsProvider.notifier).playDecision();
+    final card = ref.read(cardDrawProvider).card;
+    if (card != null) {
+      unawaited(
+        ref
+            .read(resultsHistoryProvider.notifier)
+            .addEntry(
+              modality: HistoryModality.cards,
+              resultLabel: card.shortLabel,
+            ),
+      );
+    }
   }
 
   @override

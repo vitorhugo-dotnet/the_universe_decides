@@ -181,10 +181,41 @@ class AppLocalizationsTr extends AppLocalizations {
       'Uygulama neden sözde rastgele sayılardan kaçınır';
 
   @override
+  String get aboutHistoryCardTitle => 'Son sonuçlar';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Son sonuçlarını gözden geçir';
+
+  @override
   String get aboutProfileLoadError => 'Profil şu anda yüklenemedi.';
 
   @override
   String get aboutRetryButton => 'Tekrar dene';
+
+  @override
+  String get historyTitle => 'Son Geçmiş';
+
+  @override
+  String get historyEmptyState => 'Son sonuçların burada görünecek.';
+
+  @override
+  String get historyClearButton => 'Geçmişi temizle';
+
+  @override
+  String get historyClearDialogTitle => 'Geçmiş temizlensin mi?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Bu, bu cihazdaki tüm son sonuçları kaldırır. Bu işlem geri alınamaz.';
+
+  @override
+  String get historyClearDialogCancel => 'İptal';
+
+  @override
+  String get historyClearDialogConfirm => 'Temizle';
+
+  @override
+  String get historyClearedSnackbar => 'Geçmiş temizlendi.';
 
   @override
   String get quickTileCoinAdded => 'Para kısayolu panele eklendi.';
