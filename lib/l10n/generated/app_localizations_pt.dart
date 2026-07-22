@@ -208,11 +208,42 @@ class AppLocalizationsPt extends AppLocalizations {
       'Por que o app não usa números pseudoaleatórios';
 
   @override
+  String get aboutHistoryCardTitle => 'Resultados recentes';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Reveja seus últimos resultados';
+
+  @override
   String get aboutProfileLoadError =>
       'Não foi possível carregar o perfil agora.';
 
   @override
   String get aboutRetryButton => 'Tentar novamente';
+
+  @override
+  String get historyTitle => 'Histórico Recente';
+
+  @override
+  String get historyEmptyState => 'Seus resultados recentes vão aparecer aqui.';
+
+  @override
+  String get historyClearButton => 'Limpar histórico';
+
+  @override
+  String get historyClearDialogTitle => 'Limpar histórico?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Isso remove todos os resultados recentes deste dispositivo. Essa ação não pode ser desfeita.';
+
+  @override
+  String get historyClearDialogCancel => 'Cancelar';
+
+  @override
+  String get historyClearDialogConfirm => 'Limpar';
+
+  @override
+  String get historyClearedSnackbar => 'Histórico limpo.';
 
   @override
   String get quickTileCoinAdded => 'Atalho da moeda adicionado ao painel.';

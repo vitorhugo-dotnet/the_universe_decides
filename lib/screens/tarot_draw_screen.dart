@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/tarot_draw_controller.dart';
+import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
@@ -133,6 +135,17 @@ class TarotDrawScreen extends ConsumerWidget {
                     }
                     HapticFeedback.mediumImpact();
                     ref.read(soundEffectsProvider.notifier).playDecision();
+                    final card = ref.read(tarotDrawProvider).card;
+                    if (card != null) {
+                      unawaited(
+                        ref
+                            .read(resultsHistoryProvider.notifier)
+                            .addEntry(
+                              modality: HistoryModality.tarot,
+                              resultLabel: card.title,
+                            ),
+                      );
+                    }
                   },
             maxWidth: double.infinity,
           ),

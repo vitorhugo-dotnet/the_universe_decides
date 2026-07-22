@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
+import 'package:theuniversedecides/screens/results_history_screen.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
@@ -146,6 +147,18 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
           ),
           const SizedBox(height: 24),
           _RandomnessCard(
+            icon: Icons.history,
+            title: l10n.aboutHistoryCardTitle,
+            subtitle: l10n.aboutHistoryCardSubtitle,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const ResultsHistoryScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _RandomnessCard(
+            icon: Icons.auto_awesome,
             title: l10n.aboutRandomnessCardTitle,
             subtitle: l10n.aboutRandomnessCardSubtitle,
             onTap: () => showHowRandomnessSheet(context),
@@ -457,11 +470,13 @@ class _ShortcutButton extends StatelessWidget {
 
 class _RandomnessCard extends StatelessWidget {
   const _RandomnessCard({
+    required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
+  final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -490,11 +505,7 @@ class _RandomnessCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.runePurple.withValues(alpha: 0.7),
                 ),
-                child: const Icon(
-                  Icons.auto_awesome,
-                  size: 16,
-                  color: Colors.white,
-                ),
+                child: Icon(icon, size: 16, color: Colors.white),
               ),
               const SizedBox(width: 12),
               Expanded(

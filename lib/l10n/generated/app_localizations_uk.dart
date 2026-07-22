@@ -214,10 +214,41 @@ class AppLocalizationsUk extends AppLocalizations {
       'Чому застосунок уникає псевдовипадкових чисел';
 
   @override
+  String get aboutHistoryCardTitle => 'Останні результати';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Перегляньте свої останні результати';
+
+  @override
   String get aboutProfileLoadError => 'Наразі не вдалося завантажити профіль.';
 
   @override
   String get aboutRetryButton => 'Спробувати ще раз';
+
+  @override
+  String get historyTitle => 'Останні результати';
+
+  @override
+  String get historyEmptyState => 'Ваші останні результати з\'являться тут.';
+
+  @override
+  String get historyClearButton => 'Очистити історію';
+
+  @override
+  String get historyClearDialogTitle => 'Очистити історію?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Це видалить усі останні результати з цього пристрою. Цю дію не можна скасувати.';
+
+  @override
+  String get historyClearDialogCancel => 'Скасувати';
+
+  @override
+  String get historyClearDialogConfirm => 'Очистити';
+
+  @override
+  String get historyClearedSnackbar => 'Історію очищено.';
 
   @override
   String get quickTileCoinAdded => 'Ярлик монети додано на панель.';

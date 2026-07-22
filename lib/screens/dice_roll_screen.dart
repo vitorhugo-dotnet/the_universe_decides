@@ -11,6 +11,7 @@ import 'package:theuniversedecides/dice/dice_roll_request.dart';
 import 'package:theuniversedecides/dice/dice_web_view.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
+import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
 import 'package:theuniversedecides/widgets/ritual_header.dart';
@@ -99,6 +100,25 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
     messenger?.showSnackBar(SnackBar(content: Text(error)));
   }
 
+  /// Records a finished roll using the same notation and total shown in the
+  /// result caption below the dice, e.g. "2d6: 3 + 5 = 8" or "1d20: Total: 14".
+  void _recordHistory(AppLocalizations l10n, DiceRollState state) {
+    final notation =
+        state.rollRequest?.notation ??
+        '${state.diceCount}d${state.selectedSides}';
+    final resultsText = state.results.length > 1
+        ? '${state.results.join(' + ')} = ${state.total}'
+        : l10n.diceTotal(state.total);
+    unawaited(
+      ref
+          .read(resultsHistoryProvider.notifier)
+          .addEntry(
+            modality: HistoryModality.dice,
+            resultLabel: '$notation: $resultsText',
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -117,6 +137,14 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
       if (next.animationError != null &&
           next.animationError != previous?.animationError) {
         _showAnimationError(next.animationError!);
+      }
+      // Covers both a normal animation finish and a forced timeout
+      // completion: either way, a real result was produced and belongs in
+      // the history.
+      if ((previous?.isRolling ?? false) &&
+          !next.isRolling &&
+          next.results.isNotEmpty) {
+        _recordHistory(l10n, next);
       }
     });
     ref.listen<int>(diceQuickAccessTriggerProvider, (previous, next) {

@@ -208,10 +208,41 @@ class AppLocalizationsEn extends AppLocalizations {
       'Why the app avoids pseudo-random numbers';
 
   @override
+  String get aboutHistoryCardTitle => 'Recent results';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Review your last outcomes';
+
+  @override
   String get aboutProfileLoadError => 'Could not load the profile right now.';
 
   @override
   String get aboutRetryButton => 'Try again';
+
+  @override
+  String get historyTitle => 'Recent History';
+
+  @override
+  String get historyEmptyState => 'Your recent results will appear here.';
+
+  @override
+  String get historyClearButton => 'Clear history';
+
+  @override
+  String get historyClearDialogTitle => 'Clear history?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'This removes all recent results from this device. This can\'t be undone.';
+
+  @override
+  String get historyClearDialogCancel => 'Cancel';
+
+  @override
+  String get historyClearDialogConfirm => 'Clear';
+
+  @override
+  String get historyClearedSnackbar => 'History cleared.';
 
   @override
   String get quickTileCoinAdded => 'Coin shortcut added to the panel.';

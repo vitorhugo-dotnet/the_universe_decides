@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:theuniversedecides/controllers/coin_flip_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
+import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_background.dart';
@@ -251,6 +252,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     if (!mounted) return;
     _pendingResult = ref.read(coinFlipProvider).result ?? 0;
     _resultReady = true;
+    _recordHistory(_pendingResult!);
   }
 
   Future<void> _launchReduced() async {
@@ -264,6 +266,20 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     });
     HapticFeedback.selectionClick();
     unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
+    _recordHistory(result);
+  }
+
+  /// Records the completed flip in the results history. Reuses the same
+  /// heads/tails label the result banner shows, so the history stays in the
+  /// language the flip was made in.
+  void _recordHistory(int result) {
+    final l10n = AppLocalizations.of(context)!;
+    final label = result == 0 ? l10n.coinHeads : l10n.coinTails;
+    unawaited(
+      ref
+          .read(resultsHistoryProvider.notifier)
+          .addEntry(modality: HistoryModality.coin, resultLabel: label),
+    );
   }
 
   // --- drag -------------------------------------------------------------------

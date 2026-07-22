@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/list_picker_controller.dart';
 import 'package:theuniversedecides/screens/list_picker_wheel_view.dart';
+import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
@@ -71,6 +74,14 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
           next.selectedIndex != previous?.selectedIndex) {
         HapticFeedback.mediumImpact();
         ref.read(soundEffectsProvider.notifier).playDecision();
+        unawaited(
+          ref
+              .read(resultsHistoryProvider.notifier)
+              .addEntry(
+                modality: HistoryModality.list,
+                resultLabel: next.items[next.selectedIndex!],
+              ),
+        );
       }
     });
 

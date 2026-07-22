@@ -210,10 +210,41 @@ class AppLocalizationsHi extends AppLocalizations {
       'ऐप छद्म-यादृच्छिक संख्याओं से क्यों बचता है';
 
   @override
+  String get aboutHistoryCardTitle => 'हाल के परिणाम';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'अपने पिछले परिणाम देखें';
+
+  @override
   String get aboutProfileLoadError => 'अभी प्रोफ़ाइल लोड नहीं हो सकी।';
 
   @override
   String get aboutRetryButton => 'फिर से प्रयास करें';
+
+  @override
+  String get historyTitle => 'हाल का इतिहास';
+
+  @override
+  String get historyEmptyState => 'आपके हाल के परिणाम यहाँ दिखेंगे।';
+
+  @override
+  String get historyClearButton => 'इतिहास साफ़ करें';
+
+  @override
+  String get historyClearDialogTitle => 'इतिहास साफ़ करें?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'इससे इस डिवाइस से सभी हाल के परिणाम हट जाएंगे। इसे पूर्ववत नहीं किया जा सकता।';
+
+  @override
+  String get historyClearDialogCancel => 'रद्द करें';
+
+  @override
+  String get historyClearDialogConfirm => 'साफ़ करें';
+
+  @override
+  String get historyClearedSnackbar => 'इतिहास साफ़ हो गया।';
 
   @override
   String get quickTileCoinAdded => 'सिक्का शॉर्टकट पैनल में जोड़ा गया।';

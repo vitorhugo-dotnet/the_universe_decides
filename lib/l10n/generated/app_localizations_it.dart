@@ -210,11 +210,42 @@ class AppLocalizationsIt extends AppLocalizations {
       'Perché l\'app evita i numeri pseudocasuali';
 
   @override
+  String get aboutHistoryCardTitle => 'Risultati recenti';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Rivedi i tuoi ultimi risultati';
+
+  @override
   String get aboutProfileLoadError =>
       'Al momento non è stato possibile caricare il profilo.';
 
   @override
   String get aboutRetryButton => 'Riprova';
+
+  @override
+  String get historyTitle => 'Cronologia Recente';
+
+  @override
+  String get historyEmptyState => 'I tuoi risultati recenti appariranno qui.';
+
+  @override
+  String get historyClearButton => 'Cancella cronologia';
+
+  @override
+  String get historyClearDialogTitle => 'Cancellare la cronologia?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Questo rimuove tutti i risultati recenti da questo dispositivo. Questa azione non può essere annullata.';
+
+  @override
+  String get historyClearDialogCancel => 'Annulla';
+
+  @override
+  String get historyClearDialogConfirm => 'Cancella';
+
+  @override
+  String get historyClearedSnackbar => 'Cronologia cancellata.';
 
   @override
   String get quickTileCoinAdded =>
