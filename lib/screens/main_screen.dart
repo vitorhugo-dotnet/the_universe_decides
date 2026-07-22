@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
+import 'package:theuniversedecides/minigame/entropy_drift_screen.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
@@ -26,6 +28,7 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0;
+  bool _isOpeningEntropyDrift = false;
   late final StreamSubscription<QuickAccessAction> _quickAccessSubscription;
   late final StreamSubscription<RandomOrgFallbackEvent>
   _randomOrgFallbackSubscription;
@@ -96,6 +99,24 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     });
   }
 
+  Future<void> _openEntropyDrift(int _) async {
+    if (_isOpeningEntropyDrift || !mounted) {
+      return;
+    }
+    _isOpeningEntropyDrift = true;
+    unawaited(HapticFeedback.selectionClick());
+    if (!mounted) {
+      return;
+    }
+    await Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (_) => const EntropyDriftScreen(),
+      ),
+    );
+    _isOpeningEntropyDrift = false;
+  }
+
   @override
   void dispose() {
     _quickAccessSubscription.cancel();
@@ -141,6 +162,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                       _selectedIndex = index;
                     });
                   },
+                  onLongPress: _openEntropyDrift,
                 ),
               ],
             ),

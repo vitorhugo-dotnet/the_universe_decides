@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/minigame/entropy_drift_engine.dart';
 import 'package:theuniversedecides/minigame/entropy_drift_high_score_service.dart';
+import 'package:theuniversedecides/minigame/entropy_drift_play_games_service.dart';
 import 'package:theuniversedecides/minigame/entropy_drift_strings.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
@@ -36,15 +37,15 @@ class _EntropyDriftScreenState extends ConsumerState<EntropyDriftScreen>
       onFragmentCollected: _handleFragmentCollected,
     );
     _engine.isGameOver.addListener(_handleGameOverChanged);
+    ref.read(entropyDriftPlayGamesProvider).authenticateOnGameOpen();
+    ref.read(entropyDriftPlayGamesProvider).startRun();
     // A repeating controller is used purely as a per-frame clock; its value is
     // ignored. Advancing the simulation off wall-clock deltas keeps physics
     // independent of frame rate.
-    _clock = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )
-      ..addListener(_onFrame)
-      ..repeat();
+    _clock =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1))
+          ..addListener(_onFrame)
+          ..repeat();
   }
 
   @override
@@ -62,7 +63,8 @@ class _EntropyDriftScreenState extends ConsumerState<EntropyDriftScreen>
     if (last == null) {
       return;
     }
-    var dt = now.difference(last).inMicroseconds / Duration.microsecondsPerSecond;
+    var dt =
+        now.difference(last).inMicroseconds / Duration.microsecondsPerSecond;
     if (dt > 0.05) {
       dt = 0.05;
     }
@@ -86,9 +88,17 @@ class _EntropyDriftScreenState extends ConsumerState<EntropyDriftScreen>
     ref
         .read(entropyDriftHighScoreProvider.notifier)
         .submitScore(_engine.score.value);
+    ref
+        .read(entropyDriftPlayGamesProvider)
+        .completeRun(
+          score: _engine.score.value,
+          survivalDuration: _engine.survivalDuration,
+          fragmentsCollected: _engine.fragmentsCollected,
+        );
   }
 
   void _restart() {
+    ref.read(entropyDriftPlayGamesProvider).startRun();
     _engine.restart();
     _lastTick = null;
     if (!_clock.isAnimating) {
@@ -163,6 +173,9 @@ class _EntropyDriftScreenState extends ConsumerState<EntropyDriftScreen>
                   strings: strings,
                   score: _engine.score.value,
                   onPlayAgain: _restart,
+                  onShowLeaderboard: ref
+                      .read(entropyDriftPlayGamesProvider)
+                      .showLeaderboard,
                 ),
             ],
           );
@@ -291,7 +304,10 @@ class _ScoreBadge extends StatelessWidget {
       ),
       child: Text(
         '$label: $value',
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -302,11 +318,13 @@ class _GameOverOverlay extends ConsumerWidget {
     required this.strings,
     required this.score,
     required this.onPlayAgain,
+    required this.onShowLeaderboard,
   });
 
   final EntropyDriftStrings strings;
   final int score;
   final VoidCallback onPlayAgain;
+  final VoidCallback onShowLeaderboard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -349,6 +367,12 @@ class _GameOverOverlay extends ConsumerWidget {
                 const SizedBox(height: 28),
                 RitualButton(label: strings.playAgain, onPressed: onPlayAgain),
                 const SizedBox(height: 12),
+                IconButton(
+                  tooltip: strings.leaderboard,
+                  onPressed: onShowLeaderboard,
+                  icon: const Icon(Icons.emoji_events, color: AppColors.gold1),
+                ),
+                const SizedBox(height: 4),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
