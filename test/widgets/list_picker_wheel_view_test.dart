@@ -150,6 +150,41 @@ void main() {
     expect(client.requestCount, 0);
   });
 
+  testWidgets('tapping a transparent corner does not request a winner', (
+    tester,
+  ) async {
+    final client = _PendingClient();
+    final container = _containerFor(client);
+    addTearDown(container.dispose);
+    container.read(listPickerProvider.notifier).addItem('A, B, C');
+    await _pumpWheel(tester, container);
+
+    final dial = find.byKey(const ValueKey('list-wheel-dial'));
+    await tester.tapAt(tester.getTopLeft(dial) + const Offset(5, 5));
+    await tester.pump();
+
+    expect(client.requestCount, 0);
+  });
+
+  testWidgets('below-slop movement in a transparent corner does not spin', (
+    tester,
+  ) async {
+    final client = _PendingClient();
+    final container = _containerFor(client);
+    addTearDown(container.dispose);
+    container.read(listPickerProvider.notifier).addItem('A, B, C');
+    await _pumpWheel(tester, container);
+
+    final dial = find.byKey(const ValueKey('list-wheel-dial'));
+    final corner = tester.getTopLeft(dial) + const Offset(5, 5);
+    final gesture = await tester.startGesture(corner);
+    await gesture.moveBy(const Offset(2, 2));
+    await gesture.up();
+    await tester.pump();
+
+    expect(client.requestCount, 0);
+  });
+
   testWidgets('crossing the center hub does not create angular momentum', (
     tester,
   ) async {
