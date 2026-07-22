@@ -7,6 +7,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 ## Unreleased
 
 ### en
+- You can now drag and flick the List Draw wheel for a more physical spin. 🎡
 - Fixed the coin screen background to match the Android status bar.
 - List Draw now has a spinning wheel mode — a more visual way to let chance pick from your options. 🎡
 - A small, quiet surprise is hidden somewhere in the app for the curious to find. 🌌
@@ -16,6 +17,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Fixed: duplicate items in custom lists no longer skew the odds.
 
 ### pt (Português)
+- Agora você pode arrastar e lançar a roleta do Sorteio de Lista para um giro mais físico. 🎡
 - Corrigido o fundo da tela da moeda para combinar com a barra de status do Android.
 - O Sorteio de Lista agora tem um modo roleta — uma forma mais visual de deixar o acaso escolher entre suas opções. 🎡
 - Uma pequena surpresa discreta está escondida em algum lugar do app, para quem tiver curiosidade de procurar. 🌌
@@ -25,6 +27,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigido: itens duplicados em listas personalizadas não alteram mais as chances do sorteio.
 
 ### es (Español)
+- Ahora puedes arrastrar e impulsar la ruleta del Sorteo de Lista para un giro más físico. 🎡
 - Corregido el fondo de la pantalla de moneda para que coincida con la barra de estado de Android.
 - El Sorteo de Lista ahora tiene un modo ruleta — una forma más visual de dejar que el azar elija entre tus opciones. 🎡
 - Hay una pequeña sorpresa silenciosa escondida en algún lugar de la app, para quien tenga curiosidad de buscarla. 🌌
@@ -34,6 +37,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corregido: los elementos duplicados en listas personalizadas ya no alteran las probabilidades del sorteo.
 
 ### de (Deutsch)
+- Du kannst das Glücksrad jetzt ziehen und mit Schwung loslassen, damit es sich natürlicher dreht. 🎡
 - Der Hintergrund der Münzansicht stimmt jetzt mit der Android-Statusleiste überein.
 - Die Listenlosung hat jetzt einen Glücksrad-Modus — eine visuellere Art, den Zufall unter deinen Optionen wählen zu lassen. 🎡
 - Irgendwo in der App versteckt sich eine kleine, stille Überraschung für alle, die neugierig genug sind, sie zu suchen. 🌌
@@ -43,6 +47,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Behoben: doppelte Einträge in eigenen Listen verfälschen die Gewinnchancen nicht mehr.
 
 ### fr (Français)
+- Tu peux maintenant faire glisser et lancer la roue du Tirage de Liste pour une rotation plus naturelle. 🎡
 - Correction du fond de l'écran de la pièce pour l'harmoniser avec la barre d'état Android.
 - Le Tirage de Liste propose désormais un mode roue — une façon plus visuelle de laisser le hasard choisir parmi tes options. 🎡
 - Une petite surprise discrète se cache quelque part dans l'app, pour les curieux qui sauront la chercher. 🌌
@@ -52,6 +57,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigé : les éléments en double dans les listes personnalisées ne faussent plus les probabilités.
 
 ### hi (हिन्दी)
+- अब आप सूची चयन के पहिये को खींचकर झटका दे सकते हैं, ताकि वह अधिक स्वाभाविक रूप से घूमे। 🎡
 - सिक्का स्क्रीन का बैकग्राउंड अब Android स्टेटस बार से मेल खाता है।
 - सूची चयन में अब एक पहिया मोड है — विकल्पों में से संयोग से चुनने का एक अधिक विज़ुअल तरीका। 🎡
 - ऐप में कहीं एक छोटा-सा शांत आश्चर्य छुपा है, जिज्ञासु लोगों के ढूंढने के लिए। 🌌
@@ -61,6 +67,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - ठीक किया गया: कस्टम सूचियों में डुप्लिकेट आइटम अब संभावनाओं को प्रभावित नहीं करते।
 
 ### it (Italiano)
+- Ora puoi trascinare e lanciare la ruota dell'Estrazione da Lista per farla girare in modo più naturale. 🎡
 - Corretto lo sfondo della schermata della moneta per abbinarlo alla barra di stato Android.
 - L'Estrazione da Lista ha ora una modalità ruota — un modo più visivo per lasciare che il caso scelga tra le tue opzioni. 🎡
 - Da qualche parte nell'app si nasconde una piccola sorpresa silenziosa, per chi ha la curiosità di cercarla. 🌌
@@ -70,6 +77,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Risolto: gli elementi duplicati nelle liste personalizzate non alterano più le probabilità.
 
 ### tr (Türkçe)
+- Artık Liste Çekilişi çarkını sürükleyip hızla bırakarak daha doğal bir dönüş başlatabilirsin. 🎡
 - Para ekranının arka planı Android durum çubuğuyla uyumlu hale getirildi.
 - Liste Çekilişi'nde artık bir çark modu var — seçeneklerin arasından şansın seçmesini izlemenin daha görsel bir yolu. 🎡
 - Uygulamanın bir yerinde, arayanlar için küçük ve sessiz bir sürpriz saklı. 🌌
@@ -79,6 +87,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Düzeltildi: özel listelerdeki yinelenen öğeler artık olasılıkları bozmuyor.
 
 ### uk (Українська)
+- Тепер колесо Жеребкування Списку можна перетягнути й розкрутити природним рухом. 🎡
 - Фон екрана монети тепер узгоджено з рядком стану Android.
 - У Жеребкуванні Списку тепер є режим колеса — наочніший спосіб дозволити випадку обрати серед твоїх варіантів. 🎡
 - Десь у застосунку сховано маленький тихий сюрприз — для тих, хто має цікавість його знайти. 🌌

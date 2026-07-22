@@ -30,6 +30,102 @@ void main() {
     });
   });
 
+  group('wheel drag geometry', () {
+    test('calculates pointer angles around the wheel center', () {
+      expect(
+        wheelPointerPositionAngle(
+          position: const math.Point(10, 0),
+          center: const math.Point(0, 0),
+        ),
+        closeTo(0, 1e-9),
+      );
+      expect(
+        wheelPointerPositionAngle(
+          position: const math.Point(0, 10),
+          center: const math.Point(0, 0),
+        ),
+        closeTo(math.pi / 2, 1e-9),
+      );
+    });
+
+    test('keeps angular deltas continuous across the -pi/pi boundary', () {
+      expect(
+        shortestAngularDelta(math.pi - 0.1, -math.pi + 0.1),
+        closeTo(0.2, 1e-9),
+      );
+      expect(
+        shortestAngularDelta(-math.pi + 0.1, math.pi - 0.1),
+        closeTo(-0.2, 1e-9),
+      );
+    });
+
+    test('converts tangential release velocity to angular velocity', () {
+      expect(
+        wheelAngularVelocity(
+          positionFromCenter: const math.Point(100, 0),
+          pixelsPerSecond: const math.Point(0, 500),
+        ),
+        closeTo(5, 1e-9),
+      );
+      expect(
+        wheelAngularVelocity(
+          positionFromCenter: const math.Point(100, 0),
+          pixelsPerSecond: const math.Point(0, -500),
+        ),
+        closeTo(-5, 1e-9),
+      );
+    });
+
+    test('accepts drag samples only in the wheel interaction ring', () {
+      const center = math.Point(120, 140);
+
+      expect(
+        isWheelDragPositionValid(
+          position: const math.Point(210, 140),
+          center: center,
+        ),
+        isTrue,
+      );
+      expect(
+        isWheelDragPositionValid(
+          position: const math.Point(5, 5),
+          center: center,
+        ),
+        isFalse,
+      );
+      expect(
+        isWheelDragPositionValid(
+          position: const math.Point(122, 142),
+          center: center,
+        ),
+        isFalse,
+      );
+    });
+  });
+
+  group('computeWheelFlickProfile', () {
+    test('rejects a release that is too slow', () {
+      expect(computeWheelFlickProfile(angularVelocity: 0.4), isNull);
+    });
+
+    test('preserves direction and scales visual momentum', () {
+      final slow = computeWheelFlickProfile(angularVelocity: 2)!;
+      final fast = computeWheelFlickProfile(angularVelocity: -12)!;
+
+      expect(slow.direction, 1);
+      expect(fast.direction, -1);
+      expect(fast.extraSpins, greaterThan(slow.extraSpins));
+      expect(fast.duration, greaterThan(slow.duration));
+    });
+
+    test('caps extreme flicks to bounded animation values', () {
+      final profile = computeWheelFlickProfile(angularVelocity: 1000)!;
+
+      expect(profile.extraSpins, lessThanOrEqualTo(wheelMaxFlickSpins));
+      expect(profile.duration, lessThanOrEqualTo(wheelMaxFlickDuration));
+    });
+  });
+
   group('computeWheelTargetRotation', () {
     test('lands exactly on the pointer for the winning segment center', () {
       const itemCount = 5;
@@ -91,6 +187,25 @@ void main() {
         currentRotation: 12.3,
       );
       expect(a, b);
+    });
+
+    test('lands on the winner while spinning counter-clockwise', () {
+      const itemCount = 5;
+      final rotation = computeWheelTargetRotation(
+        winnerIndex: 3,
+        itemCount: itemCount,
+        currentRotation: 2.4,
+        extraSpins: 3,
+        direction: -1,
+      );
+      final segment = wheelSegmentAngle(itemCount);
+      final segmentCenter = segment * 3 + segment / 2;
+
+      expect(rotation, lessThan(2.4));
+      expect(
+        normalizeAngle(segmentCenter + rotation),
+        closeTo(wheelPointerAngle, 1e-6),
+      );
     });
   });
 

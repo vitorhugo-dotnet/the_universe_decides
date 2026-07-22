@@ -16,6 +16,18 @@ const double wheelPointerAngle = 3 * math.pi / 2;
 /// Default number of full extra revolutions added purely for visual flair.
 const int wheelDefaultExtraSpins = 4;
 
+/// Smallest release speed that counts as an intentional wheel flick.
+const double wheelMinFlickVelocity = 0.8;
+
+/// Upper bounds keep even extreme pointer velocities comfortable to watch.
+const int wheelMaxFlickSpins = 7;
+const Duration wheelMaxFlickDuration = Duration(milliseconds: 3800);
+
+/// The painted disc radius and a central dead zone where angular motion is
+/// too unstable to infer from a finger position.
+const double wheelDialRadius = 120;
+const double wheelDragDeadZoneRadius = 28;
+
 /// Above this many items, individual segment labels become unreadable no
 /// matter how small the font gets, so labels are hidden and the always
 /// visible item list below the wheel remains the source of full text.
@@ -38,13 +50,95 @@ double normalizeAngle(double angle) {
   return normalized;
 }
 
+/// Angle of [position] around [center], increasing clockwise in Flutter's
+/// screen coordinate system.
+double wheelPointerPositionAngle({
+  required math.Point<num> position,
+  required math.Point<num> center,
+}) {
+  return math.atan2(
+    (position.y - center.y).toDouble(),
+    (position.x - center.x).toDouble(),
+  );
+}
+
+/// Smallest signed turn from [from] to [to], in the range `[-pi, pi]`.
+double shortestAngularDelta(double from, double to) {
+  var delta = normalizeAngle(to - from);
+  if (delta > math.pi) {
+    delta -= 2 * math.pi;
+  }
+  return delta;
+}
+
+/// Converts a linear release velocity into radians per second around the
+/// wheel center using the 2D cross product `r × v / |r|²`.
+double wheelAngularVelocity({
+  required math.Point<num> positionFromCenter,
+  required math.Point<num> pixelsPerSecond,
+}) {
+  final x = positionFromCenter.x.toDouble();
+  final y = positionFromCenter.y.toDouble();
+  final radiusSquared = x * x + y * y;
+  if (radiusSquared == 0) return 0;
+
+  final vx = pixelsPerSecond.x.toDouble();
+  final vy = pixelsPerSecond.y.toDouble();
+  return (x * vy - y * vx) / radiusSquared;
+}
+
+/// Whether a pointer sample is inside the visible wheel but far enough from
+/// its axis for stable angular gesture calculations.
+bool isWheelDragPositionValid({
+  required math.Point<num> position,
+  required math.Point<num> center,
+  double outerRadius = wheelDialRadius,
+  double innerRadius = wheelDragDeadZoneRadius,
+}) {
+  final dx = (position.x - center.x).toDouble();
+  final dy = (position.y - center.y).toDouble();
+  final distanceSquared = dx * dx + dy * dy;
+  return distanceSquared <= outerRadius * outerRadius &&
+      distanceSquared >= innerRadius * innerRadius;
+}
+
+class WheelFlickProfile {
+  const WheelFlickProfile({
+    required this.direction,
+    required this.extraSpins,
+    required this.duration,
+  });
+
+  final int direction;
+  final int extraSpins;
+  final Duration duration;
+}
+
+/// Maps release speed to bounded visual momentum. Returns `null` for a weak
+/// release so accidental drags never trigger a draw.
+WheelFlickProfile? computeWheelFlickProfile({
+  required double angularVelocity,
+}) {
+  final speed = angularVelocity.abs();
+  if (speed < wheelMinFlickVelocity) return null;
+
+  final momentum = (speed / 12).clamp(0.0, 1.0);
+  final extraSpins = 2 + (momentum * (wheelMaxFlickSpins - 2)).round();
+  final durationMs = 2200 + (momentum * 1600).round();
+  return WheelFlickProfile(
+    direction: angularVelocity.isNegative ? -1 : 1,
+    extraSpins: extraSpins,
+    duration: Duration(milliseconds: durationMs),
+  );
+}
+
 /// Computes the absolute rotation (radians, typically several full turns)
 /// the wheel must animate to so [winnerIndex]'s segment center lands under
 /// the fixed pointer ([wheelPointerAngle]).
 ///
-/// Always continues forward from [currentRotation] (never spins backward,
-/// mirroring the coin flip's `_nextCongruent` approach) and layers on
-/// [extraSpins] full revolutions so short hops still feel like a spin.
+/// Continues from [currentRotation] in the requested [direction] (`1` for
+/// clockwise, `-1` for counter-clockwise) and layers on [extraSpins] full
+/// revolutions so short hops still feel like a spin.
 ///
 /// The winner is decided entirely by the caller (via the randomness
 /// service) *before* this is invoked — this function is a one-way, visual
@@ -54,12 +148,14 @@ double computeWheelTargetRotation({
   required int itemCount,
   required double currentRotation,
   int extraSpins = wheelDefaultExtraSpins,
+  int direction = 1,
 }) {
   assert(itemCount > 0, 'itemCount must be positive');
   assert(
     winnerIndex >= 0 && winnerIndex < itemCount,
     'winnerIndex out of range',
   );
+  assert(direction == 1 || direction == -1, 'direction must be 1 or -1');
 
   final segment = wheelSegmentAngle(itemCount);
   final segmentCenter = segment * winnerIndex + segment / 2;
@@ -67,11 +163,13 @@ double computeWheelTargetRotation({
   final currentMod = normalizeAngle(currentRotation);
 
   var delta = desiredMod - currentMod;
-  if (delta <= 0) {
-    delta += 2 * math.pi;
+  if (direction > 0) {
+    if (delta <= 0) delta += 2 * math.pi;
+  } else {
+    if (delta >= 0) delta -= 2 * math.pi;
   }
 
-  return currentRotation + delta + extraSpins * 2 * math.pi;
+  return currentRotation + delta + direction * extraSpins * 2 * math.pi;
 }
 
 /// True when [items] has at least two non-blank entries — the minimum
