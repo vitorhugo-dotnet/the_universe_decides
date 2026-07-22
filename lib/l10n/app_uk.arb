@@ -46,6 +46,15 @@
   "listWheelSpinButton": "Крутити колесо",
   "listWheelHint": "Додайте щонайменше два варіанти, а тоді крутіть.",
   "listWheelSpinAgainHint": "Натисніть «крутити», щоб спробувати ще раз.",
+  "listDuplicateItem": "Цей елемент вже є у списку.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{Пропущено 1 дубльований елемент.} few{Пропущено {count} дубльовані елементи.} many{Пропущено {count} дубльованих елементів.} other{Пропущено {count} дубльованого елемента.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Ритуал Таро",
   "tarotTitle": "Розклад Таро",
   "tarotSubtitle": "Одна карта, розкрита чистим випадком.",

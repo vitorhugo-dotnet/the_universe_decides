@@ -131,6 +131,20 @@ class AppLocalizationsTr extends AppLocalizations {
   String get listWheelSpinAgainHint => 'Tekrar denemek için çevire dokun.';
 
   @override
+  String get listDuplicateItem => 'Bu öğe listede zaten var.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count yinelenen öğe atlandı.',
+      one: '1 yinelenen öğe atlandı.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Tarot Ritüeli';
 
   @override

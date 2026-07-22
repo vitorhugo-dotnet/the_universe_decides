@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/services/random_org_service.dart';
+import 'package:theuniversedecides/utils/list_item_dedup.dart';
 
 const _unset = Object();
 
@@ -47,6 +48,32 @@ class ListPickerState {
   }
 }
 
+/// Outcome of a call to [ListPickerController.addItem], used by the UI to
+/// decide whether (and how) to surface duplicate-item feedback.
+class AddItemOutcome {
+  const AddItemOutcome({
+    required this.addedCount,
+    required this.duplicateCount,
+    required this.candidateCount,
+  });
+
+  /// How many items were actually inserted.
+  final int addedCount;
+
+  /// How many candidates were dropped because they duplicated an existing
+  /// item or an earlier candidate in the same batch.
+  final int duplicateCount;
+
+  /// How many non-blank candidates were parsed from the raw input (before
+  /// deduplication). One candidate means the user was adding a single item
+  /// (no comma-separated batch).
+  final int candidateCount;
+
+  bool get hasDuplicates => duplicateCount > 0;
+
+  bool get isSingleCandidate => candidateCount == 1;
+}
+
 class ListPickerController extends Notifier<ListPickerState> {
   /// Mirrors the reveal cadence from the Claude Design prototype: quick
   /// ticks that quadratically slow down before landing on the result.
@@ -63,21 +90,47 @@ class ListPickerController extends Notifier<ListPickerState> {
     return const ListPickerState();
   }
 
-  void addItem(String value) {
+  /// Parses [value] into one or more comma-separated items (the input is
+  /// never split on spaces, so multi-word items like "Nova York" stay
+  /// intact), then appends only the ones that aren't already present —
+  /// comparing trimmed and case-insensitively while preserving the original
+  /// casing/spacing for display and the original order of survivors.
+  static const _noOpOutcome = AddItemOutcome(
+    addedCount: 0,
+    duplicateCount: 0,
+    candidateCount: 0,
+  );
+
+  AddItemOutcome addItem(String value) {
     if (state.isLoading) {
-      return;
-    }
-    final newItems = value
-        .split(',')
-        .map((item) => item.trim())
-        .where((item) => item.isNotEmpty);
-    if (newItems.isEmpty) {
-      return;
+      return _noOpOutcome;
     }
 
-    state = state.copyWith(
-      items: [...state.items, ...newItems],
-      selectedIndex: null,
+    final candidates = value
+        .split(',')
+        .map(trimListItem)
+        .where((item) => item.isNotEmpty)
+        .toList();
+    if (candidates.isEmpty) {
+      return _noOpOutcome;
+    }
+
+    final deduped = dedupeListItems(
+      candidates: candidates,
+      existingItems: state.items,
+    );
+
+    if (deduped.items.isNotEmpty) {
+      state = state.copyWith(
+        items: [...state.items, ...deduped.items],
+        selectedIndex: null,
+      );
+    }
+
+    return AddItemOutcome(
+      addedCount: deduped.items.length,
+      duplicateCount: deduped.duplicateCount,
+      candidateCount: candidates.length,
     );
   }
 

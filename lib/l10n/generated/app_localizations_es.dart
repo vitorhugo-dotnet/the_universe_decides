@@ -130,6 +130,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get listWheelSpinAgainHint => 'Toca girar para intentarlo de nuevo.';
 
   @override
+  String get listDuplicateItem => 'Este elemento ya existe en la lista.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se omitieron $count elementos duplicados.',
+      one: 'Se omitió 1 elemento duplicado.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Ritual del Tarot';
 
   @override

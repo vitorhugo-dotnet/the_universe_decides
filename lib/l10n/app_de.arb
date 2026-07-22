@@ -46,6 +46,15 @@
   "listWheelSpinButton": "Rad drehen",
   "listWheelHint": "Füge mindestens zwei Optionen hinzu und dreh los.",
   "listWheelSpinAgainHint": "Tippe auf Drehen, um es erneut zu versuchen.",
+  "listDuplicateItem": "Dieser Eintrag ist bereits in der Liste.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 doppelter Eintrag wurde übersprungen.} other{{count} doppelte Einträge wurden übersprungen.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Tarot-Ritual",
   "tarotTitle": "Tarot-Lesung",
   "tarotSubtitle": "Eine Karte, enthüllt durch reinen Zufall.",

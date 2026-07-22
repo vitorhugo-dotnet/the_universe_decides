@@ -46,6 +46,15 @@
   "listWheelSpinButton": "Girar la ruleta",
   "listWheelHint": "Agrega al menos dos opciones y gira.",
   "listWheelSpinAgainHint": "Toca girar para intentarlo de nuevo.",
+  "listDuplicateItem": "Este elemento ya existe en la lista.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{Se omitió 1 elemento duplicado.} other{Se omitieron {count} elementos duplicados.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Ritual del Tarot",
   "tarotTitle": "Lectura de Tarot",
   "tarotSubtitle": "Una carta, revelada por el azar puro.",

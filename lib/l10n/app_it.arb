@@ -46,6 +46,15 @@
   "listWheelSpinButton": "Gira la ruota",
   "listWheelHint": "Aggiungi almeno due opzioni, poi girala.",
   "listWheelSpinAgainHint": "Tocca gira per riprovare.",
+  "listDuplicateItem": "Questo elemento è già presente nella lista.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{È stato ignorato 1 elemento duplicato.} other{Sono stati ignorati {count} elementi duplicati.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Rituale dei Tarocchi",
   "tarotTitle": "Lettura dei Tarocchi",
   "tarotSubtitle": "Una carta, rivelata dal puro caso.",

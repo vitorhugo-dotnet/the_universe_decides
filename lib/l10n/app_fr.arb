@@ -46,6 +46,15 @@
   "listWheelSpinButton": "Faire tourner la roue",
   "listWheelHint": "Ajoute au moins deux options, puis lance la roue.",
   "listWheelSpinAgainHint": "Touche tourner pour réessayer.",
+  "listDuplicateItem": "Cet élément existe déjà dans la liste.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 élément en double a été ignoré.} other{{count} éléments en double ont été ignorés.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Rituel du Tarot",
   "tarotTitle": "Tirage de Tarot",
   "tarotSubtitle": "Une carte, révélée par le pur hasard.",
