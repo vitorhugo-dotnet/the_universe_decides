@@ -116,6 +116,22 @@ class AppLocalizationsUk extends AppLocalizations {
   String get listChosenByUniverse => 'Обрано всесвітом';
 
   @override
+  String get listDuplicateItem => 'Цей елемент вже є у списку.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Пропущено $count дубльованого елемента.',
+      many: 'Пропущено $count дубльованих елементів.',
+      few: 'Пропущено $count дубльовані елементи.',
+      one: 'Пропущено 1 дубльований елемент.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Ритуал Таро';
 
   @override

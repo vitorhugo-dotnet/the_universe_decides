@@ -11,6 +11,7 @@ import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
 import 'package:theuniversedecides/widgets/ritual_header.dart';
+import 'package:theuniversedecides/widgets/snack_bar_custom.dart';
 
 class ListPickerScreen extends ConsumerStatefulWidget {
   const ListPickerScreen({super.key});
@@ -34,9 +35,19 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
     if (ref.read(listPickerProvider).isLoading) {
       return;
     }
-    ref.read(listPickerProvider.notifier).addItem(_controller.text);
+    final outcome = ref
+        .read(listPickerProvider.notifier)
+        .addItem(_controller.text);
     _controller.clear();
     _focusNode.requestFocus();
+
+    if (outcome.hasDuplicates) {
+      final l10n = AppLocalizations.of(context)!;
+      final message = outcome.isSingleCandidate
+          ? l10n.listDuplicateItem
+          : l10n.listDuplicateItemsDiscarded(outcome.duplicateCount);
+      SnackBarCustom.buildErrorMessage(message, context: context);
+    }
   }
 
   @override

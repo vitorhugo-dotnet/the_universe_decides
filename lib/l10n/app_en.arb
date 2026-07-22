@@ -41,6 +41,15 @@
   "listChooseButton": "Let the universe choose",
   "listEmptyState": "Add at least two options to begin.",
   "listChosenByUniverse": "Chosen by the universe",
+  "listDuplicateItem": "This item already exists in the list.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 duplicate item was skipped.} other{{count} duplicate items were skipped.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Tarot Ritual",
   "tarotTitle": "Tarot Reading",
   "tarotSubtitle": "One card, revealed by pure chance.",

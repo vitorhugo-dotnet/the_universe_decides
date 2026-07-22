@@ -41,6 +41,15 @@
   "listChooseButton": "Das Universum entscheiden lassen",
   "listEmptyState": "Füge mindestens zwei Optionen hinzu, um zu beginnen.",
   "listChosenByUniverse": "Vom Universum gewählt",
+  "listDuplicateItem": "Dieser Eintrag ist bereits in der Liste.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 doppelter Eintrag wurde übersprungen.} other{{count} doppelte Einträge wurden übersprungen.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Tarot-Ritual",
   "tarotTitle": "Tarot-Lesung",
   "tarotSubtitle": "Eine Karte, enthüllt durch reinen Zufall.",
