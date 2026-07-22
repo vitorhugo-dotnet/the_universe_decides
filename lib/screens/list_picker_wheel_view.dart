@@ -30,12 +30,17 @@ class ListPickerWheelView extends ConsumerStatefulWidget {
 class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
     with SingleTickerProviderStateMixin {
   static const _spinDuration = Duration(milliseconds: 3200);
+  static const _minimumDragAngle = 0.25;
+  static const _wheelCenter = Offset(120, 140);
 
   late final AnimationController _spinController;
   double _rotation = 0;
   double _animateFrom = 0;
   double _animateTo = 0;
   bool _spinning = false;
+  double? _lastDragAngle;
+  double _dragAngularDistance = 0;
+  Offset _lastDragPosition = Offset.zero;
 
   /// True once *this* wheel instance has produced a result. Kept separate
   /// from `state.selectedIndex` (shared with the classic mode) so switching
@@ -65,7 +70,7 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
     });
   }
 
-  Future<void> _spin() async {
+  Future<void> _spin({WheelFlickProfile? flick}) async {
     final listState = ref.read(listPickerProvider);
     if (_spinning ||
         listState.isLoading ||
@@ -80,11 +85,20 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
       _hasSpunOnce = false;
     });
 
+    if (!reduceMotion && flick != null) {
+      _spinController.duration = const Duration(milliseconds: 700);
+      _animateFrom = _rotation;
+      _animateTo =
+          _rotation + flick.direction * math.pi * 2 * 1.5;
+      _spinController.forward(from: 0);
+    }
+
     final winner = await ref.read(listPickerProvider.notifier).spinWheel();
     if (!mounted) {
       return;
     }
     if (winner == null) {
+      _spinController.stop();
       setState(() => _spinning = false);
       return;
     }
@@ -98,6 +112,7 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
           itemCount: itemCount,
           currentRotation: _rotation,
           extraSpins: 0,
+          direction: flick?.direction ?? 1,
         );
         _spinning = false;
         _hasSpunOnce = true;
@@ -106,11 +121,15 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
       return;
     }
 
+    _spinController.stop();
+    _spinController.duration = flick?.duration ?? _spinDuration;
     _animateFrom = _rotation;
     _animateTo = computeWheelTargetRotation(
       winnerIndex: winner,
       itemCount: itemCount,
       currentRotation: _rotation,
+      extraSpins: flick?.extraSpins ?? wheelDefaultExtraSpins,
+      direction: flick?.direction ?? 1,
     );
     await _spinController.forward(from: 0);
     if (!mounted) {
@@ -126,6 +145,67 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
   Future<void> _celebrate() async {
     HapticFeedback.mediumImpact();
     await ref.read(soundEffectsProvider.notifier).playDecision();
+  }
+
+  bool get _canHandleDrag {
+    final state = ref.read(listPickerProvider);
+    return !_spinning &&
+        !state.isLoading &&
+        isValidWheelSelection(state.items);
+  }
+
+  void _onPanStart(DragStartDetails details) {
+    if (!_canHandleDrag) return;
+    _lastDragPosition = details.localPosition;
+    _lastDragAngle = _angleFor(details.localPosition);
+    _dragAngularDistance = 0;
+  }
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    final previousAngle = _lastDragAngle;
+    if (previousAngle == null || !_canHandleDrag) return;
+
+    final currentAngle = _angleFor(details.localPosition);
+    final delta = shortestAngularDelta(previousAngle, currentAngle);
+    _lastDragAngle = currentAngle;
+    _lastDragPosition = details.localPosition;
+    _dragAngularDistance += delta.abs();
+    setState(() => _rotation += delta);
+  }
+
+  void _onPanEnd(DragEndDetails details) {
+    if (_lastDragAngle == null || !_canHandleDrag) {
+      _resetDrag();
+      return;
+    }
+
+    final radius = _lastDragPosition - _wheelCenter;
+    final velocity = details.velocity.pixelsPerSecond;
+    final angularVelocity = wheelAngularVelocity(
+      positionFromCenter: math.Point(radius.dx, radius.dy),
+      pixelsPerSecond: math.Point(velocity.dx, velocity.dy),
+    );
+    final profile = computeWheelFlickProfile(
+      angularVelocity: angularVelocity,
+    );
+    final shouldSpin =
+        _dragAngularDistance >= _minimumDragAngle && profile != null;
+    _resetDrag();
+    if (shouldSpin) {
+      _spin(flick: profile);
+    }
+  }
+
+  void _onPanCancel() => _resetDrag();
+
+  double _angleFor(Offset position) => wheelPointerPositionAngle(
+        position: math.Point(position.dx, position.dy),
+        center: const math.Point(120.0, 140.0),
+      );
+
+  void _resetDrag() {
+    _lastDragAngle = null;
+    _dragAngularDistance = 0;
   }
 
   @override
@@ -144,7 +224,12 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: canSpin ? _spin : null,
+          key: const ValueKey('list-wheel-dial'),
+          onTap: canSpin ? () => _spin() : null,
+          onPanStart: canSpin ? _onPanStart : null,
+          onPanUpdate: canSpin ? _onPanUpdate : null,
+          onPanEnd: canSpin ? _onPanEnd : null,
+          onPanCancel: canSpin ? _onPanCancel : null,
           child: _WheelDial(items: state.items, rotation: _rotation),
         ),
         const SizedBox(height: 20),
@@ -272,6 +357,7 @@ class _WheelDial extends StatelessWidget {
           Positioned(
             top: _pointerHeight,
             child: Transform.rotate(
+              key: const ValueKey('list-wheel-disc'),
               angle: rotation,
               child: CustomPaint(
                 size: const Size(_diameter, _diameter),
