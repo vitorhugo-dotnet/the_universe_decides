@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -44,6 +45,71 @@ void main() {
     expect(find.text('Add at least two options, then give it a spin.'),
         findsOneWidget);
     expect(find.text('Spin the wheel'), findsOneWidget);
+  });
+
+  testWidgets('circular drag rotates the dial with the pointer', (tester) async {
+    final client = _PendingClient();
+    final container = _containerFor(client);
+    addTearDown(container.dispose);
+    container.read(listPickerProvider.notifier).addItem('A, B, C');
+    await _pumpWheel(tester, container);
+
+    final dial = find.byKey(const ValueKey('list-wheel-dial'));
+    final center = tester.getCenter(dial);
+    final gesture = await tester.startGesture(center + const Offset(90, 0));
+    await gesture.moveTo(center + const Offset(0, 90));
+    await tester.pump();
+
+    final transform = tester.widget<Transform>(
+      find.byKey(const ValueKey('list-wheel-disc')),
+    );
+    final matrix = transform.transform.storage;
+    expect(math.atan2(matrix[1], matrix[0]), closeTo(math.pi / 2, 0.05));
+
+    await gesture.up();
+  });
+
+  testWidgets('a quick circular flick requests exactly one winner', (
+    tester,
+  ) async {
+    final client = _PendingClient();
+    final container = _containerFor(client);
+    addTearDown(container.dispose);
+    container.read(listPickerProvider.notifier).addItem('A, B, C');
+    await _pumpWheel(tester, container, reduceMotion: true);
+
+    final dial = find.byKey(const ValueKey('list-wheel-dial'));
+    final center = tester.getCenter(dial);
+    final gesture = await tester.startGesture(center + const Offset(90, 0));
+    await gesture.moveTo(center + const Offset(0, 90),
+        timeStamp: const Duration(milliseconds: 16));
+    await gesture.up(timeStamp: const Duration(milliseconds: 20));
+    await tester.pump();
+
+    expect(client.requestCount, 1);
+
+    client.complete('1');
+    await tester.pumpAndSettle();
+    expect(find.text('B'), findsOneWidget);
+  });
+
+  testWidgets('a small accidental drag does not request a winner', (
+    tester,
+  ) async {
+    final client = _PendingClient();
+    final container = _containerFor(client);
+    addTearDown(container.dispose);
+    container.read(listPickerProvider.notifier).addItem('A, B, C');
+    await _pumpWheel(tester, container);
+
+    final dial = find.byKey(const ValueKey('list-wheel-dial'));
+    final center = tester.getCenter(dial);
+    final gesture = await tester.startGesture(center + const Offset(90, 0));
+    await gesture.moveBy(const Offset(0, 3));
+    await gesture.up();
+    await tester.pump();
+
+    expect(client.requestCount, 0);
   });
 
   testWidgets('blocks a re-trigger while a spin is already in flight', (
