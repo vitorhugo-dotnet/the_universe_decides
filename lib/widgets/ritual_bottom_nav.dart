@@ -15,11 +15,13 @@ class RitualBottomNav extends StatelessWidget {
     required this.items,
     required this.selectedIndex,
     required this.onSelected,
+    this.onLongPress,
   });
 
   final List<RitualNavItem> items;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final ValueChanged<int>? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,9 @@ class RitualBottomNav extends StatelessWidget {
                         item: items[i],
                         active: i == selectedIndex,
                         onTap: () => onSelected(i),
+                        onLongPress: onLongPress == null
+                            ? null
+                            : () => onLongPress!(i),
                       ),
                     ),
                 ],
@@ -62,11 +67,13 @@ class _NavButton extends StatelessWidget {
     required this.item,
     required this.active,
     required this.onTap,
+    this.onLongPress,
   });
 
   final RitualNavItem item;
   final bool active;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +81,7 @@ class _NavButton extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),

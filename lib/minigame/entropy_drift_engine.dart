@@ -65,6 +65,7 @@ class EntropyDriftEngine {
 
   double _survivalTime = 0;
   int _fragmentScore = 0;
+  int _fragmentsCollected = 0;
   double _obstacleTimer = 1.4;
   double _fragmentTimer = 1.8;
   double _obstacleInterval = 1.6;
@@ -74,6 +75,10 @@ class EntropyDriftEngine {
 
   Size get size => _size;
   Offset get star => _star;
+  Duration get survivalDuration => Duration(
+    microseconds: (_survivalTime * Duration.microsecondsPerSecond).round(),
+  );
+  int get fragmentsCollected => _fragmentsCollected;
 
   /// Sets/updates the playfield size. Centres the star the first time a real
   /// size arrives, and re-clamps it on later resizes.
@@ -147,6 +152,7 @@ class EntropyDriftEngine {
       fragments.removeWhere((fragment) {
         if (_hitsStar(fragment)) {
           _fragmentScore += 5;
+          _fragmentsCollected++;
           onFragmentCollected();
           return true;
         }
@@ -220,6 +226,7 @@ class EntropyDriftEngine {
     fragments.clear();
     _survivalTime = 0;
     _fragmentScore = 0;
+    _fragmentsCollected = 0;
     _obstacleTimer = 1.4;
     _fragmentTimer = 1.8;
     _obstacleInterval = 1.6;

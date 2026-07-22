@@ -23,4 +23,5 @@ class EntropyDriftStrings {
   String get gameOverTitle => 'The universe has decided.';
   String get playAgain => _isPortuguese ? 'Jogar novamente' : 'Play again';
   String get backToApp => _isPortuguese ? 'Voltar' : 'Back';
+  String get leaderboard => _isPortuguese ? 'Ranking' : 'Leaderboard';
 }
