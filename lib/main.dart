@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/screens/main_screen.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
+import 'package:theuniversedecides/theme/system_ui_overlay.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Explicitly declare edge-to-edge instead of relying on the implicit
+  // per-SDK default (see lib/theme/system_ui_overlay.dart for details).
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(const ProviderScope(child: UniverseDecidesApp()));
 }
 
@@ -23,6 +29,8 @@ class UniverseDecidesApp extends StatelessWidget {
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
+      builder: (context, child) =>
+          AppSystemUiOverlay(child: child ?? const SizedBox.shrink()),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
