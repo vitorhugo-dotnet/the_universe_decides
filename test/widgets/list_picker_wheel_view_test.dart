@@ -55,7 +55,7 @@ void main() {
     await _pumpWheel(tester, container);
 
     final dial = find.byKey(const ValueKey('list-wheel-dial'));
-    final center = tester.getCenter(dial);
+    final center = tester.getTopLeft(dial) + const Offset(120, 140);
     final gesture = await tester.startGesture(center + const Offset(90, 0));
     await gesture.moveTo(
       center + const Offset(0, 90),
@@ -82,11 +82,20 @@ void main() {
     await _pumpWheel(tester, container, reduceMotion: true);
 
     final dial = find.byKey(const ValueKey('list-wheel-dial'));
-    final center = tester.getCenter(dial);
-    final gesture = await tester.startGesture(center + const Offset(90, 0));
-    await gesture.moveTo(center + const Offset(0, 90),
-        timeStamp: const Duration(milliseconds: 16));
-    await gesture.up(timeStamp: const Duration(milliseconds: 20));
+    final center = tester.getTopLeft(dial) + const Offset(120, 140);
+    final gesture = await tester.startGesture(
+      center + const Offset(90, 0),
+      timeStamp: Duration.zero,
+    );
+    await gesture.moveTo(
+      center + const Offset(64, 64),
+      timeStamp: const Duration(milliseconds: 10),
+    );
+    await gesture.moveTo(
+      center + const Offset(0, 90),
+      timeStamp: const Duration(milliseconds: 20),
+    );
+    await gesture.up(timeStamp: const Duration(milliseconds: 21));
     await tester.pump();
 
     expect(client.requestCount, 1);
@@ -106,7 +115,7 @@ void main() {
     await _pumpWheel(tester, container);
 
     final dial = find.byKey(const ValueKey('list-wheel-dial'));
-    final center = tester.getCenter(dial);
+    final center = tester.getTopLeft(dial) + const Offset(120, 140);
     final gesture = await tester.startGesture(center + const Offset(90, 0));
     // A radial movement is large enough to win the pan gesture arena, but it
     // has almost no angular travel and therefore must not count as a flick.
