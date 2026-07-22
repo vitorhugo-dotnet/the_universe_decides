@@ -154,21 +154,37 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
         isValidWheelSelection(state.items);
   }
 
-  void _onPanStart(DragStartDetails details) {
+  void _onPanDown(DragDownDetails details) {
     if (!_canHandleDrag) return;
     _lastDragPosition = details.localPosition;
     _lastDragAngle = _angleFor(details.localPosition);
     _dragAngularDistance = 0;
   }
 
+  void _onPanStart(DragStartDetails details) {
+    if (!_canHandleDrag) return;
+    if (_lastDragAngle == null) {
+      _onPanDown(DragDownDetails(
+        globalPosition: details.globalPosition,
+        localPosition: details.localPosition,
+      ));
+      return;
+    }
+    _applyDrag(details.localPosition);
+  }
+
   void _onPanUpdate(DragUpdateDetails details) {
+    _applyDrag(details.localPosition);
+  }
+
+  void _applyDrag(Offset position) {
     final previousAngle = _lastDragAngle;
     if (previousAngle == null || !_canHandleDrag) return;
 
-    final currentAngle = _angleFor(details.localPosition);
+    final currentAngle = _angleFor(position);
     final delta = shortestAngularDelta(previousAngle, currentAngle);
     _lastDragAngle = currentAngle;
-    _lastDragPosition = details.localPosition;
+    _lastDragPosition = position;
     _dragAngularDistance += delta.abs();
     setState(() => _rotation += delta);
   }
@@ -226,6 +242,7 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
         GestureDetector(
           key: const ValueKey('list-wheel-dial'),
           onTap: canSpin ? () => _spin() : null,
+          onPanDown: canSpin ? _onPanDown : null,
           onPanStart: canSpin ? _onPanStart : null,
           onPanUpdate: canSpin ? _onPanUpdate : null,
           onPanEnd: canSpin ? _onPanEnd : null,
