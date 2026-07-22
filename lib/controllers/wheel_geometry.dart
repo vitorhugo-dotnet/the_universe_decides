@@ -23,6 +23,11 @@ const double wheelMinFlickVelocity = 0.8;
 const int wheelMaxFlickSpins = 7;
 const Duration wheelMaxFlickDuration = Duration(milliseconds: 3800);
 
+/// The painted disc radius and a central dead zone where angular motion is
+/// too unstable to infer from a finger position.
+const double wheelDialRadius = 120;
+const double wheelDragDeadZoneRadius = 28;
+
 /// Above this many items, individual segment labels become unreadable no
 /// matter how small the font gets, so labels are hidden and the always
 /// visible item list below the wheel remains the source of full text.
@@ -82,6 +87,21 @@ double wheelAngularVelocity({
   return (x * vy - y * vx) / radiusSquared;
 }
 
+/// Whether a pointer sample is inside the visible wheel but far enough from
+/// its axis for stable angular gesture calculations.
+bool isWheelDragPositionValid({
+  required math.Point<num> position,
+  required math.Point<num> center,
+  double outerRadius = wheelDialRadius,
+  double innerRadius = wheelDragDeadZoneRadius,
+}) {
+  final dx = (position.x - center.x).toDouble();
+  final dy = (position.y - center.y).toDouble();
+  final distanceSquared = dx * dx + dy * dy;
+  return distanceSquared <= outerRadius * outerRadius &&
+      distanceSquared >= innerRadius * innerRadius;
+}
+
 class WheelFlickProfile {
   const WheelFlickProfile({
     required this.direction,
@@ -116,9 +136,9 @@ WheelFlickProfile? computeWheelFlickProfile({
 /// the wheel must animate to so [winnerIndex]'s segment center lands under
 /// the fixed pointer ([wheelPointerAngle]).
 ///
-/// Always continues forward from [currentRotation] (never spins backward,
-/// mirroring the coin flip's `_nextCongruent` approach) and layers on
-/// [extraSpins] full revolutions so short hops still feel like a spin.
+/// Continues from [currentRotation] in the requested [direction] (`1` for
+/// clockwise, `-1` for counter-clockwise) and layers on [extraSpins] full
+/// revolutions so short hops still feel like a spin.
 ///
 /// The winner is decided entirely by the caller (via the randomness
 /// service) *before* this is invoked — this function is a one-way, visual
