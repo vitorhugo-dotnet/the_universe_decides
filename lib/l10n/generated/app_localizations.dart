@@ -316,6 +316,18 @@ abstract class AppLocalizations {
   /// **'Chosen by the universe'**
   String get listChosenByUniverse;
 
+  /// No description provided for @listDuplicateItem.
+  ///
+  /// In en, this message translates to:
+  /// **'This item already exists in the list.'**
+  String get listDuplicateItem;
+
+  /// No description provided for @listDuplicateItemsDiscarded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 duplicate item was skipped.} other{{count} duplicate items were skipped.}}'**
+  String listDuplicateItemsDiscarded(int count);
+
   /// No description provided for @tarotEyebrow.
   ///
   /// In en, this message translates to:
