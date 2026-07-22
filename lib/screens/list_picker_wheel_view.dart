@@ -41,6 +41,7 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
   double? _lastDragAngle;
   double _dragAngularDistance = 0;
   Offset _lastDragPosition = Offset.zero;
+  bool _dragActive = false;
 
   /// True once *this* wheel instance has produced a result. Kept separate
   /// from `state.selectedIndex` (shared with the classic mode) so switching
@@ -156,20 +157,18 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
 
   void _onPanDown(DragDownDetails details) {
     if (!_canHandleDrag) return;
+    if (!_isValidDragPosition(details.localPosition)) {
+      _resetDrag();
+      return;
+    }
+    _dragActive = true;
     _lastDragPosition = details.localPosition;
     _lastDragAngle = _angleFor(details.localPosition);
     _dragAngularDistance = 0;
   }
 
   void _onPanStart(DragStartDetails details) {
-    if (!_canHandleDrag) return;
-    if (_lastDragAngle == null) {
-      _onPanDown(DragDownDetails(
-        globalPosition: details.globalPosition,
-        localPosition: details.localPosition,
-      ));
-      return;
-    }
+    if (!_canHandleDrag || !_dragActive) return;
     _applyDrag(details.localPosition);
   }
 
@@ -178,10 +177,21 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
   }
 
   void _applyDrag(Offset position) {
-    final previousAngle = _lastDragAngle;
-    if (previousAngle == null || !_canHandleDrag) return;
+    if (!_dragActive || !_canHandleDrag) return;
+    if (!_isValidDragPosition(position)) {
+      _lastDragAngle = null;
+      _lastDragPosition = position;
+      return;
+    }
 
     final currentAngle = _angleFor(position);
+    final previousAngle = _lastDragAngle;
+    if (previousAngle == null) {
+      _lastDragAngle = currentAngle;
+      _lastDragPosition = position;
+      return;
+    }
+
     final delta = shortestAngularDelta(previousAngle, currentAngle);
     _lastDragAngle = currentAngle;
     _lastDragPosition = position;
@@ -190,7 +200,10 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
   }
 
   void _onPanEnd(DragEndDetails details) {
-    if (_lastDragAngle == null || !_canHandleDrag) {
+    if (!_dragActive ||
+        _lastDragAngle == null ||
+        !_isValidDragPosition(_lastDragPosition) ||
+        !_canHandleDrag) {
       _resetDrag();
       return;
     }
@@ -219,7 +232,13 @@ class _ListPickerWheelViewState extends ConsumerState<ListPickerWheelView>
         center: const math.Point(120.0, 140.0),
       );
 
+  bool _isValidDragPosition(Offset position) => isWheelDragPositionValid(
+        position: math.Point(position.dx, position.dy),
+        center: const math.Point(120.0, 140.0),
+      );
+
   void _resetDrag() {
+    _dragActive = false;
     _lastDragAngle = null;
     _dragAngularDistance = 0;
   }
