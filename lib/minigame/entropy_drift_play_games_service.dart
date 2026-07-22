@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:games_services/games_services.dart';
 
@@ -55,13 +56,39 @@ class EntropyDriftPlayGamesService {
     _authenticationAttempted = true;
     try {
       await _gateway.signIn();
-      _authenticated = await _gateway.isSignedIn();
-      if (_authenticated) {
-        await _unlock(EntropyDriftPlayGamesIds.discovered);
-      }
     } catch (_) {
       _authenticated = false;
+      _debugLog(
+        'Play Games sign-in failed; continuing with offline gameplay. '
+        'Check account eligibility, tester access, network connectivity, and '
+        'the Android OAuth certificate SHA-1.',
+      );
+      return;
     }
+
+    try {
+      _authenticated = await _gateway.isSignedIn();
+    } catch (_) {
+      _authenticated = false;
+      _debugLog(
+        'Play Games could not verify authentication; continuing offline. '
+        'Check the APP_ID manifest metadata and Play Games project setup.',
+      );
+      return;
+    }
+
+    if (!_authenticated) {
+      _debugLog(
+        'Play Games sign-in completed without an authenticated account. '
+        'Check tester access, published Play Games configuration, APP_ID, and '
+        'OAuth certificate SHA-1.',
+      );
+      return;
+    }
+    await _unlock(
+      EntropyDriftPlayGamesIds.discovered,
+      feature: 'discovery achievement',
+    );
   }
 
   void startRun() => _scoreSubmittedForRun = false;
@@ -75,23 +102,41 @@ class EntropyDriftPlayGamesService {
       return;
     }
     _scoreSubmittedForRun = true;
-    await _unlock(EntropyDriftPlayGamesIds.firstDrift);
+    await _unlock(
+      EntropyDriftPlayGamesIds.firstDrift,
+      feature: 'first-run achievement',
+    );
     if (survivalDuration >= const Duration(seconds: 30)) {
-      await _unlock(EntropyDriftPlayGamesIds.survivor30s);
+      await _unlock(
+        EntropyDriftPlayGamesIds.survivor30s,
+        feature: 'survival achievement',
+      );
     }
     if (fragmentsCollected >= 10) {
-      await _unlock(EntropyDriftPlayGamesIds.fragmentCollector);
+      await _unlock(
+        EntropyDriftPlayGamesIds.fragmentCollector,
+        feature: 'fragment achievement',
+      );
     }
     if (score >= 100) {
-      await _unlock(EntropyDriftPlayGamesIds.entropyMaster);
+      await _unlock(
+        EntropyDriftPlayGamesIds.entropyMaster,
+        feature: 'score achievement',
+      );
     }
     final leaderboardId = _leaderboardId;
     if (leaderboardId.isEmpty) {
+      _debugLog(
+        'Play Games leaderboard is disabled because its resource ID is not '
+        'configured; achievements and offline gameplay remain available.',
+      );
       return;
     }
     try {
       await _gateway.submitScore(leaderboardId, score);
-    } catch (_) {}
+    } catch (_) {
+      _debugLog('Play Games score submission failed; local score was kept.');
+    }
   }
 
   Future<void> showLeaderboard() async {
@@ -100,16 +145,33 @@ class EntropyDriftPlayGamesService {
     }
     try {
       await _gateway.showLeaderboard(_leaderboardId);
-    } catch (_) {}
+    } catch (_) {
+      _debugLog('Play Games leaderboard UI could not be opened.');
+    }
   }
 
-  Future<void> _unlock(String id) async {
-    if (!_authenticated || id.isEmpty) {
+  Future<void> _unlock(String id, {required String feature}) async {
+    if (!_authenticated) {
+      return;
+    }
+    if (id.isEmpty) {
+      _debugLog(
+        'Play Games $feature is disabled because its resource ID is not '
+        'configured; other online features remain available.',
+      );
       return;
     }
     try {
       await _gateway.unlock(id);
-    } catch (_) {}
+    } catch (_) {
+      _debugLog('Play Games $feature unlock failed; gameplay continues.');
+    }
+  }
+
+  void _debugLog(String message) {
+    if (kDebugMode) {
+      debugPrint('[EntropyDriftPlayGames] $message');
+    }
   }
 }
 
