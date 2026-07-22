@@ -12,6 +12,9 @@
 .swiftpm/
 migrate_working_dir/
 
+# Claude Code agent worktrees (local tooling state, not project content)
+.claude/worktrees/
+
 # IntelliJ related
 *.iml
 *.ipr
