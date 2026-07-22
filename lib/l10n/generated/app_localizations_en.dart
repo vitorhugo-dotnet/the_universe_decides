@@ -114,6 +114,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listChosenByUniverse => 'Chosen by the universe';
 
   @override
+  String get listDuplicateItem => 'This item already exists in the list.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplicate items were skipped.',
+      one: '1 duplicate item was skipped.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Tarot Ritual';
 
   @override

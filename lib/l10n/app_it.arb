@@ -41,6 +41,15 @@
   "listChooseButton": "Lascia scegliere l'universo",
   "listEmptyState": "Aggiungi almeno due opzioni per iniziare.",
   "listChosenByUniverse": "Scelto dall'universo",
+  "listDuplicateItem": "Questo elemento è già presente nella lista.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{È stato ignorato 1 elemento duplicato.} other{Sono stati ignorati {count} elementi duplicati.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Rituale dei Tarocchi",
   "tarotTitle": "Lettura dei Tarocchi",
   "tarotSubtitle": "Una carta, rivelata dal puro caso.",

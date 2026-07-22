@@ -41,6 +41,15 @@
   "listChooseButton": "ब्रह्मांड को चुनने दें",
   "listEmptyState": "शुरू करने के लिए कम से कम दो विकल्प जोड़ें।",
   "listChosenByUniverse": "ब्रह्मांड द्वारा चुना गया",
+  "listDuplicateItem": "यह आइटम पहले से सूची में मौजूद है।",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 डुप्लिकेट आइटम छोड़ दिया गया।} other{{count} डुप्लिकेट आइटम छोड़ दिए गए।}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "टैरो अनुष्ठान",
   "tarotTitle": "टैरो रीडिंग",
   "tarotSubtitle": "एक कार्ड, शुद्ध संयोग से प्रकट।",

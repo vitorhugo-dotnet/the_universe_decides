@@ -41,6 +41,15 @@
   "listChooseButton": "Deixar o universo escolher",
   "listEmptyState": "Adicione ao menos duas opções para começar.",
   "listChosenByUniverse": "Escolhido pelo universo",
+  "listDuplicateItem": "Este item já existe na lista.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 item duplicado foi ignorado.} other{{count} itens duplicados foram ignorados.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Ritual do Tarot",
   "tarotTitle": "Leitura do Tarot",
   "tarotSubtitle": "Uma carta, revelada pelo acaso puro.",
