@@ -7,6 +7,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 ## Unreleased
 
 ### en
+- A quiet connection beyond the app now finds its way more reliably. ✨
 - A familiar path may now reveal a little more to those who linger. ✨
 - You can now drag and flick the List Draw wheel for a more physical spin. 🎡
 - Fixed the coin screen background to match the Android status bar.
@@ -18,6 +19,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Fixed: duplicate items in custom lists no longer skew the odds.
 
 ### pt (Português)
+- Uma conexão discreta além do app agora encontra seu caminho com mais confiança. ✨
 - Um caminho conhecido agora pode revelar um pouco mais a quem se demora. ✨
 - Agora você pode arrastar e lançar a roleta do Sorteio de Lista para um giro mais físico. 🎡
 - Corrigido o fundo da tela da moeda para combinar com a barra de status do Android.
@@ -29,6 +31,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigido: itens duplicados em listas personalizadas não alteram mais as chances do sorteio.
 
 ### es (Español)
+- Una conexión discreta más allá de la app ahora encuentra su camino con mayor fiabilidad. ✨
 - Un camino conocido ahora puede revelar algo más a quien se detenga. ✨
 - Ahora puedes arrastrar e impulsar la ruleta del Sorteo de Lista para un giro más físico. 🎡
 - Corregido el fondo de la pantalla de moneda para que coincida con la barra de estado de Android.
@@ -40,6 +43,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corregido: los elementos duplicados en listas personalizadas ya no alteran las probabilidades del sorteo.
 
 ### de (Deutsch)
+- Eine stille Verbindung über die App hinaus findet nun zuverlässiger ihren Weg. ✨
 - Ein vertrauter Weg kann nun denen etwas mehr zeigen, die kurz verweilen. ✨
 - Du kannst das Glücksrad jetzt ziehen und mit Schwung loslassen, damit es sich natürlicher dreht. 🎡
 - Der Hintergrund der Münzansicht stimmt jetzt mit der Android-Statusleiste überein.
@@ -51,6 +55,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Behoben: doppelte Einträge in eigenen Listen verfälschen die Gewinnchancen nicht mehr.
 
 ### fr (Français)
+- Une connexion discrète au-delà de l'app trouve désormais son chemin plus sûrement. ✨
 - Un chemin familier peut désormais en révéler un peu plus à qui s'y attarde. ✨
 - Tu peux maintenant faire glisser et lancer la roue du Tirage de Liste pour une rotation plus naturelle. 🎡
 - Correction du fond de l'écran de la pièce pour l'harmoniser avec la barre d'état Android.
@@ -62,6 +67,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigé : les éléments en double dans les listes personnalisées ne faussent plus les probabilités.
 
 ### hi (हिन्दी)
+- ऐप से परे एक शांत जुड़ाव अब अधिक भरोसेमंद ढंग से अपना रास्ता खोजता है। ✨
 - एक जाना-पहचाना रास्ता अब ठहरने वालों को कुछ और दिखा सकता है। ✨
 - अब आप सूची चयन के पहिये को खींचकर झटका दे सकते हैं, ताकि वह अधिक स्वाभाविक रूप से घूमे। 🎡
 - सिक्का स्क्रीन का बैकग्राउंड अब Android स्टेटस बार से मेल खाता है।
@@ -73,6 +79,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - ठीक किया गया: कस्टम सूचियों में डुप्लिकेट आइटम अब संभावनाओं को प्रभावित नहीं करते।
 
 ### it (Italiano)
+- Una connessione discreta oltre l'app ora trova la sua strada in modo più affidabile. ✨
 - Un percorso familiare ora può rivelare qualcosa in più a chi si sofferma. ✨
 - Ora puoi trascinare e lanciare la ruota dell'Estrazione da Lista per farla girare in modo più naturale. 🎡
 - Corretto lo sfondo della schermata della moneta per abbinarlo alla barra di stato Android.
@@ -84,6 +91,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Risolto: gli elementi duplicati nelle liste personalizzate non alterano più le probabilità.
 
 ### tr (Türkçe)
+- Uygulamanın ötesindeki sessiz bir bağlantı artık yolunu daha güvenilir biçimde buluyor. ✨
 - Tanıdık bir yol, biraz oyalananlara artık daha fazlasını gösterebilir. ✨
 - Artık Liste Çekilişi çarkını sürükleyip hızla bırakarak daha doğal bir dönüş başlatabilirsin. 🎡
 - Para ekranının arka planı Android durum çubuğuyla uyumlu hale getirildi.
@@ -95,6 +103,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Düzeltildi: özel listelerdeki yinelenen öğeler artık olasılıkları bozmuyor.
 
 ### uk (Українська)
+- Тихий зв’язок за межами застосунку тепер надійніше знаходить свій шлях. ✨
 - Знайомий шлях тепер може відкрити трохи більше тим, хто затримається. ✨
 - Тепер колесо Жеребкування Списку можна перетягнути й розкрутити природним рухом. 🎡
 - Фон екрана монети тепер узгоджено з рядком стану Android.

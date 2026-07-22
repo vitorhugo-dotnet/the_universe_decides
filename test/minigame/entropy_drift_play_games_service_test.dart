@@ -34,36 +34,83 @@ void main() {
     expect(gateway.calls, ['signIn']);
   });
 
-  test('a run submits online at most once', () async {
+  test(
+    'missing achievement IDs do not prevent one leaderboard submission',
+    () async {
+      final gateway = _RecordingGateway(signedIn: true);
+      final service = EntropyDriftPlayGamesService(
+        gateway: gateway,
+        isAndroid: true,
+        leaderboardId: 'leaderboard',
+      );
+      await service.authenticateOnGameOpen();
+      service.startRun();
+
+      await service.completeRun(
+        score: 150,
+        survivalDuration: const Duration(seconds: 40),
+        fragmentsCollected: 12,
+      );
+      await service.completeRun(
+        score: 150,
+        survivalDuration: const Duration(seconds: 40),
+        fragmentsCollected: 12,
+      );
+
+      expect(gateway.calls.where((call) => call == 'unlock'), isEmpty);
+      expect(gateway.calls.where((call) => call == 'score'), hasLength(1));
+    },
+  );
+
+  test('missing leaderboard ID disables only score submission', () async {
     final gateway = _RecordingGateway(signedIn: true);
+    final service = EntropyDriftPlayGamesService(
+      gateway: gateway,
+      isAndroid: true,
+      leaderboardId: '',
+    );
+    await service.authenticateOnGameOpen();
+
+    await service.completeRun(
+      score: 150,
+      survivalDuration: const Duration(seconds: 40),
+      fragmentsCollected: 12,
+    );
+
+    expect(gateway.calls, contains('isSignedIn'));
+    expect(gateway.calls, isNot(contains('score')));
+  });
+
+  test('online operation failures remain non-fatal', () async {
+    final gateway = _RecordingGateway(signedIn: true, throwOnScore: true);
     final service = EntropyDriftPlayGamesService(
       gateway: gateway,
       isAndroid: true,
       leaderboardId: 'leaderboard',
     );
     await service.authenticateOnGameOpen();
-    service.startRun();
 
-    await service.completeRun(
-      score: 150,
-      survivalDuration: const Duration(seconds: 40),
-      fragmentsCollected: 12,
+    await expectLater(
+      service.completeRun(
+        score: 10,
+        survivalDuration: Duration.zero,
+        fragmentsCollected: 0,
+      ),
+      completes,
     );
-    await service.completeRun(
-      score: 150,
-      survivalDuration: const Duration(seconds: 40),
-      fragmentsCollected: 12,
-    );
-
-    expect(gateway.calls.where((call) => call == 'score'), hasLength(1));
   });
 }
 
 class _RecordingGateway implements EntropyDriftGamesGateway {
-  _RecordingGateway({this.signedIn = false, this.throwOnSignIn = false});
+  _RecordingGateway({
+    this.signedIn = false,
+    this.throwOnSignIn = false,
+    this.throwOnScore = false,
+  });
 
   final bool signedIn;
   final bool throwOnSignIn;
+  final bool throwOnScore;
   final List<String> calls = [];
 
   @override
@@ -83,8 +130,10 @@ class _RecordingGateway implements EntropyDriftGamesGateway {
       calls.add('leaderboard');
 
   @override
-  Future<void> submitScore(String leaderboardId, int score) async =>
-      calls.add('score');
+  Future<void> submitScore(String leaderboardId, int score) async {
+    calls.add('score');
+    if (throwOnScore) throw StateError('offline');
+  }
 
   @override
   Future<void> unlock(String id) async => calls.add('unlock');

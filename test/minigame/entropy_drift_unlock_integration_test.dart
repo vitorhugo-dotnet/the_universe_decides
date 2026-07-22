@@ -36,6 +36,7 @@ void main() {
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
+    final playGamesService = _FakePlayGamesService();
 
     await tester.pumpWidget(
       ProviderScope(
@@ -49,9 +50,7 @@ void main() {
           quickAccessServiceProvider.overrideWith(
             (ref) => _FakeQuickAccessService(),
           ),
-          entropyDriftPlayGamesProvider.overrideWithValue(
-            _FakePlayGamesService(),
-          ),
+          entropyDriftPlayGamesProvider.overrideWithValue(playGamesService),
         ],
         child: const UniverseDecidesApp(),
       ),
@@ -65,18 +64,24 @@ void main() {
     expect(navButtons, findsNWidgets(6));
     expect(find.byIcon(Icons.auto_awesome), findsWidgets);
     expect(find.byType(EntropyDriftScreen), findsNothing);
+    expect(playGamesService.authenticationAttempts, 0);
 
     await tester.longPress(navButtons.first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byType(EntropyDriftScreen), findsOneWidget);
+    expect(playGamesService.authenticationAttempts, 1);
   });
 }
 
 class _FakePlayGamesService extends EntropyDriftPlayGamesService {
+  int authenticationAttempts = 0;
+
   @override
-  Future<void> authenticateOnGameOpen() async {}
+  Future<void> authenticateOnGameOpen() async {
+    authenticationAttempts++;
+  }
 }
 
 class _FakeRandomOrgService extends RandomOrgService {
