@@ -75,6 +75,32 @@ void main() {
         closeTo(-5, 1e-9),
       );
     });
+
+    test('accepts drag samples only in the wheel interaction ring', () {
+      const center = math.Point(120, 140);
+
+      expect(
+        isWheelDragPositionValid(
+          position: const math.Point(210, 140),
+          center: center,
+        ),
+        isTrue,
+      );
+      expect(
+        isWheelDragPositionValid(
+          position: const math.Point(5, 5),
+          center: center,
+        ),
+        isFalse,
+      );
+      expect(
+        isWheelDragPositionValid(
+          position: const math.Point(122, 142),
+          center: center,
+        ),
+        isFalse,
+      );
+    });
   });
 
   group('computeWheelFlickProfile', () {
