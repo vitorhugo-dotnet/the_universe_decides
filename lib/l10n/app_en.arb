@@ -41,6 +41,11 @@
   "listChooseButton": "Let the universe choose",
   "listEmptyState": "Add at least two options to begin.",
   "listChosenByUniverse": "Chosen by the universe",
+  "listModeClassic": "List",
+  "listModeWheel": "Wheel",
+  "listWheelSpinButton": "Spin the wheel",
+  "listWheelHint": "Add at least two options, then give it a spin.",
+  "listWheelSpinAgainHint": "Tap spin to try again.",
   "listDuplicateItem": "This item already exists in the list.",
   "listDuplicateItemsDiscarded": "{count, plural, one{1 duplicate item was skipped.} other{{count} duplicate items were skipped.}}",
   "@listDuplicateItemsDiscarded": {

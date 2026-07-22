@@ -316,6 +316,36 @@ abstract class AppLocalizations {
   /// **'Chosen by the universe'**
   String get listChosenByUniverse;
 
+  /// No description provided for @listModeClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get listModeClassic;
+
+  /// No description provided for @listModeWheel.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheel'**
+  String get listModeWheel;
+
+  /// No description provided for @listWheelSpinButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin the wheel'**
+  String get listWheelSpinButton;
+
+  /// No description provided for @listWheelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two options, then give it a spin.'**
+  String get listWheelHint;
+
+  /// No description provided for @listWheelSpinAgainHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap spin to try again.'**
+  String get listWheelSpinAgainHint;
+
   /// No description provided for @listDuplicateItem.
   ///
   /// In en, this message translates to:

@@ -41,6 +41,11 @@
   "listChooseButton": "Laisser l'univers choisir",
   "listEmptyState": "Ajoute au moins deux options pour commencer.",
   "listChosenByUniverse": "Choisi par l'univers",
+  "listModeClassic": "Liste",
+  "listModeWheel": "Roue",
+  "listWheelSpinButton": "Faire tourner la roue",
+  "listWheelHint": "Ajoute au moins deux options, puis lance la roue.",
+  "listWheelSpinAgainHint": "Touche tourner pour réessayer.",
   "listDuplicateItem": "Cet élément existe déjà dans la liste.",
   "listDuplicateItemsDiscarded": "{count, plural, one{1 élément en double a été ignoré.} other{{count} éléments en double ont été ignorés.}}",
   "@listDuplicateItemsDiscarded": {

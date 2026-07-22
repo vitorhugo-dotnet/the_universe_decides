@@ -41,6 +41,11 @@
   "listChooseButton": "Dejar que el universo elija",
   "listEmptyState": "Agrega al menos dos opciones para comenzar.",
   "listChosenByUniverse": "Elegido por el universo",
+  "listModeClassic": "Lista",
+  "listModeWheel": "Ruleta",
+  "listWheelSpinButton": "Girar la ruleta",
+  "listWheelHint": "Agrega al menos dos opciones y gira.",
+  "listWheelSpinAgainHint": "Toca girar para intentarlo de nuevo.",
   "listDuplicateItem": "Este elemento ya existe en la lista.",
   "listDuplicateItemsDiscarded": "{count, plural, one{Se omitió 1 elemento duplicado.} other{Se omitieron {count} elementos duplicados.}}",
   "@listDuplicateItemsDiscarded": {

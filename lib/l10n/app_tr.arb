@@ -41,6 +41,11 @@
   "listChooseButton": "Evrenin seçmesine izin ver",
   "listEmptyState": "Başlamak için en az iki seçenek ekle.",
   "listChosenByUniverse": "Evren tarafından seçildi",
+  "listModeClassic": "Liste",
+  "listModeWheel": "Çark",
+  "listWheelSpinButton": "Çarkı çevir",
+  "listWheelHint": "En az iki seçenek ekle, sonra çevir.",
+  "listWheelSpinAgainHint": "Tekrar denemek için çevire dokun.",
   "listDuplicateItem": "Bu öğe listede zaten var.",
   "listDuplicateItemsDiscarded": "{count, plural, one{1 yinelenen öğe atlandı.} other{{count} yinelenen öğe atlandı.}}",
   "@listDuplicateItemsDiscarded": {

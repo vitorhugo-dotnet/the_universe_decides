@@ -116,6 +116,23 @@ class AppLocalizationsUk extends AppLocalizations {
   String get listChosenByUniverse => 'Обрано всесвітом';
 
   @override
+  String get listModeClassic => 'Список';
+
+  @override
+  String get listModeWheel => 'Колесо';
+
+  @override
+  String get listWheelSpinButton => 'Крутити колесо';
+
+  @override
+  String get listWheelHint =>
+      'Додайте щонайменше два варіанти, а тоді крутіть.';
+
+  @override
+  String get listWheelSpinAgainHint =>
+      'Натисніть «крутити», щоб спробувати ще раз.';
+
+  @override
   String get listDuplicateItem => 'Цей елемент вже є у списку.';
 
   @override

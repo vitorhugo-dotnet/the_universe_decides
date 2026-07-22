@@ -41,6 +41,11 @@
   "listChooseButton": "Дозволити всесвіту обрати",
   "listEmptyState": "Додайте щонайменше два варіанти, щоб почати.",
   "listChosenByUniverse": "Обрано всесвітом",
+  "listModeClassic": "Список",
+  "listModeWheel": "Колесо",
+  "listWheelSpinButton": "Крутити колесо",
+  "listWheelHint": "Додайте щонайменше два варіанти, а тоді крутіть.",
+  "listWheelSpinAgainHint": "Натисніть «крутити», щоб спробувати ще раз.",
   "listDuplicateItem": "Цей елемент вже є у списку.",
   "listDuplicateItemsDiscarded": "{count, plural, one{Пропущено 1 дубльований елемент.} few{Пропущено {count} дубльовані елементи.} many{Пропущено {count} дубльованих елементів.} other{Пропущено {count} дубльованого елемента.}}",
   "@listDuplicateItemsDiscarded": {
