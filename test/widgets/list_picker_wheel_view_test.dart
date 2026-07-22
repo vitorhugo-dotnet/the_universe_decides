@@ -57,7 +57,10 @@ void main() {
     final dial = find.byKey(const ValueKey('list-wheel-dial'));
     final center = tester.getCenter(dial);
     final gesture = await tester.startGesture(center + const Offset(90, 0));
-    await gesture.moveTo(center + const Offset(0, 90));
+    await gesture.moveTo(
+      center + const Offset(0, 90),
+      timeStamp: const Duration(seconds: 2),
+    );
     await tester.pump();
 
     final transform = tester.widget<Transform>(
@@ -66,7 +69,7 @@ void main() {
     final matrix = transform.transform.storage;
     expect(math.atan2(matrix[1], matrix[0]), closeTo(math.pi / 2, 0.05));
 
-    await gesture.up();
+    await gesture.up(timeStamp: const Duration(milliseconds: 2100));
   });
 
   testWidgets('a quick circular flick requests exactly one winner', (
