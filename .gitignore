@@ -46,33 +46,3 @@ app.*.map.json
 android/key.properties
 android/*.jks
 android/*.keystore
-
-# Environment & Secrets (AIOX)
-.env
-.env.local
-.env.*.local
-*.key
-*.pem
-
-# Dependencies (AIOX)
-node_modules/
-node_modules
-
-# Build & Logs (AIOX)
-dist/
-logs/
-
-# IDE & OS (AIOX)
-Thumbs.db
-
-# AIOX Local (AIOX)
-.aiox-core/local/
-.claude/settings.local.json
-.aiox/install-log.txt
-/.cursor
-/.codex
-/.claude
-/.antigravity
-/.aiox-core
-.env.example
-/.tmp

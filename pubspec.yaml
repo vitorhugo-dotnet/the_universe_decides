@@ -3,7 +3,7 @@ description: "A mystical Flutter decision app powered by Random.org with local f
 
 publish_to: 'none'
 
-version: 1.3.0+5
+version: 2.5.0+5
 
 environment:
   sdk: ^3.10.0
@@ -22,7 +22,6 @@ dependencies:
   webview_flutter: ^4.14.1
   audioplayers: ^6.7.1
   shared_preferences: ^2.5.4
-  flame: ">=1.35.1 <1.36.0"
 
 dev_dependencies:
   flutter_test:
