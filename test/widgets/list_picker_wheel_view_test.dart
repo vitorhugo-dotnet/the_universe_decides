@@ -147,7 +147,7 @@ Future<void> _pumpWheel(
 }
 
 class _PendingClient extends http.BaseClient {
-  Completer<http.Response> _response = Completer<http.Response>();
+  final Completer<http.Response> _response = Completer<http.Response>();
   var requestCount = 0;
 
   @override
