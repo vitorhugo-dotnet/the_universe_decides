@@ -7,6 +7,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 ## Unreleased
 
 ### en
+- List Draw now has a spinning wheel mode — a more visual way to let chance pick from your options. 🎡
 - A small, quiet surprise is hidden somewhere in the app for the curious to find. 🌌
 - Various small fixes and polish.
 - Fixed a display issue on newer Android phones where content could sit behind the status or navigation bar.
@@ -14,6 +15,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Fixed: duplicate items in custom lists no longer skew the odds.
 
 ### pt (Português)
+- O Sorteio de Lista agora tem um modo roleta — uma forma mais visual de deixar o acaso escolher entre suas opções. 🎡
 - Uma pequena surpresa discreta está escondida em algum lugar do app, para quem tiver curiosidade de procurar. 🌌
 - Pequenos ajustes e correções.
 - Corrigido um problema de exibição em celulares Android mais recentes em que o conteúdo podia ficar por trás da barra de status ou de navegação.
@@ -21,6 +23,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigido: itens duplicados em listas personalizadas não alteram mais as chances do sorteio.
 
 ### es (Español)
+- El Sorteo de Lista ahora tiene un modo ruleta — una forma más visual de dejar que el azar elija entre tus opciones. 🎡
 - Hay una pequeña sorpresa silenciosa escondida en algún lugar de la app, para quien tenga curiosidad de buscarla. 🌌
 - Pequeños ajustes y correcciones.
 - Corregido un problema de visualización en teléfonos Android más recientes en el que el contenido podía quedar detrás de la barra de estado o de navegación.
@@ -28,6 +31,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corregido: los elementos duplicados en listas personalizadas ya no alteran las probabilidades del sorteo.
 
 ### de (Deutsch)
+- Die Listenlosung hat jetzt einen Glücksrad-Modus — eine visuellere Art, den Zufall unter deinen Optionen wählen zu lassen. 🎡
 - Irgendwo in der App versteckt sich eine kleine, stille Überraschung für alle, die neugierig genug sind, sie zu suchen. 🌌
 - Kleinere Verbesserungen und Fehlerbehebungen.
 - Ein Anzeigeproblem auf neueren Android-Geräten behoben, bei dem Inhalte hinter der Status- oder Navigationsleiste verschwinden konnten.
@@ -35,6 +39,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Behoben: doppelte Einträge in eigenen Listen verfälschen die Gewinnchancen nicht mehr.
 
 ### fr (Français)
+- Le Tirage de Liste propose désormais un mode roue — une façon plus visuelle de laisser le hasard choisir parmi tes options. 🎡
 - Une petite surprise discrète se cache quelque part dans l'app, pour les curieux qui sauront la chercher. 🌌
 - Petites améliorations et corrections.
 - Correction d'un problème d'affichage sur les téléphones Android récents où le contenu pouvait se retrouver derrière la barre d'état ou de navigation.
@@ -42,6 +47,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigé : les éléments en double dans les listes personnalisées ne faussent plus les probabilités.
 
 ### hi (हिन्दी)
+- सूची चयन में अब एक पहिया मोड है — विकल्पों में से संयोग से चुनने का एक अधिक विज़ुअल तरीका। 🎡
 - ऐप में कहीं एक छोटा-सा शांत आश्चर्य छुपा है, जिज्ञासु लोगों के ढूंढने के लिए। 🌌
 - छोटे-मोटे सुधार और बग फ़िक्स।
 - नए Android फ़ोन पर एक डिस्प्ले समस्या ठीक की गई, जिसमें सामग्री स्टेटस या नेविगेशन बार के पीछे छिप सकती थी।
@@ -49,6 +55,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - ठीक किया गया: कस्टम सूचियों में डुप्लिकेट आइटम अब संभावनाओं को प्रभावित नहीं करते।
 
 ### it (Italiano)
+- L'Estrazione da Lista ha ora una modalità ruota — un modo più visivo per lasciare che il caso scelga tra le tue opzioni. 🎡
 - Da qualche parte nell'app si nasconde una piccola sorpresa silenziosa, per chi ha la curiosità di cercarla. 🌌
 - Piccoli miglioramenti e correzioni.
 - Risolto un problema di visualizzazione sui telefoni Android più recenti, dove i contenuti potevano finire dietro la barra di stato o di navigazione.
@@ -56,6 +63,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Risolto: gli elementi duplicati nelle liste personalizzate non alterano più le probabilità.
 
 ### tr (Türkçe)
+- Liste Çekilişi'nde artık bir çark modu var — seçeneklerin arasından şansın seçmesini izlemenin daha görsel bir yolu. 🎡
 - Uygulamanın bir yerinde, arayanlar için küçük ve sessiz bir sürpriz saklı. 🌌
 - Küçük iyileştirmeler ve hata düzeltmeleri.
 - Yeni Android telefonlarda içeriğin durum veya gezinme çubuğunun arkasında kalabildiği bir görüntüleme sorunu düzeltildi.
@@ -63,6 +71,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Düzeltildi: özel listelerdeki yinelenen öğeler artık olasılıkları bozmuyor.
 
 ### uk (Українська)
+- У Жеребкуванні Списку тепер є режим колеса — наочніший спосіб дозволити випадку обрати серед твоїх варіантів. 🎡
 - Десь у застосунку сховано маленький тихий сюрприз — для тих, хто має цікавість його знайти. 🌌
 - Дрібні покращення та виправлення.
 - Виправлено проблему з відображенням на новіших Android-пристроях, коли вміст міг опинятися за рядком стану чи панеллю навігації.

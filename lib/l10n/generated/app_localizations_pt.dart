@@ -114,6 +114,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get listChosenByUniverse => 'Escolhido pelo universo';
 
   @override
+  String get listModeClassic => 'Lista';
+
+  @override
+  String get listModeWheel => 'Roleta';
+
+  @override
+  String get listWheelSpinButton => 'Girar a roleta';
+
+  @override
+  String get listWheelHint => 'Adicione ao menos duas opções e gire.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Toque em girar para tentar de novo.';
+
+  @override
   String get listDuplicateItem => 'Este item já existe na lista.';
 
   @override

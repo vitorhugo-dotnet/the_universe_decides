@@ -120,6 +120,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listChosenByUniverse => 'Vom Universum gewählt';
 
   @override
+  String get listModeClassic => 'Liste';
+
+  @override
+  String get listModeWheel => 'Glücksrad';
+
+  @override
+  String get listWheelSpinButton => 'Rad drehen';
+
+  @override
+  String get listWheelHint =>
+      'Füge mindestens zwei Optionen hinzu und dreh los.';
+
+  @override
+  String get listWheelSpinAgainHint =>
+      'Tippe auf Drehen, um es erneut zu versuchen.';
+
+  @override
   String get listDuplicateItem => 'Dieser Eintrag ist bereits in der Liste.';
 
   @override
