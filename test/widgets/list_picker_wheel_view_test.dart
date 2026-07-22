@@ -108,7 +108,9 @@ void main() {
     final dial = find.byKey(const ValueKey('list-wheel-dial'));
     final center = tester.getCenter(dial);
     final gesture = await tester.startGesture(center + const Offset(90, 0));
-    await gesture.moveBy(const Offset(0, 3));
+    // A radial movement is large enough to win the pan gesture arena, but it
+    // has almost no angular travel and therefore must not count as a flick.
+    await gesture.moveBy(const Offset(-30, 0));
     await gesture.up();
     await tester.pump();
 
