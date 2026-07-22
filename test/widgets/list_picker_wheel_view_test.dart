@@ -83,10 +83,7 @@ void main() {
 
     final dial = find.byKey(const ValueKey('list-wheel-dial'));
     final center = tester.getTopLeft(dial) + const Offset(120, 140);
-    final gesture = await tester.startGesture(
-      center + const Offset(90, 0),
-      timeStamp: Duration.zero,
-    );
+    final gesture = await tester.startGesture(center + const Offset(90, 0));
     await gesture.moveTo(
       center + const Offset(64, 64),
       timeStamp: const Duration(milliseconds: 10),
