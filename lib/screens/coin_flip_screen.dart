@@ -415,41 +415,37 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     final state = ref.watch(coinFlipProvider);
     final busy = _phase != _Phase.idle || state.isLoading;
 
-    return RitualBackground(
-      glowAlignment: const Alignment(0, -0.12),
-      glowRadius: 1.0,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              RitualHeader(
-                eyebrow: l10n.coinEyebrow,
-                title: l10n.coinTitle,
-                subtitle: l10n.coinRitualSubtitle,
-                titleSize: 28,
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            RitualHeader(
+              eyebrow: l10n.coinEyebrow,
+              title: l10n.coinTitle,
+              subtitle: l10n.coinRitualSubtitle,
+              titleSize: 28,
+            ),
+            Expanded(child: Center(child: _buildArena())),
+            _buildResultBlock(l10n, state, busy),
+            const SizedBox(height: 10),
+            RitualButton(
+              label: l10n.coinButton,
+              onPressed: busy ? null : _launchAuto,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              l10n.coinDragHelper,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textFaint,
               ),
-              Expanded(child: Center(child: _buildArena())),
-              _buildResultBlock(l10n, state, busy),
-              const SizedBox(height: 10),
-              RitualButton(
-                label: l10n.coinButton,
-                onPressed: busy ? null : _launchAuto,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l10n.coinDragHelper,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textFaint,
-                ),
-              ),
-              const SizedBox(height: 6),
-            ],
-          ),
+            ),
+            const SizedBox(height: 6),
+          ],
         ),
       ),
     );
