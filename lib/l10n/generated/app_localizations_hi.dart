@@ -115,6 +115,21 @@ class AppLocalizationsHi extends AppLocalizations {
   String get listChosenByUniverse => 'ब्रह्मांड द्वारा चुना गया';
 
   @override
+  String get listModeClassic => 'सूची';
+
+  @override
+  String get listModeWheel => 'पहिया';
+
+  @override
+  String get listWheelSpinButton => 'पहिया घुमाएं';
+
+  @override
+  String get listWheelHint => 'कम से कम दो विकल्प जोड़ें, फिर घुमाएं।';
+
+  @override
+  String get listWheelSpinAgainHint => 'फिर से आज़माने के लिए घुमाएं दबाएं।';
+
+  @override
   String get tarotEyebrow => 'टैरो अनुष्ठान';
 
   @override

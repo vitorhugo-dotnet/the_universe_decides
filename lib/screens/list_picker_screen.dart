@@ -3,11 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/list_picker_controller.dart';
+import 'package:theuniversedecides/screens/list_picker_wheel_view.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
 import 'package:theuniversedecides/widgets/ritual_header.dart';
+
+/// Which reveal mode List Draw is currently showing. Both modes share the
+/// same item list and state ([listPickerProvider]) — this only toggles the
+/// widget used to draw and reveal the winner.
+enum _ListPickerMode { classic, wheel }
 
 class ListPickerScreen extends ConsumerStatefulWidget {
   const ListPickerScreen({super.key});
@@ -19,6 +25,7 @@ class ListPickerScreen extends ConsumerStatefulWidget {
 class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  _ListPickerMode _mode = _ListPickerMode.classic;
 
   @override
   void dispose() {
@@ -45,7 +52,11 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
 
     ref.listen<ListPickerState>(listPickerProvider, (previous, next) {
-      if (next.selectedIndex != null &&
+      // The wheel mode plays its own haptic/sound once its spin animation
+      // visually settles (see ListPickerWheelView), since its result arrives
+      // from the service well before the animation finishes.
+      if (_mode == _ListPickerMode.classic &&
+          next.selectedIndex != null &&
           next.selectedIndex != previous?.selectedIndex) {
         HapticFeedback.mediumImpact();
         ref.read(soundEffectsProvider.notifier).playDecision();
@@ -99,53 +110,162 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          RitualButton(
-            label: l10n.listChooseButton,
-            onPressed: canPick
-                ? () => controller.pickItem(reduceMotion: reduceMotion)
-                : null,
-            maxWidth: double.infinity,
+          _ModeToggle(
+            mode: _mode,
+            onChanged: (mode) => setState(() => _mode = mode),
           ),
-          const SizedBox(height: 20),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child: state.isLoading && !state.isScanning
-                ? const Padding(
-                    key: ValueKey('loading'),
-                    padding: EdgeInsets.symmetric(vertical: 28),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                : state.items.isEmpty
-                ? _EmptyState(text: l10n.listEmptyState)
-                : Column(
-                    key: ValueKey(
-                      '${state.items.length}-${state.selectedIndex ?? -1}',
+          const SizedBox(height: 16),
+          if (_mode == _ListPickerMode.classic) ...[
+            RitualButton(
+              label: l10n.listChooseButton,
+              onPressed: canPick
+                  ? () => controller.pickItem(reduceMotion: reduceMotion)
+                  : null,
+              maxWidth: double.infinity,
+            ),
+            const SizedBox(height: 20),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: state.isLoading && !state.isScanning
+                  ? const Padding(
+                      key: ValueKey('loading'),
+                      padding: EdgeInsets.symmetric(vertical: 28),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : state.items.isEmpty
+                  ? _EmptyState(text: l10n.listEmptyState)
+                  : Column(
+                      key: ValueKey(
+                        '${state.items.length}-${state.selectedIndex ?? -1}',
+                      ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (state.selectedIndex != null) ...[
+                          _SelectedBanner(
+                            label: l10n.listChosenByUniverse,
+                            value: state.items[state.selectedIndex!],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        for (var i = 0; i < state.items.length; i++) ...[
+                          if (i > 0) const SizedBox(height: 9),
+                          _ItemRow(
+                            index: i,
+                            label: state.items[i],
+                            selected: state.selectedIndex == i,
+                            scanning:
+                                state.isScanning && state.scanIndex == i,
+                            onRemove: state.isLoading
+                                ? null
+                                : () => controller.removeItem(i),
+                          ),
+                        ],
+                      ],
                     ),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (state.selectedIndex != null) ...[
-                        _SelectedBanner(
-                          label: l10n.listChosenByUniverse,
-                          value: state.items[state.selectedIndex!],
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                      for (var i = 0; i < state.items.length; i++) ...[
-                        if (i > 0) const SizedBox(height: 9),
-                        _ItemRow(
-                          index: i,
-                          label: state.items[i],
-                          selected: state.selectedIndex == i,
-                          scanning: state.isScanning && state.scanIndex == i,
-                          onRemove: state.isLoading
-                              ? null
-                              : () => controller.removeItem(i),
-                        ),
-                      ],
-                    ],
-                  ),
+            ),
+          ] else ...[
+            const ListPickerWheelView(),
+            if (state.items.isNotEmpty) ...[
+              const SizedBox(height: 22),
+              // Full, untruncated labels always stay available here — the
+              // wheel itself may need to shorten long labels to fit a slice.
+              for (var i = 0; i < state.items.length; i++) ...[
+                if (i > 0) const SizedBox(height: 9),
+                _ItemRow(
+                  index: i,
+                  label: state.items[i],
+                  selected: false,
+                  scanning: false,
+                  onRemove: state.isLoading
+                      ? null
+                      : () => controller.removeItem(i),
+                ),
+              ],
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ModeToggle extends StatelessWidget {
+  const _ModeToggle({required this.mode, required this.onChanged});
+
+  final _ListPickerMode mode;
+  final ValueChanged<_ListPickerMode> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: const Color(0x0AFFFFFF),
+        border: Border.all(color: const Color(0x14FFFFFF)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _ModeToggleButton(
+              label: l10n.listModeClassic,
+              selected: mode == _ListPickerMode.classic,
+              onTap: () => onChanged(_ListPickerMode.classic),
+            ),
+          ),
+          Expanded(
+            child: _ModeToggleButton(
+              label: l10n.listModeWheel,
+              selected: mode == _ListPickerMode.wheel,
+              onTap: () => onChanged(_ListPickerMode.wheel),
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ModeToggleButton extends StatelessWidget {
+  const _ModeToggleButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(11),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(11),
+            gradient: selected
+                ? const LinearGradient(
+                    colors: [AppColors.gold1, AppColors.gold2],
+                  )
+                : null,
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: selected ? AppColors.goldText : AppColors.textSoft,
+            ),
+          ),
+        ),
       ),
     );
   }

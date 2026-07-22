@@ -140,4 +140,35 @@ class ListPickerController extends Notifier<ListPickerState> {
       selectedIndex: values.isEmpty ? 0 : values.first,
     );
   }
+
+  /// Fetches a winner through the exact same randomness service and rule as
+  /// [pickItem] (a single integer in `[0, itemCount)`), for the wheel mode's
+  /// reveal. Unlike [pickItem], this does not drive a fake highlight scan —
+  /// the wheel widget owns its own purely-visual spin animation and reads
+  /// [ListPickerState.selectedIndex] once this resolves. Returns the winning
+  /// index, or `null` when the spin was rejected (invalid list or already
+  /// busy) so the caller never starts an animation without a result.
+  Future<int?> spinWheel() async {
+    if (state.items.length < 2 || state.isLoading || state.isScanning) {
+      return null;
+    }
+
+    final itemCount = state.items.length;
+    state = state.copyWith(
+      isLoading: true,
+      isScanning: false,
+      scanIndex: null,
+      selectedIndex: null,
+    );
+
+    final values = await _randomOrgService.fetchIntegers(
+      count: 1,
+      min: 0,
+      max: itemCount - 1,
+    );
+    final winner = values.isEmpty ? 0 : values.first;
+
+    state = state.copyWith(isLoading: false, selectedIndex: winner);
+    return winner;
+  }
 }

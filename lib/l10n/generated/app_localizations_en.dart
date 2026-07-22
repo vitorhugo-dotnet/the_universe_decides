@@ -114,6 +114,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listChosenByUniverse => 'Chosen by the universe';
 
   @override
+  String get listModeClassic => 'List';
+
+  @override
+  String get listModeWheel => 'Wheel';
+
+  @override
+  String get listWheelSpinButton => 'Spin the wheel';
+
+  @override
+  String get listWheelHint => 'Add at least two options, then give it a spin.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Tap spin to try again.';
+
+  @override
   String get tarotEyebrow => 'Tarot Ritual';
 
   @override

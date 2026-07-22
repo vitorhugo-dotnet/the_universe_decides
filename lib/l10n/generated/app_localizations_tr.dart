@@ -116,6 +116,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String get listChosenByUniverse => 'Evren tarafından seçildi';
 
   @override
+  String get listModeClassic => 'Liste';
+
+  @override
+  String get listModeWheel => 'Çark';
+
+  @override
+  String get listWheelSpinButton => 'Çarkı çevir';
+
+  @override
+  String get listWheelHint => 'En az iki seçenek ekle, sonra çevir.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Tekrar denemek için çevire dokun.';
+
+  @override
   String get tarotEyebrow => 'Tarot Ritüeli';
 
   @override
