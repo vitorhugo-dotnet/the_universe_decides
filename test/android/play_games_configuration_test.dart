@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Android manifest maps the Play Games application ID resource', () {
+  test('Play flavor maps the Play Games application ID resource', () {
     final manifest = File(
-      'android/app/src/main/AndroidManifest.xml',
+      'android/app/src/play/AndroidManifest.xml',
     ).readAsStringSync();
 
     expect(manifest, contains('com.google.android.gms.games.APP_ID'));
@@ -13,6 +13,20 @@ void main() {
     expect(
       manifest,
       contains('com.google.android.gms.games.SUPPRESS_GAME_PROFILE_CREATION'),
+    );
+  });
+
+  test('shared manifest excludes Play Games metadata', () {
+    final manifest = File(
+      'android/app/src/main/AndroidManifest.xml',
+    ).readAsStringSync();
+
+    expect(manifest, isNot(contains('com.google.android.gms.games.APP_ID')));
+    expect(
+      manifest,
+      isNot(
+        contains('com.google.android.gms.games.SUPPRESS_GAME_PROFILE_CREATION'),
+      ),
     );
   });
 
