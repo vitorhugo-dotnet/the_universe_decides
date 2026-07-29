@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:games_services/games_services.dart';
 
 /// Play Console resource IDs, supplied at build time so generated IDs never
 /// leak into widgets. Empty IDs safely disable the corresponding feature.
@@ -36,7 +36,7 @@ class EntropyDriftPlayGamesService {
     EntropyDriftGamesGateway? gateway,
     bool? isAndroid,
     String leaderboardId = EntropyDriftPlayGamesIds.leaderboard,
-  }) : _gateway = gateway ?? const GamesServicesGateway(),
+  }) : _gateway = gateway ?? const MethodChannelGamesGateway(),
        _isAndroid = isAndroid ?? Platform.isAndroid,
        _leaderboardId = leaderboardId;
 
@@ -183,27 +183,32 @@ abstract interface class EntropyDriftGamesGateway {
   Future<void> showLeaderboard(String leaderboardId);
 }
 
-class GamesServicesGateway implements EntropyDriftGamesGateway {
-  const GamesServicesGateway();
+class MethodChannelGamesGateway implements EntropyDriftGamesGateway {
+  const MethodChannelGamesGateway();
+
+  static const _channel = MethodChannel('theuniversedecides/play_games');
 
   @override
-  Future<void> signIn() async => GamesServices.signIn();
+  Future<void> signIn() => _channel.invokeMethod<void>('signIn');
 
   @override
-  Future<bool> isSignedIn() => GamesServices.isSignedIn;
+  Future<bool> isSignedIn() async =>
+      await _channel.invokeMethod<bool>('isSignedIn') ?? false;
 
   @override
-  Future<void> unlock(String id) async => GamesServices.unlock(
-    achievement: Achievement(androidID: id, percentComplete: 100),
-  );
+  Future<void> unlock(String id) =>
+      _channel.invokeMethod<void>('unlock', <String, Object>{'id': id});
 
   @override
-  Future<void> submitScore(String leaderboardId, int score) async =>
-      GamesServices.submitScore(
-        score: Score(androidLeaderboardID: leaderboardId, value: score),
-      );
+  Future<void> submitScore(String leaderboardId, int score) =>
+      _channel.invokeMethod<void>('submitScore', <String, Object>{
+        'id': leaderboardId,
+        'score': score,
+      });
 
   @override
-  Future<void> showLeaderboard(String leaderboardId) async =>
-      GamesServices.showLeaderboards(androidLeaderboardID: leaderboardId);
+  Future<void> showLeaderboard(String leaderboardId) =>
+      _channel.invokeMethod<void>('showLeaderboard', <String, Object>{
+        'id': leaderboardId,
+      });
 }

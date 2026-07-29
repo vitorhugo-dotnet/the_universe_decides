@@ -55,10 +55,9 @@ jobs:
         run: flutter test
 
   build-android:
-    name: Build Android APK and AAB
+    name: Build Android flavors
     needs: [analyze, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,24 +83,34 @@ jobs:
         id: android_version
         run: echo "version_code=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
 
-      - name: Build release APK
-        run: flutter build apk --release --build-number "${{ steps.android_version.outputs.version_code }}"
+      - name: Build Play release APK
+        run: flutter build apk --release --flavor play --build-number "${{ steps.android_version.outputs.version_code }}"
 
-      - name: Build release AAB
-        run: flutter build appbundle --release --build-number "${{ steps.android_version.outputs.version_code }}"
+      - name: Build Play release AAB
+        run: flutter build appbundle --release --flavor play --build-number "${{ steps.android_version.outputs.version_code }}"
 
-      - name: Upload APK artifact
+      - name: Build F-Droid release APK
+        run: flutter build apk --release --flavor fdroid --build-number "${{ steps.android_version.outputs.version_code }}"
+
+      - name: Upload Play APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: the-universe-decides-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-play-release.apk
           if-no-files-found: error
 
-      - name: Upload AAB artifact
+      - name: Upload Play AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: the-universe-decides-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: build/app/outputs/bundle/playRelease/app-play-release.aab
+          if-no-files-found: error
+
+      - name: Upload F-Droid APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-universe-decides-fdroid-apk
+          path: build/app/outputs/flutter-apk/app-fdroid-release.apk
           if-no-files-found: error
 
   release:
@@ -125,22 +134,29 @@ jobs:
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
 
-      - name: Download APK artifact
+      - name: Download Play APK artifact
         uses: actions/download-artifact@v4
         with:
           name: the-universe-decides-apk
           path: dist
 
-      - name: Download AAB artifact
+      - name: Download Play AAB artifact
         uses: actions/download-artifact@v4
         with:
           name: the-universe-decides-aab
           path: dist
 
+      - name: Download F-Droid APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: the-universe-decides-fdroid-apk
+          path: dist
+
       - name: Rename release artifacts
         run: |
-          mv dist/app-release.apk "dist/the-universe-decides-${{ steps.version.outputs.tag }}.apk"
-          mv dist/app-release.aab "dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab"
+          mv dist/app-play-release.apk "dist/the-universe-decides-${{ steps.version.outputs.tag }}-play.apk"
+          mv dist/app-play-release.aab "dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab"
+          mv dist/app-fdroid-release.apk "dist/the-universe-decides-${{ steps.version.outputs.tag }}-fdroid.apk"
 
       - name: Extract changelog for this release
         run: |
@@ -160,5 +176,6 @@ jobs:
           name: ${{ steps.version.outputs.tag }}
           body_path: ${{ steps.changelog.outputs.notes_file }}
           files: |
-            dist/the-universe-decides-${{ steps.version.outputs.tag }}.apk
+            dist/the-universe-decides-${{ steps.version.outputs.tag }}-play.apk
+            dist/the-universe-decides-${{ steps.version.outputs.tag }}-fdroid.apk
             dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab

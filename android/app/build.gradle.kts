@@ -37,6 +37,16 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("play") {
+            dimension = "distribution"
+        }
+        create("fdroid") {
+            dimension = "distribution"
+        }
+    }
+
     signingConfigs {
         create("release") {
             if (hasReleaseKeystore) {
@@ -58,6 +68,10 @@ android {
                 }
         }
     }
+}
+
+dependencies {
+    "playImplementation"("com.google.android.gms:play-services-games-v2:21.0.0")
 }
 
 flutter {
