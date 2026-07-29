@@ -1,17 +1,45 @@
 # The Universe Decides 🌌
 
-The Universe Decides is a Flutter decision app with a dark mystical Material 3 interface. It uses Random.org whenever possible and silently falls back to local randomness when the network is unavailable.
+> **Can't decide? Let the universe choose.**
 
-## Included in this app
+The Universe Decides is a decision app for the moments when you want chance to make the final call. Flip a coin, roll RPG dice, draw cards, spin a wheel, or choose from your own list without turning a simple decision into a committee meeting.
 
-- Coin flip screen with animated tosses
-- RPG dice roller with configurable quantities and polyhedral sides
-- Card draw screen with a full 52-card deck
-- Custom list picker with highlighted winners
-- Consistent app naming for Android and iOS
-- Unique application identifier: `com.hugo.theuniversedecides`
-- Release signing support through `android/key.properties`
-- Custom launcher icons for Android and iOS
+Whenever possible, the app obtains results from [RANDOM.ORG](https://www.random.org/), an external service that generates randomness from atmospheric noise. When that service cannot provide a valid result, the app remains usable with local randomness and clearly warns the user that the fallback was used.
+
+## What can it decide?
+
+- Flip a coin with an animated toss
+- Roll configurable polyhedral RPG dice
+- Draw from a complete 52-card deck
+- Draw tarot cards
+- Pick an item from a custom list
+- Spin a wheel using the items from a custom list
+- Review and clear recent results
+- Access selected actions from Android quick settings
+
+Common uses include choosing what to eat or watch, settling friendly disagreements, selecting a player or activity, supporting tabletop RPG sessions, and running small transparent draws.
+
+## How randomness works
+
+1. The app requests random integers from RANDOM.ORG.
+2. When RANDOM.ORG returns a valid response, that result is used by the decision feature.
+3. Local pseudo-randomness is used only when RANDOM.ORG cannot provide a valid response, including situations such as:
+   - RANDOM.ORG being unavailable;
+   - the device being offline or experiencing a network failure;
+   - the request timing out;
+   - the IP-based RANDOM.ORG quota or rate limit being reached.
+4. Whenever local randomness is used, the app displays a visible fallback warning.
+
+The local fallback keeps decisions available when the external service cannot be reached. It is never presented to the user as a RANDOM.ORG result.
+
+## Built with
+
+- Flutter
+- Material 3
+- Riverpod
+- RANDOM.ORG HTTP integer interface
+
+Application identifier: `com.hugo.theuniversedecides`
 
 ## Android release signing
 
@@ -71,7 +99,7 @@ base64 -w 0 android/upload-keystore.jks
 
 ## Icon workflow
 
-The repository now includes branded launcher icons. If you want to regenerate them later, use the same source artwork with either:
+The repository includes branded launcher icons. To regenerate them later, use the same source artwork with either:
 
 - [App Icon Forge](https://www.appicon.co/)
 - [`flutter_launcher_icons`](https://pub.dev/packages/flutter_launcher_icons)

@@ -7,118 +7,37 @@ Each entry is written once here and reused verbatim for both the Google Play
 ## Unreleased
 
 ### en
+- Improved the public project description and clarified when RANDOM.ORG or local randomness is used.
 - Added a fully open-source Android build prepared for F-Droid.
-- A quiet connection beyond the app now finds its way more reliably. ✨
-- A familiar path may now reveal a little more to those who linger. ✨
-- You can now drag and flick the List Draw wheel for a more physical spin. 🎡
-- Fixed the coin screen background to match the Android status bar.
-- List Draw now has a spinning wheel mode — a more visual way to let chance pick from your options. 🎡
-- A small, quiet surprise is hidden somewhere in the app for the curious to find. 🌌
-- Various small fixes and polish.
-- Fixed a display issue on newer Android phones where content could sit behind the status or navigation bar.
-- Added a recent-results history you can review and clear anytime.
-- Fixed: duplicate items in custom lists no longer skew the odds.
 
 ### pt (Português)
+- Melhorada a descrição pública do projeto e esclarecido quando o RANDOM.ORG ou a aleatoriedade local são usados.
 - Adicionada uma versão Android totalmente de código aberto preparada para o F-Droid.
-- Uma conexão discreta além do app agora encontra seu caminho com mais confiança. ✨
-- Um caminho conhecido agora pode revelar um pouco mais a quem se demora. ✨
-- Agora você pode arrastar e lançar a roleta do Sorteio de Lista para um giro mais físico. 🎡
-- Corrigido o fundo da tela da moeda para combinar com a barra de status do Android.
-- O Sorteio de Lista agora tem um modo roleta — uma forma mais visual de deixar o acaso escolher entre suas opções. 🎡
-- Uma pequena surpresa discreta está escondida em algum lugar do app, para quem tiver curiosidade de procurar. 🌌
-- Pequenos ajustes e correções.
-- Corrigido um problema de exibição em celulares Android mais recentes em que o conteúdo podia ficar por trás da barra de status ou de navegação.
-- Adicionado um histórico de resultados recentes que você pode revisar e limpar quando quiser.
-- Corrigido: itens duplicados em listas personalizadas não alteram mais as chances do sorteio.
 
 ### es (Español)
+- Se mejoró la descripción pública del proyecto y se aclaró cuándo se usa RANDOM.ORG o la aleatoriedad local.
 - Se añadió una versión de Android completamente de código abierto preparada para F-Droid.
-- Una conexión discreta más allá de la app ahora encuentra su camino con mayor fiabilidad. ✨
-- Un camino conocido ahora puede revelar algo más a quien se detenga. ✨
-- Ahora puedes arrastrar e impulsar la ruleta del Sorteo de Lista para un giro más físico. 🎡
-- Corregido el fondo de la pantalla de moneda para que coincida con la barra de estado de Android.
-- El Sorteo de Lista ahora tiene un modo ruleta — una forma más visual de dejar que el azar elija entre tus opciones. 🎡
-- Hay una pequeña sorpresa silenciosa escondida en algún lugar de la app, para quien tenga curiosidad de buscarla. 🌌
-- Pequeños ajustes y correcciones.
-- Corregido un problema de visualización en teléfonos Android más recientes en el que el contenido podía quedar detrás de la barra de estado o de navegación.
-- Se agregó un historial de resultados recientes que puedes revisar y borrar cuando quieras.
-- Corregido: los elementos duplicados en listas personalizadas ya no alteran las probabilidades del sorteo.
 
 ### de (Deutsch)
+- Die öffentliche Projektbeschreibung wurde verbessert und erklärt nun klarer, wann RANDOM.ORG oder lokale Zufallswerte verwendet werden.
 - Eine vollständig quelloffene Android-Version für F-Droid wurde hinzugefügt.
-- Eine stille Verbindung über die App hinaus findet nun zuverlässiger ihren Weg. ✨
-- Ein vertrauter Weg kann nun denen etwas mehr zeigen, die kurz verweilen. ✨
-- Du kannst das Glücksrad jetzt ziehen und mit Schwung loslassen, damit es sich natürlicher dreht. 🎡
-- Der Hintergrund der Münzansicht stimmt jetzt mit der Android-Statusleiste überein.
-- Die Listenlosung hat jetzt einen Glücksrad-Modus — eine visuellere Art, den Zufall unter deinen Optionen wählen zu lassen. 🎡
-- Irgendwo in der App versteckt sich eine kleine, stille Überraschung für alle, die neugierig genug sind, sie zu suchen. 🌌
-- Kleinere Verbesserungen und Fehlerbehebungen.
-- Ein Anzeigeproblem auf neueren Android-Geräten behoben, bei dem Inhalte hinter der Status- oder Navigationsleiste verschwinden konnten.
-- Neu: ein Verlauf der letzten Ergebnisse, den du jederzeit ansehen und löschen kannst.
-- Behoben: doppelte Einträge in eigenen Listen verfälschen die Gewinnchancen nicht mehr.
 
 ### fr (Français)
+- La description publique du projet a été améliorée et précise désormais quand RANDOM.ORG ou l'aléatoire local est utilisé.
 - Ajout d’une version Android entièrement open source préparée pour F-Droid.
-- Une connexion discrète au-delà de l'app trouve désormais son chemin plus sûrement. ✨
-- Un chemin familier peut désormais en révéler un peu plus à qui s'y attarde. ✨
-- Tu peux maintenant faire glisser et lancer la roue du Tirage de Liste pour une rotation plus naturelle. 🎡
-- Correction du fond de l'écran de la pièce pour l'harmoniser avec la barre d'état Android.
-- Le Tirage de Liste propose désormais un mode roue — une façon plus visuelle de laisser le hasard choisir parmi tes options. 🎡
-- Une petite surprise discrète se cache quelque part dans l'app, pour les curieux qui sauront la chercher. 🌌
-- Petites améliorations et corrections.
-- Correction d'un problème d'affichage sur les téléphones Android récents où le contenu pouvait se retrouver derrière la barre d'état ou de navigation.
-- Ajout d'un historique des résultats récents que tu peux consulter et effacer à tout moment.
-- Corrigé : les éléments en double dans les listes personnalisées ne faussent plus les probabilités.
 
 ### hi (हिन्दी)
+- सार्वजनिक प्रोजेक्ट विवरण को बेहतर किया गया और स्पष्ट किया गया कि RANDOM.ORG या स्थानीय रैंडमनेस कब उपयोग होती है।
 - F-Droid के लिए तैयार पूरी तरह ओपन-सोर्स Android बिल्ड जोड़ा गया।
-- ऐप से परे एक शांत जुड़ाव अब अधिक भरोसेमंद ढंग से अपना रास्ता खोजता है। ✨
-- एक जाना-पहचाना रास्ता अब ठहरने वालों को कुछ और दिखा सकता है। ✨
-- अब आप सूची चयन के पहिये को खींचकर झटका दे सकते हैं, ताकि वह अधिक स्वाभाविक रूप से घूमे। 🎡
-- सिक्का स्क्रीन का बैकग्राउंड अब Android स्टेटस बार से मेल खाता है।
-- सूची चयन में अब एक पहिया मोड है — विकल्पों में से संयोग से चुनने का एक अधिक विज़ुअल तरीका। 🎡
-- ऐप में कहीं एक छोटा-सा शांत आश्चर्य छुपा है, जिज्ञासु लोगों के ढूंढने के लिए। 🌌
-- छोटे-मोटे सुधार और बग फ़िक्स।
-- नए Android फ़ोन पर एक डिस्प्ले समस्या ठीक की गई, जिसमें सामग्री स्टेटस या नेविगेशन बार के पीछे छिप सकती थी।
-- हाल के परिणामों का इतिहास जोड़ा गया, जिसे आप कभी भी देख और साफ़ कर सकते हैं।
-- ठीक किया गया: कस्टम सूचियों में डुप्लिकेट आइटम अब संभावनाओं को प्रभावित नहीं करते।
 
 ### it (Italiano)
+- Migliorata la descrizione pubblica del progetto e chiarito quando vengono usati RANDOM.ORG o la casualità locale.
 - Aggiunta una versione Android completamente open source pronta per F-Droid.
-- Una connessione discreta oltre l'app ora trova la sua strada in modo più affidabile. ✨
-- Un percorso familiare ora può rivelare qualcosa in più a chi si sofferma. ✨
-- Ora puoi trascinare e lanciare la ruota dell'Estrazione da Lista per farla girare in modo più naturale. 🎡
-- Corretto lo sfondo della schermata della moneta per abbinarlo alla barra di stato Android.
-- L'Estrazione da Lista ha ora una modalità ruota — un modo più visivo per lasciare che il caso scelga tra le tue opzioni. 🎡
-- Da qualche parte nell'app si nasconde una piccola sorpresa silenziosa, per chi ha la curiosità di cercarla. 🌌
-- Piccoli miglioramenti e correzioni.
-- Risolto un problema di visualizzazione sui telefoni Android più recenti, dove i contenuti potevano finire dietro la barra di stato o di navigazione.
-- Aggiunta una cronologia dei risultati recenti, consultabile e cancellabile in qualsiasi momento.
-- Risolto: gli elementi duplicati nelle liste personalizzate non alterano più le probabilità.
 
 ### tr (Türkçe)
+- Projenin herkese açık açıklaması geliştirildi ve RANDOM.ORG ile yerel rastgeleliğin ne zaman kullanıldığı netleştirildi.
 - F-Droid için hazırlanmış tamamen açık kaynaklı Android sürümü eklendi.
-- Uygulamanın ötesindeki sessiz bir bağlantı artık yolunu daha güvenilir biçimde buluyor. ✨
-- Tanıdık bir yol, biraz oyalananlara artık daha fazlasını gösterebilir. ✨
-- Artık Liste Çekilişi çarkını sürükleyip hızla bırakarak daha doğal bir dönüş başlatabilirsin. 🎡
-- Para ekranının arka planı Android durum çubuğuyla uyumlu hale getirildi.
-- Liste Çekilişi'nde artık bir çark modu var — seçeneklerin arasından şansın seçmesini izlemenin daha görsel bir yolu. 🎡
-- Uygulamanın bir yerinde, arayanlar için küçük ve sessiz bir sürpriz saklı. 🌌
-- Küçük iyileştirmeler ve hata düzeltmeleri.
-- Yeni Android telefonlarda içeriğin durum veya gezinme çubuğunun arkasında kalabildiği bir görüntüleme sorunu düzeltildi.
-- İstediğin zaman gözden geçirip temizleyebileceğin bir son sonuçlar geçmişi eklendi.
-- Düzeltildi: özel listelerdeki yinelenen öğeler artık olasılıkları bozmuyor.
 
 ### uk (Українська)
+- Покращено публічний опис проєкту та уточнено, коли використовується RANDOM.ORG або локальна випадковість.
 - Додано повністю відкриту Android-збірку, підготовлену для F-Droid.
-- Тихий зв’язок за межами застосунку тепер надійніше знаходить свій шлях. ✨
-- Знайомий шлях тепер може відкрити трохи більше тим, хто затримається. ✨
-- Тепер колесо Жеребкування Списку можна перетягнути й розкрутити природним рухом. 🎡
-- Фон екрана монети тепер узгоджено з рядком стану Android.
-- У Жеребкуванні Списку тепер є режим колеса — наочніший спосіб дозволити випадку обрати серед твоїх варіантів. 🎡
-- Десь у застосунку сховано маленький тихий сюрприз — для тих, хто має цікавість його знайти. 🌌
-- Дрібні покращення та виправлення.
-- Виправлено проблему з відображенням на новіших Android-пристроях, коли вміст міг опинитися за рядком стану чи панеллю навігації.
-- Додано історію останніх результатів, яку можна переглянути й очистити будь-коли.
-- Виправлено: дубльовані елементи в користувацьких списках більше не впливають на ймовірність вибору.
