@@ -83,13 +83,13 @@ jobs:
         run: |
           BUILD_NUMBER=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))
           echo "Using Android versionCode: $BUILD_NUMBER"
-          flutter build appbundle --release --build-number "$BUILD_NUMBER"
+          flutter build appbundle --release --flavor play --build-number "$BUILD_NUMBER"
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: the-universe-decides-play-beta-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: build/app/outputs/bundle/playRelease/app-play-release.aab
           if-no-files-found: error
 
       - name: Install Fastlane
@@ -100,7 +100,7 @@ jobs:
       - name: Upload to Google Play open testing
         run: |
           fastlane supply \
-            --aab build/app/outputs/bundle/release/app-release.aab \
+            --aab build/app/outputs/bundle/playRelease/app-play-release.aab \
             --track "$PLAY_TRACK" \
             --release_status completed \
             --json_key play-service-account.json \
