@@ -14,38 +14,6 @@ env:
   ANDROID_VERSION_CODE_OFFSET: "100000"
 
 jobs:
-  refresh-lockfile:
-    name: Refresh Flutter lockfile
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout pull request branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
-          cache: true
-
-      - name: Resolve and commit lockfile
-        run: |
-          flutter pub get
-          if git diff --quiet -- pubspec.lock; then
-            echo "pubspec.lock is already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pubspec.lock
-          git commit -m "build: refresh Flutter lockfile"
-          git push origin "HEAD:${{ github.head_ref }}"
-
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
