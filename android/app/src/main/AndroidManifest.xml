@@ -5,12 +5,6 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:appCategory="productivity">
-        <meta-data
-            android:name="com.google.android.gms.games.APP_ID"
-            android:value="@string/game_services_project_id" />
-        <meta-data
-            android:name="com.google.android.gms.games.SUPPRESS_GAME_PROFILE_CREATION"
-            android:value="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
