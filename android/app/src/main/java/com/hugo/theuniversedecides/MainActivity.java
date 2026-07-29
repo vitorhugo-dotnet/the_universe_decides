@@ -42,6 +42,8 @@ public class MainActivity extends FlutterActivity {
                 quickAccessEventSink = null;
             }
         });
+
+        PlayGamesBridge.register(this, flutterEngine);
     }
 
     @Override
