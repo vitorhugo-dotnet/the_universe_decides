@@ -7,6 +7,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 ## Unreleased
 
 ### en
+- Improved the public project description and clarified when RANDOM.ORG or local randomness is used.
 - A quiet connection beyond the app now finds its way more reliably. ✨
 - A familiar path may now reveal a little more to those who linger. ✨
 - You can now drag and flick the List Draw wheel for a more physical spin. 🎡
@@ -19,6 +20,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Fixed: duplicate items in custom lists no longer skew the odds.
 
 ### pt (Português)
+- Melhorada a descrição pública do projeto e esclarecido quando o RANDOM.ORG ou a aleatoriedade local são usados.
 - Uma conexão discreta além do app agora encontra seu caminho com mais confiança. ✨
 - Um caminho conhecido agora pode revelar um pouco mais a quem se demora. ✨
 - Agora você pode arrastar e lançar a roleta do Sorteio de Lista para um giro mais físico. 🎡
@@ -31,6 +33,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigido: itens duplicados em listas personalizadas não alteram mais as chances do sorteio.
 
 ### es (Español)
+- Se mejoró la descripción pública del proyecto y se aclaró cuándo se usa RANDOM.ORG o la aleatoriedad local.
 - Una conexión discreta más allá de la app ahora encuentra su camino con mayor fiabilidad. ✨
 - Un camino conocido ahora puede revelar algo más a quien se detenga. ✨
 - Ahora puedes arrastrar e impulsar la ruleta del Sorteo de Lista para un giro más físico. 🎡
@@ -43,6 +46,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corregido: los elementos duplicados en listas personalizadas ya no alteran las probabilidades del sorteo.
 
 ### de (Deutsch)
+- Die öffentliche Projektbeschreibung wurde verbessert und erklärt nun klarer, wann RANDOM.ORG oder lokale Zufallswerte verwendet werden.
 - Eine stille Verbindung über die App hinaus findet nun zuverlässiger ihren Weg. ✨
 - Ein vertrauter Weg kann nun denen etwas mehr zeigen, die kurz verweilen. ✨
 - Du kannst das Glücksrad jetzt ziehen und mit Schwung loslassen, damit es sich natürlicher dreht. 🎡
@@ -55,6 +59,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Behoben: doppelte Einträge in eigenen Listen verfälschen die Gewinnchancen nicht mehr.
 
 ### fr (Français)
+- La description publique du projet a été améliorée et précise désormais quand RANDOM.ORG ou l'aléatoire local est utilisé.
 - Une connexion discrète au-delà de l'app trouve désormais son chemin plus sûrement. ✨
 - Un chemin familier peut désormais en révéler un peu plus à qui s'y attarde. ✨
 - Tu peux maintenant faire glisser et lancer la roue du Tirage de Liste pour une rotation plus naturelle. 🎡
@@ -67,6 +72,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Corrigé : les éléments en double dans les listes personnalisées ne faussent plus les probabilités.
 
 ### hi (हिन्दी)
+- सार्वजनिक प्रोजेक्ट विवरण को बेहतर किया गया और स्पष्ट किया गया कि RANDOM.ORG या स्थानीय रैंडमनेस कब उपयोग होती है।
 - ऐप से परे एक शांत जुड़ाव अब अधिक भरोसेमंद ढंग से अपना रास्ता खोजता है। ✨
 - एक जाना-पहचाना रास्ता अब ठहरने वालों को कुछ और दिखा सकता है। ✨
 - अब आप सूची चयन के पहिये को खींचकर झटका दे सकते हैं, ताकि वह अधिक स्वाभाविक रूप से घूमे। 🎡
@@ -79,6 +85,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - ठीक किया गया: कस्टम सूचियों में डुप्लिकेट आइटम अब संभावनाओं को प्रभावित नहीं करते।
 
 ### it (Italiano)
+- Migliorata la descrizione pubblica del progetto e chiarito quando vengono usati RANDOM.ORG o la casualità locale.
 - Una connessione discreta oltre l'app ora trova la sua strada in modo più affidabile. ✨
 - Un percorso familiare ora può rivelare qualcosa in più a chi si sofferma. ✨
 - Ora puoi trascinare e lanciare la ruota dell'Estrazione da Lista per farla girare in modo più naturale. 🎡
@@ -91,6 +98,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Risolto: gli elementi duplicati nelle liste personalizzate non alterano più le probabilità.
 
 ### tr (Türkçe)
+- Projenin herkese açık açıklaması geliştirildi ve RANDOM.ORG ile yerel rastgeleliğin ne zaman kullanıldığı netleştirildi.
 - Uygulamanın ötesindeki sessiz bir bağlantı artık yolunu daha güvenilir biçimde buluyor. ✨
 - Tanıdık bir yol, biraz oyalananlara artık daha fazlasını gösterebilir. ✨
 - Artık Liste Çekilişi çarkını sürükleyip hızla bırakarak daha doğal bir dönüş başlatabilirsin. 🎡
@@ -103,6 +111,7 @@ Each entry is written once here and reused verbatim for both the Google Play
 - Düzeltildi: özel listelerdeki yinelenen öğeler artık olasılıkları bozmuyor.
 
 ### uk (Українська)
+- Покращено публічний опис проєкту та уточнено, коли використовується RANDOM.ORG або локальна випадковість.
 - Тихий зв’язок за межами застосунку тепер надійніше знаходить свій шлях. ✨
 - Знайомий шлях тепер може відкрити трохи більше тим, хто затримається. ✨
 - Тепер колесо Жеребкування Списку можна перетягнути й розкрутити природним рухом. 🎡
@@ -110,6 +119,6 @@ Each entry is written once here and reused verbatim for both the Google Play
 - У Жеребкуванні Списку тепер є режим колеса — наочніший спосіб дозволити випадку обрати серед твоїх варіантів. 🎡
 - Десь у застосунку сховано маленький тихий сюрприз — для тих, хто має цікавість його знайти. 🌌
 - Дрібні покращення та виправлення.
-- Виправлено проблему з відображенням на новіших Android-пристроях, коли вміст міг опинятися за рядком стану чи панеллю навігації.
+- Виправлено проблему з відображенням на новіших Android-пристроях, коли вміст міг опинитися за рядком стану чи панеллю навігації.
 - Додано історію останніх результатів, яку можна переглянути й очистити будь-коли.
 - Виправлено: дубльовані елементи в користувацьких списках більше не впливають на ймовірність вибору.
