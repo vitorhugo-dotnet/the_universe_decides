@@ -21,5 +21,14 @@ jobs:
       - name: Trigger Android Play Deploy workflow
         env:
           GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          VERSION_CODE_OFFSET: "100000"
         run: |
-          gh workflow run android-play-deploy.yml --repo "$GITHUB_REPOSITORY" --ref master
+          VERSION_CODE=$((VERSION_CODE_OFFSET + SOURCE_RUN_NUMBER))
+
+          echo "Deploying Android versionCode: $VERSION_CODE"
+
+          gh workflow run android-play-deploy.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref master \
+            -f version_code="$VERSION_CODE"
