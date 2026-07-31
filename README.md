@@ -77,7 +77,7 @@ The workflow runs only when a pull request or push to `master` changes a build-r
 
 Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.md`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
 
-Pull requests run analyze and tests only. Release APK/AAB builds, GitHub Releases, and Google Play deploys run only after a successful build-relevant `push` to `master`.
+Pull requests run analyze, tests, and Android flavor builds. GitHub Releases and Google Play deploys run only after a successful build-relevant `push` to `master`.
 
 Each successful release run publishes:
 
@@ -87,15 +87,10 @@ Each successful release run publishes:
 
 The repository also includes Google Play deployment workflows:
 
-- `.github/workflows/android-play-deploy.yml`: builds and uploads a signed AAB to Google Play, restricted to manual dispatches on `master`.
-- `.github/workflows/play-deploy-after-ci.yml`: triggers Play deploy after successful `CI/CD` runs on `master`.
+- `.github/workflows/android-play-deploy.yml`: builds and uploads a signed AAB to the Google Play open-testing `beta` track. It accepts manual dispatches on `master`.
+- `.github/workflows/play-deploy-after-ci.yml`: automatically dispatches the Play deployment after a successful `CI/CD` push run on `master`.
 
-Supported Play targets:
-
-- `internal`: Google Play internal testing.
-- `closed`: Google Play closed testing through the `alpha` track.
-
-See [`docs/google-play-cicd.md`](docs/google-play-cicd.md) for setup details, required secrets, and track behavior.
+See [`docs/google-play-cicd.md`](docs/google-play-cicd.md) for setup details and required secrets.
 
 ## Publishing an update to F-Droid
 
