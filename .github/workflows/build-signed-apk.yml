@@ -3,8 +3,30 @@ name: CI/CD
 on:
   push:
     branches: [master]
+    paths:
+      - ".github/workflows/build-signed-apk.yml"
+      - "lib/**"
+      - "test/**"
+      - "integration_test/**"
+      - "android/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - "l10n.yaml"
   pull_request:
     branches: [master]
+    paths:
+      - ".github/workflows/build-signed-apk.yml"
+      - "lib/**"
+      - "test/**"
+      - "integration_test/**"
+      - "android/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - "l10n.yaml"
 
 permissions:
   contents: read
