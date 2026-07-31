@@ -62,11 +62,27 @@ When `android/key.properties` is present, release builds use that keystore autom
 
 The repository includes `.github/workflows/build-signed-apk.yml`, named `CI/CD`, to run Flutter analyze, tests, Android release APK/AAB builds, and GitHub Release publishing.
 
-Pull requests run analyze and tests only. Release APK/AAB builds, GitHub Releases, and Google Play deploys run only after a successful `push` to `master`.
+The workflow runs only when a pull request or push to `master` changes a build-relevant path:
 
-On every push to `master`, the workflow publishes:
+- `.github/workflows/build-signed-apk.yml`
+- `lib/**`
+- `test/**`
+- `integration_test/**`
+- `android/**`
+- `assets/**`
+- `pubspec.yaml`
+- `pubspec.lock`
+- `analysis_options.yaml`
+- `l10n.yaml`
 
-- `the-universe-decides-v<version>+<versionCode>.apk`
+Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.md`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
+
+Pull requests run analyze and tests only. Release APK/AAB builds, GitHub Releases, and Google Play deploys run only after a successful build-relevant `push` to `master`.
+
+Each successful release run publishes:
+
+- `the-universe-decides-v<version>+<versionCode>-play.apk`
+- `the-universe-decides-v<version>+<versionCode>-fdroid.apk`
 - `the-universe-decides-v<version>+<versionCode>.aab`
 
 The repository also includes Google Play deployment workflows:
@@ -80,6 +96,20 @@ Supported Play targets:
 - `closed`: Google Play closed testing through the `alpha` track.
 
 See [`docs/google-play-cicd.md`](docs/google-play-cicd.md) for setup details, required secrets, and track behavior.
+
+## Publishing an update to F-Droid
+
+F-Droid does not publish every commit pushed to `master`. Its metadata watches release tags matching `v<major>.<minor>.<patch>+<versionCode>`.
+
+Release procedure:
+
+1. Update the application version in `pubspec.yaml` and update `CHANGELOG.md`.
+2. Merge or push the build-relevant release changes to `master`.
+3. Wait for the `CI/CD` workflow to pass. It assigns the Android version code and creates a GitHub tag such as `v2.5.1+100118`; no separate manual tag is needed when this workflow succeeds.
+4. F-Droid detects the new matching tag during its update cycle and builds the `fdroid` flavor from source. It does not install or redistribute the APK attached to the GitHub Release.
+5. Check the upstream F-Droid build status after its next update cycle.
+
+A documentation-only push will not create a release tag and therefore will not request a new F-Droid version.
 
 ## Required Android signing secrets
 
