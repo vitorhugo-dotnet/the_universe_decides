@@ -2,6 +2,10 @@
 
 Guidance for Claude Code when working in this repository (a Flutter app: The Universe Decides).
 
+Before making changes, read and follow the repository-wide instructions in
+`/AGENTS.md`, especially the CI path-filter policy and the F-Droid release
+procedure.
+
 ## Changelog on every PR
 
 Before finishing a pull request, add an entry to `CHANGELOG.md` under the
