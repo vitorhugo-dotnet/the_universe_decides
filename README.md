@@ -41,6 +41,11 @@ The local fallback keeps decisions available when the external service cannot be
 
 Application identifier: `com.hugo.theuniversedecides`
 
+## Download
+
+- [Google Play](https://play.google.com/store/apps/details?id=com.hugo.theuniversedecides)
+- [F-Droid](https://f-droid.org/packages/com.hugo.theuniversedecides)
+
 ## Android release signing
 
 1. Generate a keystore and keep it somewhere safe.
