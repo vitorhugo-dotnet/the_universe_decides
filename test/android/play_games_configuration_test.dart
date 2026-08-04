@@ -72,6 +72,8 @@ void main() {
     );
     expect(quickActivity, contains('getInitialRoute()'));
     expect(quickActivity, contains('/quick-coin'));
+    expect(quickActivity, contains('BackgroundMode.transparent'));
+    expect(quickActivity, contains('RenderMode.texture'));
     expect(manifest, contains('android:name=".QuickCoinActivity"'));
     expect(manifest, contains('android:theme="@style/QuickCoinTheme"'));
     expect(manifest, isNot(contains('SYSTEM_ALERT_WINDOW')));

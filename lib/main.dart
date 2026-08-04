@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import 'package:theuniversedecides/theme/system_ui_overlay.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPaintBaselinesEnabled = false;
   // Explicitly declare edge-to-edge instead of relying on the implicit
   // per-SDK default (see lib/theme/system_ui_overlay.dart for details).
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -25,15 +27,23 @@ class UniverseRoutes {
 }
 
 Route<void> _buildRoute(RouteSettings settings) {
-  final builder = switch (settings.name) {
-    UniverseRoutes.quickCoin => (_) => const CoinFlipScreen(
-      quickMode: true,
-      autoStart: true,
-      autoClose: true,
-    ),
-    UniverseRoutes.home || _ => (_) => const MainScreen(),
-  };
-  return MaterialPageRoute<void>(builder: builder, settings: settings);
+  if (settings.name == UniverseRoutes.quickCoin) {
+    return PageRouteBuilder<void>(
+      settings: settings,
+      opaque: false,
+      barrierColor: Colors.transparent,
+      pageBuilder: (_, _, _) => const CoinFlipScreen(
+        quickMode: true,
+        autoStart: true,
+        autoClose: true,
+      ),
+    );
+  }
+
+  return MaterialPageRoute<void>(
+    builder: (_) => const MainScreen(),
+    settings: settings,
+  );
 }
 
 class UniverseDecidesApp extends StatelessWidget {
@@ -52,6 +62,9 @@ class UniverseDecidesApp extends StatelessWidget {
     );
 
     return MaterialApp(
+      color: initialRoute == UniverseRoutes.quickCoin
+          ? Colors.transparent
+          : AppColors.scaffoldBackground,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
       builder: (context, child) =>

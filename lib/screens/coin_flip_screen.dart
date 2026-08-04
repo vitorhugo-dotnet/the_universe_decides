@@ -141,9 +141,19 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     _autoCloseQueued = true;
     Future<void>.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) {
-        Navigator.of(context).maybePop();
+        unawaited(_closeQuickMode());
       }
     });
+  }
+
+  Future<void> _closeQuickMode() async {
+    if (widget.quickMode) {
+      await SystemNavigator.pop();
+      return;
+    }
+    if (mounted) {
+      await Navigator.of(context).maybePop();
+    }
   }
 
   @override
@@ -456,9 +466,12 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     final state = ref.watch(coinFlipProvider);
     final busy = _phase != _Phase.idle || state.isLoading;
 
-    return SafeArea(
-      bottom: false,
-      child: Padding(
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: widget.quickMode ? () => unawaited(_closeQuickMode()) : null,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
         padding: widget.quickMode
             ? const EdgeInsets.fromLTRB(24, 32, 24, 24)
             : const EdgeInsets.fromLTRB(24, 24, 24, 6),
@@ -492,6 +505,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
               const SizedBox(height: 6),
             ],
           ],
+          ),
         ),
       ),
     );

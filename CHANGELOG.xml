@@ -1,35 +1,35 @@
 <en-US>
-- Flip a coin directly from Android Quick Settings in a compact translucent view that starts automatically and closes after the result.
+- Fixed Quick Settings coin flip transparency, removed debug baselines, and restored automatic closing after the result.
 </en-US>
 
 <pt-BR>
-- Jogue uma moeda diretamente pelas Configurações Rápidas do Android em uma tela compacta e translúcida, que inicia automaticamente e fecha após o resultado.
+- Corrigida a transparência do lançamento rápido da moeda, removidas as linhas de depuração e restaurado o fechamento automático após o resultado.
 </pt-BR>
 
 <es-ES>
-- Lanza una moneda directamente desde los Ajustes rápidos de Android en una vista compacta y translúcida que comienza automáticamente y se cierra tras el resultado.
+- Corregida la transparencia del lanzamiento rápido, eliminadas las líneas de depuración y restaurado el cierre automático tras el resultado.
 </es-ES>
 
 <de>
-- Wirf eine Münze direkt über die Android-Schnelleinstellungen in einer kompakten, transparenten Ansicht, die automatisch startet und sich nach dem Ergebnis schließt.
+- Die Transparenz des Schnellwurfs wurde korrigiert, Debug-Linien entfernt und das automatische Schließen nach dem Ergebnis wiederhergestellt.
 </de>
 
 <fr-FR>
-- Lancez une pièce directement depuis les réglages rapides d’Android dans une vue compacte et translucide qui démarre automatiquement et se ferme après le résultat.
+- Correction de la transparence du lancer rapide, suppression des lignes de débogage et rétablissement de la fermeture automatique après le résultat.
 </fr-FR>
 
 <hi>
-- Android की क्विक सेटिंग्स से सीधे सिक्का उछालें। कॉम्पैक्ट पारदर्शी स्क्रीन अपने आप शुरू होती है और परिणाम के बाद बंद हो जाती है।
+- क्विक कॉइन फ्लिप की पारदर्शिता ठीक की गई, डिबग लाइनें हटाई गईं और परिणाम के बाद अपने आप बंद होना बहाल किया गया।
 </hi>
 
 <it>
-- Lancia una moneta direttamente dalle Impostazioni rapide di Android in una schermata compatta e traslucida che si avvia automaticamente e si chiude dopo il risultato.
+- Corretta la trasparenza del lancio rapido, rimosse le linee di debug e ripristinata la chiusura automatica dopo il risultato.
 </it>
 
 <tr>
-- Android Hızlı Ayarlar’dan doğrudan yazı tura atın. Kompakt ve yarı saydam ekran otomatik olarak başlar ve sonuçtan sonra kapanır.
+- Hızlı yazı tura ekranının şeffaflığı düzeltildi, hata ayıklama çizgileri kaldırıldı ve sonuçtan sonra otomatik kapanma geri getirildi.
 </tr>
 
 <uk>
-- Підкидайте монету прямо зі швидких налаштувань Android у компактному напівпрозорому вікні, яке запускається автоматично й закривається після результату.
+- Виправлено прозорість швидкого підкидання монети, прибрано лінії налагодження та відновлено автоматичне закриття після результату.
 </uk>
