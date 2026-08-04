@@ -33,7 +33,23 @@ Keep the semantic version name in `pubspec.yaml` under manual control:
 version: <major>.<minor>.<patch>+<buildNumber>
 ```
 
-For a new semantic release, change only `<major>.<minor>.<patch>`. Do not manually increment `<buildNumber>`.
+Before finishing any application `feat`, `fix`, or `refactor`, increment the semantic version name exactly once according to Semantic Versioning:
+
+- `MAJOR`: incompatible or breaking application changes.
+- `MINOR`: backward-compatible features or new user-facing capabilities.
+- `PATCH`: backward-compatible fixes, refactors, performance improvements, or internal application changes.
+
+When a change fits more than one category, use the highest applicable level. Reset the lower components normally: `MAJOR` resets `MINOR` and `PATCH` to `0`; `MINOR` resets `PATCH` to `0`.
+
+Change only `<major>.<minor>.<patch>`. Preserve `<buildNumber>` exactly as it is and never increment it manually. For example:
+
+```text
+1.4.2+100037 -> 1.5.0+100037  # feature
+1.4.2+100037 -> 1.4.3+100037  # fix/refactor
+1.4.2+100037 -> 2.0.0+100037  # breaking change
+```
+
+Do not increment the semantic version for documentation-only, test-only, CI/workflow-only, changelog-only, or agent-instruction-only changes that do not modify the application.
 
 The `CI/CD` workflow is the single source of the Android build number. It chooses a value greater than the current `pubspec.yaml` build number and the latest stable release tag, while retaining the `100000 + GITHUB_RUN_NUMBER` baseline.
 
@@ -57,7 +73,7 @@ v<major>.<minor>.<patch>+<versionCode>
 
 For a new application release:
 
-1. Update the semantic version name in `pubspec.yaml` when required and add release notes to `CHANGELOG.xml`.
+1. Increment the semantic version name in `pubspec.yaml` according to the rules above and add release notes to `CHANGELOG.xml`.
 2. Merge or push the application change to `master`.
 3. Wait for the `CI/CD` workflow to pass.
 4. The workflow assigns and persists the Android build number, then creates the matching GitHub release tag automatically. Do not create a duplicate manual tag.
