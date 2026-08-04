@@ -3,8 +3,35 @@
 Guidance for Claude Code when working in this repository (a Flutter app: The Universe Decides).
 
 Before making changes, read and follow the repository-wide instructions in
-`/AGENTS.md`, especially the CI path-filter policy, changelog policy, and
-F-Droid release procedure.
+`/AGENTS.md`, especially the CI path-filter policy, semantic versioning policy,
+changelog policy, and F-Droid release procedure.
+
+## Application version name
+
+Before finishing any application `feat`, `fix`, or `refactor`, increment the
+semantic version name in `pubspec.yaml` exactly once:
+
+```yaml
+version: <major>.<minor>.<patch>+<buildNumber>
+```
+
+Choose the increment according to the change:
+
+* `MAJOR` for incompatible or breaking application changes.
+* `MINOR` for backward-compatible features or new user-facing capabilities.
+* `PATCH` for backward-compatible fixes, refactors, performance improvements,
+  or internal application changes.
+
+When multiple categories apply, use the highest applicable level and reset the
+lower components according to Semantic Versioning.
+
+Change only the `MAJOR.MINOR.PATCH` portion. Preserve the value after `+`
+exactly as it is. Never manually increment or replace the build number because
+CI/CD owns it.
+
+Do not increment the semantic version for documentation-only, test-only,
+CI/workflow-only, changelog-only, or agent-instruction-only changes that do not
+modify the application.
 
 ## Changelog for user-visible changes
 
