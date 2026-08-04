@@ -65,6 +65,83 @@ jobs:
             exit 1
           fi
 
+      - name: Prepare localized Google Play changelogs
+        shell: bash
+        env:
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          python3 <<'PY'
+          import os
+          import re
+          import shutil
+          from pathlib import Path
+
+          source_path = Path("CHANGELOG.xml")
+          metadata_path = Path(os.environ["RUNNER_TEMP"]) / "play-metadata"
+          version_code = os.environ["PLAY_VERSION_CODE"].strip()
+          expected_locales = (
+              "en-US",
+              "pt-BR",
+              "es-ES",
+              "de",
+              "fr-FR",
+              "hi",
+              "it",
+              "tr",
+              "uk",
+          )
+
+          if not version_code.isdigit():
+              raise SystemExit(f"Invalid Android versionCode: {version_code!r}")
+
+          source = source_path.read_text(encoding="utf-8")
+          block_pattern = re.compile(
+              r"<([A-Za-z0-9-]+)>\s*(.*?)\s*</\1>",
+              re.DOTALL,
+          )
+          blocks = block_pattern.findall(source)
+          locales = tuple(locale for locale, _ in blocks)
+
+          if locales != expected_locales:
+              raise SystemExit(
+                  "CHANGELOG.xml locales must appear exactly once in this order: "
+                  + ", ".join(expected_locales)
+                  + f". Found: {', '.join(locales) or 'none'}."
+              )
+
+          if block_pattern.sub("", source).strip():
+              raise SystemExit(
+                  "CHANGELOG.xml contains content outside the supported locale blocks."
+              )
+
+          shutil.rmtree(metadata_path, ignore_errors=True)
+
+          for locale, raw_notes in blocks:
+              notes = raw_notes.strip()
+              if not notes:
+                  raise SystemExit(f"CHANGELOG.xml locale {locale} is empty.")
+              if len(notes) > 500:
+                  raise SystemExit(
+                      f"CHANGELOG.xml locale {locale} exceeds 500 characters "
+                      f"({len(notes)})."
+                  )
+
+              invalid_lines = [
+                  line for line in notes.splitlines() if line and not line.startswith("- ")
+              ]
+              if invalid_lines:
+                  raise SystemExit(
+                      f"CHANGELOG.xml locale {locale} must contain only '- ' bullets."
+                  )
+
+              output_path = (
+                  metadata_path / locale / "changelogs" / f"{version_code}.txt"
+              )
+              output_path.parent.mkdir(parents=True, exist_ok=True)
+              output_path.write_text(f"{notes}\n", encoding="utf-8")
+              print(f"Prepared {output_path}")
+          PY
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -143,7 +220,7 @@ jobs:
           gem install fastlane --user-install --no-document
           echo "$(ruby -e 'print Gem.user_dir')/bin" >> "$GITHUB_PATH"
 
-      - name: Upload to Google Play open testing
+      - name: Upload AAB and changelogs to Google Play open testing
         run: |
           fastlane supply \
             --aab build/app/outputs/bundle/playRelease/app-play-release.aab \
@@ -151,8 +228,9 @@ jobs:
             --release_status completed \
             --json_key play-service-account.json \
             --package_name "$ANDROID_PACKAGE_NAME" \
+            --metadata_path "$RUNNER_TEMP/play-metadata" \
             --skip_upload_metadata true \
             --skip_upload_images true \
             --skip_upload_screenshots true \
-            --skip_upload_changelogs true \
+            --skip_upload_changelogs false \
             --rescue_changes_not_sent_for_review true
