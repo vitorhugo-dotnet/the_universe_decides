@@ -287,11 +287,11 @@ jobs:
         shell: bash
         run: |
           NOTES_FILE="dist/release-notes.md"
-          awk '/^## Unreleased/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md > "$NOTES_FILE" || true
+          sed -E '/^<\/[^>]+>$/d; s/^<([^>]+)>$/### \1/' CHANGELOG.xml > "$NOTES_FILE"
 
-          if [[ ! -s "$NOTES_FILE" ]] || ! grep -q '[^[:space:]]' "$NOTES_FILE"; then
-            echo "No CHANGELOG.md '## Unreleased' entry found; falling back to a minimal note." >&2
-            echo "See CHANGELOG.md for release notes." > "$NOTES_FILE"
+          if [[ ! -s "$NOTES_FILE" ]] || ! grep -q '^### en-US$' "$NOTES_FILE"; then
+            echo "CHANGELOG.xml is missing or could not be converted to GitHub Release Markdown." >&2
+            exit 1
           fi
 
           echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"

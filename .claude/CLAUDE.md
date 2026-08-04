@@ -3,70 +3,39 @@
 Guidance for Claude Code when working in this repository (a Flutter app: The Universe Decides).
 
 Before making changes, read and follow the repository-wide instructions in
-`/AGENTS.md`, especially the CI path-filter policy and the F-Droid release
-procedure.
+`/AGENTS.md`, especially the CI path-filter policy, changelog policy, and
+F-Droid release procedure.
 
-## Changelog on every PR
+## Changelog for user-visible changes
 
-Before finishing a pull request, add an entry to `CHANGELOG.md` under the
-`## Unreleased` section.
+Before finishing any user-visible `feat`, `fix`, or `refactor`, rewrite
+`CHANGELOG.xml`.
 
-Write the entry in every locale currently supported by the app, using the
-existing `### <code>` headings in `CHANGELOG.md`:
+Remove all previous release-note content and replace it with notes only for the
+current change. Never append new notes to old notes. Documentation, tests,
+chore-only changes, and internal refactors with no user-visible impact do not
+require release notes.
 
-* `en`
-* `pt`
-* `es`
+`CHANGELOG.xml` is the single source of truth and must be ready to copy and
+paste directly into the Google Play Console production release notes field.
+Do not create or maintain a Markdown changelog.
+
+Include every locale currently supported by the app, using exactly these Play
+Console tags and this order:
+
+* `en-US`
+* `pt-BR`
+* `es-ES`
 * `de`
-* `fr`
+* `fr-FR`
 * `hi`
 * `it`
 * `tr`
 * `uk`
 
-These locale codes correspond to the files in `lib/l10n/app_*.arb`.
+These tags correspond to the files in `lib/l10n/app_*.arb`.
 
-Keep every translation short, natural, and consistent with the tone and meaning
-of the other languages. Do not produce awkward literal translations.
-
-The changelog content is the single source of truth for:
-
-* The Google Play Console "What's new" listing.
-* The corresponding GitHub Release description.
-
-Write the release note content only once in `CHANGELOG.md`. The wording must be
-reused without alteration when preparing a release, although the surrounding
-format may differ between GitHub and Google Play.
-
-If the change is part of a feature that must remain hidden or undiscoverable
-inside the app, such as an easter egg, do not explicitly reveal the feature in
-the changelog. Use a subtle hint without spoiling it, following the tone of the
-existing Entropy Drift entry.
-
-When a release adds support for new languages, explicitly mention the newly
-supported languages in every translated changelog entry.
-
-## Google Play release notes format
-
-When generating release notes to paste into Google Play Console, extract the
-entries from the current `## Unreleased` section of `CHANGELOG.md`.
-
-Output only the final release notes. Do not include explanations, Markdown
-headings, separators, comments, or code fences.
-
-Wrap each language in an XML-like locale block using exactly these mappings:
-
-* `en` → `en-US`
-* `pt` → `pt-BR`
-* `es` → `es-ES`
-* `de` → `de`
-* `fr` → `fr-FR`
-* `hi` → `hi`
-* `it` → `it`
-* `tr` → `tr`
-* `uk` → `uk`
-
-Example structure:
+Use this exact structure:
 
 <en-US>
 - Release note.
@@ -76,22 +45,25 @@ Example structure:
 - Nota da versão.
 </pt-BR>
 
-Never use unsupported regional variants such as:
-
-* `de-DE`
-* `hi-IN`
-* `it-IT`
-* `tr-TR`
-* `uk-UA`
+Keep every translation short, natural, and consistent in meaning. Do not
+produce awkward literal translations.
 
 Additional requirements:
 
-1. Preserve the changelog wording exactly.
-2. Preserve relevant emojis.
-3. Use bullet points beginning with `-`.
-4. Keep each locale block under 500 Unicode characters.
-5. Include every supported locale, even when the change is small.
-6. Ensure every opening locale tag has an identical closing tag.
-7. Do not translate locale tags.
-8. Do not omit a language because its Play Console tag differs from its Flutter
-   localization code.
+1. Use bullet points beginning with `-`.
+2. Keep each locale block under 500 Unicode characters.
+3. Include every supported locale, even for a small change.
+4. Ensure every opening locale tag has an identical closing tag.
+5. Do not translate locale tags or use unsupported regional variants such as
+   `de-DE`, `hi-IN`, `it-IT`, `tr-TR`, or `uk-UA`.
+6. Preserve relevant emojis.
+7. If a feature must remain hidden, such as an easter egg, use a subtle hint
+   without revealing it.
+8. When adding languages, mention the newly supported languages in every locale.
+
+## GitHub Release format
+
+The CI/CD workflow converts `CHANGELOG.xml` into Markdown for the GitHub
+Release by replacing each opening locale block with a `### <locale>` heading,
+removing the closing tags, and preserving the localized bullets. Do not write
+or append a separate Markdown version manually.
