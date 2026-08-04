@@ -1,36 +1,67 @@
 # Google Play CI/CD
 
-This repository publishes the Android Flutter app to Google Play testing tracks through `.github/workflows/android-play-deploy.yml`.
+This repository publishes the Android Flutter app to the Google Play open-testing `beta` track through `.github/workflows/android-play-deploy.yml`.
 
 ## Workflow behavior
 
-- `pull_request` to `master` runs analyze and tests only.
-- `push` to `master` runs analyze, tests, Android APK/AAB release builds, and GitHub Release publishing.
-- After a successful `CI/CD` run caused by a `push` on `master`, `.github/workflows/play-deploy-after-ci.yml` triggers Google Play deploys for:
-  - `internal`: Google Play internal testing.
-  - `closed`: Google Play closed testing through the `alpha` track.
-- `.github/workflows/android-play-deploy.yml` has only a `workflow_dispatch` trigger and its deploy job is restricted to `refs/heads/master`.
-- Pull requests must never build release APK/AAB artifacts or upload anything to Google Play.
-- The Play deploy workflow builds `build/app/outputs/bundle/release/app-release.aab` with `flutter build appbundle --release`.
-- The Android `versionCode` is calculated as `ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER`.
-- The default offset is `100000`, which avoids accidentally generating a lower versionCode than previous local/manual builds.
-- Metadata, images, screenshots, and Google Play changelogs are intentionally skipped (`--skip_upload_changelogs true` etc. in `android-play-deploy.yml`) — the Play deploy workflow uploads only the binary. Play Store "What's new" text is still pasted into Play Console by hand from `CHANGELOG.md`.
-- The GitHub Release published by `.github/workflows/build-signed-apk.yml`'s `release` job *does* use `CHANGELOG.md`: it extracts the `## Unreleased` section as the release body (see "GitHub Release changelog" below). If that section is empty, it falls back to a one-line pointer to `CHANGELOG.md`.
+- Pull requests to `master` run analyze, tests, and Android flavor builds without publishing.
+- Pushes to `master` run the same validation when a CI-relevant path changes.
+- A release is created only when the push changes application inputs under `lib/**`, `android/**`, `assets/**`, `pubspec.yaml`, `pubspec.lock`, or `l10n.yaml`.
+- Changes limited to tests, analysis configuration, documentation, or workflow files do not publish a GitHub Release, F-Droid tag, or Google Play build.
+- `.github/workflows/build-signed-apk.yml` resolves one version name and build number for the entire release.
+- After validation succeeds, the workflow writes the resolved version back to `pubspec.yaml`, commits it to `master`, and creates the release tag on that exact commit.
+- `.github/workflows/android-play-deploy.yml` is a reusable workflow called by `CI/CD` after the GitHub Release is published. It also supports manual `workflow_dispatch` execution.
+- The Play workflow checks out the persisted release commit and verifies that `pubspec.yaml` matches the supplied `versionName+versionCode` before building.
+- The signed AAB is built with explicit `--build-name` and `--build-number` arguments and uploaded to the `beta` track.
+- Metadata, images, screenshots, and Google Play changelogs are intentionally skipped. The workflow uploads only the binary; Play Store "What's new" text remains sourced from `CHANGELOG.md`.
+
+## Version calculation
+
+The semantic version name is manually controlled in `pubspec.yaml`:
+
+```yaml
+version: 2.6.0+100129
+```
+
+Before a semantic release, update only `2.6.0`. The CI/CD workflow calculates the build number after `+` using the greatest safe next value from:
+
+1. `100000 + GITHUB_RUN_NUMBER`;
+2. the current `pubspec.yaml` build number plus one;
+3. the latest stable release tag build number plus one.
+
+This keeps the Android `versionCode` monotonic even if the workflow run counter or the persisted file falls behind. The same base build number is used by GitHub Release, Google Play, and the F-Droid release tag. F-Droid derives ABI-specific codes from that base through its upstream `VercodeOperation` metadata.
+
+## Persisted version commit
+
+The release workflow commits the calculated version to `pubspec.yaml` only after analyze, tests, and Android builds pass. The commit is pushed using the repository `GITHUB_TOKEN`, which prevents the write-back from recursively starting another push workflow.
+
+The release tag is created on the persisted version commit, not on the original source commit. The reusable Play workflow receives that exact commit SHA and refuses to deploy when the checked-out `pubspec.yaml` version differs from the supplied release version.
 
 ## GitHub Release changelog
 
-`CHANGELOG.md` at the repo root has one `## Unreleased` section with a subsection per locale the app supports (`### en`, `### pt (Português)`, etc. — see `CLAUDE.md` for the convention). The `release` job in `build-signed-apk.yml` extracts everything between `## Unreleased` and the next `## ` heading (or end of file) and passes it to `softprops/action-gh-release@v2` via `body_path`, so it becomes the GitHub Release description as-is.
+`CHANGELOG.md` at the repository root has one `## Unreleased` section with a subsection per locale the app supports. The release job extracts everything between `## Unreleased` and the next `## ` heading, or the end of the file, and uses it as the GitHub Release description.
 
-This repo does not currently rotate `## Unreleased` into a dated/versioned heading after a release ships — `CHANGELOG.md` is meant to be kept current by each PR (per `CLAUDE.md`), and after a release goes out, a maintainer should manually rename `## Unreleased` to something like `## v1.4.0+100123` and start a fresh empty `## Unreleased` section for the next round of PRs. Automating that rotation would mean the release workflow committing back to `master`, which was deliberately left out of scope here to avoid adding a write-back step to the release pipeline.
+When that section is empty, the workflow falls back to a short pointer to `CHANGELOG.md`.
 
-## Google Play tracks
+The workflow currently does not rotate `## Unreleased` into a dated/versioned heading. After a release, a maintainer should rename it to the released tag and create a new empty `## Unreleased` section.
 
-| Workflow target | Google Play track value | Play Console area |
+## Google Play track
+
+| Workflow | Google Play track | Play Console area |
 | --- | --- | --- |
-| `internal` | `internal` | Internal testing |
-| `closed` | `alpha` | Closed testing |
+| `android-play-deploy.yml` | `beta` | Open testing |
 
-If your Play Console closed testing track uses a custom track name instead of `alpha`, update `CLOSED_TESTING_PLAY_TRACK` in `.github/workflows/android-play-deploy.yml`.
+Production deployment remains intentionally separate and requires an explicit future workflow/review process.
+
+## Manual deployment
+
+`android-play-deploy.yml` can be manually dispatched with:
+
+- `version_name`: semantic version name, such as `2.6.0`;
+- `version_code`: persisted Android build number, such as `100130`;
+- `source_ref`: branch, tag, or commit containing exactly `version: 2.6.0+100130` in `pubspec.yaml`.
+
+The workflow fails before building when the source reference does not contain the expected persisted version.
 
 ## Required GitHub Actions secrets
 
@@ -64,15 +95,14 @@ base64 -w 0 android/upload-keystore.jks
 2. Use the same upload key represented by `ANDROID_KEYSTORE_BASE64`.
 3. Enable the Google Play Android Developer API in Google Cloud.
 4. Create a service account JSON key.
-5. Link/grant that service account access in Play Console with release permissions for this app.
+5. Link the service account in Play Console and grant release permissions for this app.
 6. Add the JSON content as `PLAY_SERVICE_ACCOUNT_JSON` in GitHub Actions secrets.
 7. Ensure the package name is `com.hugo.theuniversedecides`.
-8. Create/configure the internal testing track and tester list in Play Console.
-9. Create/configure the closed testing track and tester list in Play Console.
+8. Configure the open-testing `beta` track.
 
 ## Safety notes
 
 - Do not commit `android/key.properties`, `.jks`, or `.keystore` files.
-- The default CI workflow can still build without signing secrets because `android/app/build.gradle.kts` falls back to the debug signing config when `android/key.properties` is missing.
-- The Play deploy workflow fails early if any required secret is missing.
-- Keep production deploy separate from testing deploys. Production should be a separate PR/workflow with explicit review.
+- The default CI workflow can build without signing secrets because `android/app/build.gradle.kts` falls back to the debug signing config when `android/key.properties` is missing.
+- The Play deployment workflow fails early if any required secret is missing.
+- Keep production deployment separate from testing deployment.
