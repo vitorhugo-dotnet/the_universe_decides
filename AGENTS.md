@@ -19,7 +19,7 @@ Current CI-relevant paths:
 - `analysis_options.yaml`
 - `l10n.yaml`
 
-Do not make documentation-only changes trigger Flutter CI. This includes changes limited to `README.md`, `docs/**`, `CHANGELOG.md`, agent instructions, or unrelated YAML files.
+Do not make documentation-only changes trigger Flutter CI. This includes changes limited to `README.md`, `docs/**`, `CHANGELOG.xml`, agent instructions, or unrelated YAML files.
 
 When adding a new file or directory that becomes an input to `flutter analyze`, `flutter test`, code generation, or the Android build, update the `paths` filters in `.github/workflows/build-signed-apk.yml` and document the new input in `README.md`.
 
@@ -57,7 +57,7 @@ v<major>.<minor>.<patch>+<versionCode>
 
 For a new application release:
 
-1. Update the semantic version name in `pubspec.yaml` when required and add release notes to `CHANGELOG.md`.
+1. Update the semantic version name in `pubspec.yaml` when required and add release notes to `CHANGELOG.xml`.
 2. Merge or push the application change to `master`.
 3. Wait for the `CI/CD` workflow to pass.
 4. The workflow assigns and persists the Android build number, then creates the matching GitHub release tag automatically. Do not create a duplicate manual tag.
@@ -70,4 +70,8 @@ Keep `fdroid/com.hugo.theuniversedecides.yml` synchronized with the accepted met
 
 ## Changelog
 
-Follow the localization and Google Play release-note requirements in `.claude/CLAUDE.md`. Keep `CHANGELOG.md` as the single source of truth for release notes.
+Follow the localization and Google Play release-note requirements in `.claude/CLAUDE.md`. Keep `CHANGELOG.xml` as the single source of truth for release notes.
+
+For every user-visible `feat`, `fix`, or `refactor`, replace the entire previous content of `CHANGELOG.xml` with notes for the new change. Never append the new notes to older release notes. The file must remain directly copyable into the Google Play Console production release notes field.
+
+When publishing a GitHub Release, convert the locale blocks from `CHANGELOG.xml` to Markdown headings and preserve the localized bullet text. Do not maintain a second hand-written changelog.
