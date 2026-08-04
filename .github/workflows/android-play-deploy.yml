@@ -40,6 +40,7 @@ concurrency:
 
 env:
   FLUTTER_VERSION: "3.38.1"
+  RUBY_VERSION: "3.3"
   ANDROID_PACKAGE_NAME: "com.hugo.theuniversedecides"
   PLAY_TRACK: "beta"
 
@@ -95,7 +96,6 @@ jobs:
               "hi": "hi-IN",
               "it": "it-IT",
               "tr": "tr-TR",
-              "uk": "uk-UA",
           }
 
           if not version_code.isdigit():
@@ -224,6 +224,11 @@ jobs:
           name: the-universe-decides-play-beta-${{ inputs.version_code }}-aab
           path: build/app/outputs/bundle/playRelease/app-play-release.aab
           if-no-files-found: error
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
 
       - name: Install Fastlane
         run: |
