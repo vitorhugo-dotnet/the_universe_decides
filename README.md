@@ -80,7 +80,7 @@ The workflow runs only when a pull request or push to `master` changes a CI-rele
 - `analysis_options.yaml`
 - `l10n.yaml`
 
-Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.md`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
+Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.xml`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
 
 Pull requests and CI-only changes run validation and Android flavor builds without publishing. A release is created only when a successful push to `master` changes application inputs under `lib/**`, `android/**`, `assets/**`, `pubspec.yaml`, `pubspec.lock`, or `l10n.yaml`.
 
@@ -123,7 +123,7 @@ F-Droid does not publish every commit pushed to `master`. Its metadata watches s
 
 Release procedure:
 
-1. Update the semantic version name before `+` in `pubspec.yaml` when the release requires a new version name, and update `CHANGELOG.md`.
+1. Update the semantic version name before `+` in `pubspec.yaml` when the release requires a new version name, and update `CHANGELOG.xml`.
 2. Merge or push the application change to `master`.
 3. Wait for the `CI/CD` workflow to pass. It calculates and persists the Android build number, then creates a tag such as `v2.6.0+100130` on the version commit.
 4. F-Droid detects the new matching tag during its update cycle and builds the `fdroid` flavor from source. It does not install or redistribute the APK attached to the GitHub Release.
