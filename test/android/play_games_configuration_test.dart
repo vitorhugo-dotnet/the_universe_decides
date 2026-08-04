@@ -52,4 +52,29 @@ void main() {
       isFalse,
     );
   });
+
+  test('coin quick tile opens the translucent quick coin activity', () {
+    final tileService = File(
+      'android/app/src/main/java/com/hugo/theuniversedecides/QuickActionTileService.java',
+    ).readAsStringSync();
+    final quickActivity = File(
+      'android/app/src/main/java/com/hugo/theuniversedecides/QuickCoinActivity.java',
+    ).readAsStringSync();
+    final manifest = File(
+      'android/app/src/main/AndroidManifest.xml',
+    ).readAsStringSync();
+
+    expect(tileService, contains('getLaunchActivityClass()'));
+    expect(tileService, contains('new Intent(this, getLaunchActivityClass())'));
+    expect(
+      quickActivity,
+      contains('QuickCoinActivity extends FlutterActivity'),
+    );
+    expect(quickActivity, contains('getInitialRoute()'));
+    expect(quickActivity, contains('/quick-coin'));
+    expect(manifest, contains('android:name=".QuickCoinActivity"'));
+    expect(manifest, contains('android:theme="@style/QuickCoinTheme"'));
+    expect(manifest, isNot(contains('SYSTEM_ALERT_WINDOW')));
+    expect(manifest, isNot(contains('TYPE_APPLICATION_OVERLAY')));
+  });
 }

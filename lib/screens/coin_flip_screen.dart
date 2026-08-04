@@ -42,7 +42,16 @@ class _CoinTransform {
 }
 
 class CoinFlipScreen extends ConsumerStatefulWidget {
-  const CoinFlipScreen({super.key});
+  const CoinFlipScreen({
+    super.key,
+    this.quickMode = false,
+    this.autoStart = false,
+    this.autoClose = false,
+  });
+
+  final bool quickMode;
+  final bool autoStart;
+  final bool autoClose;
 
   @override
   ConsumerState<CoinFlipScreen> createState() => _CoinFlipScreenState();
@@ -96,6 +105,8 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   double _fromY = 0;
 
   bool _reduceMotion = false;
+  bool _autoStartQueued = false;
+  bool _autoCloseQueued = false;
 
   @override
   void initState() {
@@ -105,6 +116,34 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+
+    if (widget.autoStart) {
+      _queueAutoStart();
+    }
+  }
+
+  void _queueAutoStart() {
+    if (_autoStartQueued) {
+      return;
+    }
+    _autoStartQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _launchAuto();
+      }
+    });
+  }
+
+  void _queueAutoClose() {
+    if (!widget.autoClose || _autoCloseQueued) {
+      return;
+    }
+    _autoCloseQueued = true;
+    Future<void>.delayed(const Duration(milliseconds: 1800), () {
+      if (mounted) {
+        Navigator.of(context).maybePop();
+      }
+    });
   }
 
   @override
@@ -201,6 +240,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     _dragOffset = Offset.zero;
     setState(() {});
     _frame.value++;
+    _queueAutoClose();
   }
 
   void _endReturn() {
@@ -267,6 +307,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     HapticFeedback.selectionClick();
     unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
     _recordHistory(result);
+    _queueAutoClose();
   }
 
   /// Records the completed flip in the results history. Reuses the same
@@ -418,33 +459,38 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
+        padding: widget.quickMode
+            ? const EdgeInsets.fromLTRB(24, 32, 24, 24)
+            : const EdgeInsets.fromLTRB(24, 24, 24, 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            RitualHeader(
-              eyebrow: l10n.coinEyebrow,
-              title: l10n.coinTitle,
-              subtitle: l10n.coinRitualSubtitle,
-              titleSize: 28,
-            ),
+            if (!widget.quickMode)
+              RitualHeader(
+                eyebrow: l10n.coinEyebrow,
+                title: l10n.coinTitle,
+                subtitle: l10n.coinRitualSubtitle,
+                titleSize: 28,
+              ),
             Expanded(child: Center(child: _buildArena())),
             _buildResultBlock(l10n, state, busy),
             const SizedBox(height: 10),
-            RitualButton(
-              label: l10n.coinButton,
-              onPressed: busy ? null : _launchAuto,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              l10n.coinDragHelper,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textFaint,
+            if (!widget.quickMode) ...[
+              RitualButton(
+                label: l10n.coinButton,
+                onPressed: busy ? null : _launchAuto,
               ),
-            ),
-            const SizedBox(height: 6),
+              const SizedBox(height: 10),
+              Text(
+                l10n.coinDragHelper,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textFaint,
+                ),
+              ),
+              const SizedBox(height: 6),
+            ],
           ],
         ),
       ),
