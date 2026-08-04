@@ -90,6 +90,13 @@ jobs:
               "tr",
               "uk",
           )
+          play_locales = {
+              "de": "de-DE",
+              "hi": "hi-IN",
+              "it": "it-IT",
+              "tr": "tr-TR",
+              "uk": "uk-UA",
+          }
 
           if not version_code.isdigit():
               raise SystemExit(f"Invalid Android versionCode: {version_code!r}")
@@ -135,7 +142,10 @@ jobs:
                   )
 
               output_path = (
-                  metadata_path / locale / "changelogs" / f"{version_code}.txt"
+                  metadata_path
+                  / play_locales.get(locale, locale)
+                  / "changelogs"
+                  / f"{version_code}.txt"
               )
               output_path.parent.mkdir(parents=True, exist_ok=True)
               output_path.write_text(f"{notes}\n", encoding="utf-8")
