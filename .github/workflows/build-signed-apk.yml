@@ -169,9 +169,29 @@ jobs:
         run: flutter test
 
   build-android:
-    name: Build Android flavors
+    name: Build ${{ matrix.name }}
     needs: [version, analyze, test]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        include:
+          - name: Play APK
+            build_target: apk
+            flavor: play
+            artifact_name: the-universe-decides-apk
+            artifact_path: build/app/outputs/flutter-apk/app-play-release.apk
+          - name: Play AAB
+            build_target: appbundle
+            flavor: play
+            artifact_name: the-universe-decides-aab
+            artifact_path: build/app/outputs/bundle/playRelease/app-play-release.aab
+          - name: F-Droid APK
+            build_target: apk
+            flavor: fdroid
+            artifact_name: the-universe-decides-fdroid-apk
+            artifact_path: build/app/outputs/flutter-apk/app-fdroid-release.apk
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -193,49 +213,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Play release APK
+      - name: Build ${{ matrix.name }}
         run: |
-          flutter build apk \
+          flutter build "${{ matrix.build_target }}" \
             --release \
-            --flavor play \
+            --flavor "${{ matrix.flavor }}" \
             --build-name "${{ needs.version.outputs.version_name }}" \
             --build-number "${{ needs.version.outputs.version_code }}"
 
-      - name: Build Play release AAB
-        run: |
-          flutter build appbundle \
-            --release \
-            --flavor play \
-            --build-name "${{ needs.version.outputs.version_name }}" \
-            --build-number "${{ needs.version.outputs.version_code }}"
-
-      - name: Build F-Droid release APK
-        run: |
-          flutter build apk \
-            --release \
-            --flavor fdroid \
-            --build-name "${{ needs.version.outputs.version_name }}" \
-            --build-number "${{ needs.version.outputs.version_code }}"
-
-      - name: Upload Play APK artifact
+      - name: Upload ${{ matrix.name }} artifact
         uses: actions/upload-artifact@v4
         with:
-          name: the-universe-decides-apk
-          path: build/app/outputs/flutter-apk/app-play-release.apk
-          if-no-files-found: error
-
-      - name: Upload Play AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: the-universe-decides-aab
-          path: build/app/outputs/bundle/playRelease/app-play-release.aab
-          if-no-files-found: error
-
-      - name: Upload F-Droid APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: the-universe-decides-fdroid-apk
-          path: build/app/outputs/flutter-apk/app-fdroid-release.apk
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
           if-no-files-found: error
 
   release:
