@@ -41,6 +41,20 @@
   "listChooseButton": "Let the universe choose",
   "listEmptyState": "Add at least two options to begin.",
   "listChosenByUniverse": "Chosen by the universe",
+  "listModeClassic": "List",
+  "listModeWheel": "Wheel",
+  "listWheelSpinButton": "Spin the wheel",
+  "listWheelHint": "Add at least two options, then give it a spin.",
+  "listWheelSpinAgainHint": "Tap spin to try again.",
+  "listDuplicateItem": "This item already exists in the list.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 duplicate item was skipped.} other{{count} duplicate items were skipped.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Tarot Ritual",
   "tarotTitle": "Tarot Reading",
   "tarotSubtitle": "One card, revealed by pure chance.",
@@ -68,8 +82,18 @@
   "aboutSoundEffectsSubtitle": "Play a subtle sound when a decision is complete.",
   "aboutRandomnessCardTitle": "How does real randomness work?",
   "aboutRandomnessCardSubtitle": "Why the app avoids pseudo-random numbers",
+  "aboutHistoryCardTitle": "Recent results",
+  "aboutHistoryCardSubtitle": "Review your last outcomes",
   "aboutProfileLoadError": "Could not load the profile right now.",
   "aboutRetryButton": "Try again",
+  "historyTitle": "Recent History",
+  "historyEmptyState": "Your recent results will appear here.",
+  "historyClearButton": "Clear history",
+  "historyClearDialogTitle": "Clear history?",
+  "historyClearDialogMessage": "This removes all recent results from this device. This can't be undone.",
+  "historyClearDialogCancel": "Cancel",
+  "historyClearDialogConfirm": "Clear",
+  "historyClearedSnackbar": "History cleared.",
   "quickTileCoinAdded": "Coin shortcut added to the panel.",
   "quickTileCoinAlreadyAdded": "The coin shortcut is already in the panel.",
   "quickTileCoinCancelled": "Coin shortcut request cancelled.",

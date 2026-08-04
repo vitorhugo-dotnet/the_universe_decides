@@ -3,17 +3,131 @@ name: CI/CD
 on:
   push:
     branches: [master]
+    paths:
+      - ".github/workflows/build-signed-apk.yml"
+      - "lib/**"
+      - "test/**"
+      - "integration_test/**"
+      - "android/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - "l10n.yaml"
   pull_request:
     branches: [master]
+    paths:
+      - ".github/workflows/build-signed-apk.yml"
+      - "lib/**"
+      - "test/**"
+      - "integration_test/**"
+      - "android/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - "l10n.yaml"
 
 permissions:
   contents: read
+
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   FLUTTER_VERSION: "3.38.1"
   ANDROID_VERSION_CODE_OFFSET: "100000"
 
 jobs:
+  version:
+    name: Resolve release version
+    runs-on: ubuntu-latest
+    outputs:
+      version_name: ${{ steps.version.outputs.version_name }}
+      version_code: ${{ steps.version.outputs.version_code }}
+      tag: ${{ steps.version.outputs.tag }}
+      should_release: ${{ steps.version.outputs.should_release }}
+    steps:
+      - name: Checkout with tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version and release eligibility
+        id: version
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          VERSION_DECLARATION=$(sed -nE 's/^version:[[:space:]]*//p' pubspec.yaml | head -n 1)
+
+          if [[ -z "$VERSION_DECLARATION" ]]; then
+            echo "Unable to read version from pubspec.yaml." >&2
+            exit 1
+          fi
+
+          VERSION_NAME="${VERSION_DECLARATION%%+*}"
+
+          if [[ ! "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Stable releases require a versionName in major.minor.patch format, found '$VERSION_NAME'." >&2
+            exit 1
+          fi
+
+          CURRENT_VERSION_CODE=0
+          if [[ "$VERSION_DECLARATION" == *+* ]]; then
+            CURRENT_VERSION_CODE="${VERSION_DECLARATION##*+}"
+          fi
+
+          if [[ ! "$CURRENT_VERSION_CODE" =~ ^[0-9]+$ ]]; then
+            echo "Invalid build number in pubspec.yaml: '$CURRENT_VERSION_CODE'." >&2
+            exit 1
+          fi
+
+          LATEST_TAG_VERSION_CODE=$(
+            git tag --list 'v*+*' \
+              | sed -nE 's/^v[0-9]+\.[0-9]+\.[0-9]+\+([0-9]+)$/\1/p' \
+              | sort -n \
+              | tail -n 1
+          )
+          LATEST_TAG_VERSION_CODE="${LATEST_TAG_VERSION_CODE:-0}"
+
+          VERSION_CODE=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))
+
+          if (( VERSION_CODE <= CURRENT_VERSION_CODE )); then
+            VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+          fi
+
+          if (( VERSION_CODE <= LATEST_TAG_VERSION_CODE )); then
+            VERSION_CODE=$((LATEST_TAG_VERSION_CODE + 1))
+          fi
+
+          TAG="v${VERSION_NAME}+${VERSION_CODE}"
+          SHOULD_RELEASE=false
+
+          if [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/master" ]]; then
+            if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+              CHANGED_FILES=$(git show --pretty='' --name-only "$GITHUB_SHA")
+            else
+              CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")
+            fi
+
+            echo "Changed files:"
+            printf '%s\n' "$CHANGED_FILES"
+
+            if grep -Eq '^(lib/|android/|assets/|pubspec\.yaml$|pubspec\.lock$|l10n\.yaml$)' <<< "$CHANGED_FILES"; then
+              SHOULD_RELEASE=true
+            fi
+          fi
+
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+
+          echo "Resolved release: $TAG"
+          echo "Release eligible: $SHOULD_RELEASE"
+
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
@@ -55,10 +169,29 @@ jobs:
         run: flutter test
 
   build-android:
-    name: Build Android APK and AAB
-    needs: [analyze, test]
+    name: Build ${{ matrix.name }}
+    needs: [version, analyze, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        include:
+          - name: Play APK
+            build_target: apk
+            flavor: play
+            artifact_name: the-universe-decides-apk
+            artifact_path: build/app/outputs/flutter-apk/app-play-release.apk
+          - name: Play AAB
+            build_target: appbundle
+            flavor: play
+            artifact_name: the-universe-decides-aab
+            artifact_path: build/app/outputs/bundle/playRelease/app-play-release.aab
+          - name: F-Droid APK
+            build_target: apk
+            flavor: fdroid
+            artifact_name: the-universe-decides-fdroid-apk
+            artifact_path: build/app/outputs/flutter-apk/app-fdroid-release.apk
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,85 +213,178 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Resolve Android version code
-        id: android_version
-        run: echo "version_code=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+      - name: Build ${{ matrix.name }}
+        run: |
+          flutter build "${{ matrix.build_target }}" \
+            --release \
+            --flavor "${{ matrix.flavor }}" \
+            --build-name "${{ needs.version.outputs.version_name }}" \
+            --build-number "${{ needs.version.outputs.version_code }}"
 
-      - name: Build release APK
-        run: flutter build apk --release --build-number "${{ steps.android_version.outputs.version_code }}"
-
-      - name: Build release AAB
-        run: flutter build appbundle --release --build-number "${{ steps.android_version.outputs.version_code }}"
-
-      - name: Upload APK artifact
+      - name: Upload ${{ matrix.name }} artifact
         uses: actions/upload-artifact@v4
         with:
-          name: the-universe-decides-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
-
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: the-universe-decides-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
           if-no-files-found: error
 
   release:
-    name: Publish GitHub Release
-    needs: [build-android]
+    name: Persist version and publish GitHub Release
+    needs: [version, build-android]
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/master' &&
+      needs.version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
       contents: write
+    outputs:
+      release_commit: ${{ steps.persist_version.outputs.sha }}
     steps:
-      - name: Checkout
+      - name: Checkout source commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
 
-      - name: Resolve version and tag
-        id: version
-        run: |
-          VERSION_NAME=$(grep '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//' | cut -d'+' -f1)
-          VERSION_CODE=$((ANDROID_VERSION_CODE_OFFSET + GITHUB_RUN_NUMBER))
-          TAG="v${VERSION_NAME}+${VERSION_CODE}"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
-          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
-
-      - name: Download APK artifact
+      - name: Download Play APK artifact
         uses: actions/download-artifact@v4
         with:
           name: the-universe-decides-apk
           path: dist
 
-      - name: Download AAB artifact
+      - name: Download Play AAB artifact
         uses: actions/download-artifact@v4
         with:
           name: the-universe-decides-aab
           path: dist
 
+      - name: Download F-Droid APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: the-universe-decides-fdroid-apk
+          path: dist
+
       - name: Rename release artifacts
+        shell: bash
         run: |
-          mv dist/app-release.apk "dist/the-universe-decides-${{ steps.version.outputs.tag }}.apk"
-          mv dist/app-release.aab "dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab"
+          mv dist/app-play-release.apk "dist/the-universe-decides-${{ needs.version.outputs.tag }}-play.apk"
+          mv dist/app-play-release.aab "dist/the-universe-decides-${{ needs.version.outputs.tag }}.aab"
+          mv dist/app-fdroid-release.apk "dist/the-universe-decides-${{ needs.version.outputs.tag }}-fdroid.apk"
 
       - name: Extract changelog for this release
+        id: changelog
+        shell: bash
         run: |
           NOTES_FILE="dist/release-notes.md"
-          awk '/^## Unreleased/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md > "$NOTES_FILE" || true
-          if [ ! -s "$NOTES_FILE" ] || ! grep -q '[^[:space:]]' "$NOTES_FILE"; then
-            echo "No CHANGELOG.md '## Unreleased' entry found; falling back to a minimal note." >&2
-            echo "See CHANGELOG.md for release notes." > "$NOTES_FILE"
-          fi
-          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
-        id: changelog
+          sed -E '/^<\/[^>]+>$/d; s/^<([^>]+)>$/### \1/' CHANGELOG.xml > "$NOTES_FILE"
 
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: ${{ steps.version.outputs.tag }}
-          body_path: ${{ steps.changelog.outputs.notes_file }}
-          files: |
-            dist/the-universe-decides-${{ steps.version.outputs.tag }}.apk
-            dist/the-universe-decides-${{ steps.version.outputs.tag }}.aab
+          if [[ ! -s "$NOTES_FILE" ]] || ! grep -q '^### en-US$' "$NOTES_FILE"; then
+            echo "CHANGELOG.xml is missing or could not be converted to GitHub Release Markdown." >&2
+            exit 1
+          fi
+
+          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Persist release version in pubspec.yaml
+        id: persist_version
+        shell: bash
+        env:
+          VERSION_NAME: ${{ needs.version.outputs.version_name }}
+          VERSION_CODE: ${{ needs.version.outputs.version_code }}
+        run: |
+          EXPECTED_VERSION="${VERSION_NAME}+${VERSION_CODE}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin master --tags
+
+          REMOTE_SHA=$(git rev-parse origin/master)
+
+          if [[ "$REMOTE_SHA" != "$GITHUB_SHA" ]]; then
+            REMOTE_VERSION=$(git show origin/master:pubspec.yaml | sed -nE 's/^version:[[:space:]]*//p' | head -n 1)
+            REMOTE_PARENT=$(git rev-parse origin/master^ 2>/dev/null || true)
+
+            if [[ "$REMOTE_VERSION" == "$EXPECTED_VERSION" && "$REMOTE_PARENT" == "$GITHUB_SHA" ]]; then
+              echo "Release version commit already exists at $REMOTE_SHA."
+              echo "sha=$REMOTE_SHA" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            echo "master moved from $GITHUB_SHA to $REMOTE_SHA while the release was running." >&2
+            echo "Refusing to tag or overwrite a newer commit." >&2
+            exit 1
+          fi
+
+          sed -i -E "s/^version:.*/version: ${EXPECTED_VERSION}/" pubspec.yaml
+
+          ACTUAL_VERSION=$(sed -nE 's/^version:[[:space:]]*//p' pubspec.yaml | head -n 1)
+          if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
+            echo "Failed to persist release version '$EXPECTED_VERSION'." >&2
+            exit 1
+          fi
+
+          if git diff --quiet -- pubspec.yaml; then
+            RELEASE_SHA=$(git rev-parse HEAD)
+          else
+            git add pubspec.yaml
+            git commit -m "chore(release): persist ${EXPECTED_VERSION}"
+            git push origin HEAD:master
+            RELEASE_SHA=$(git rev-parse HEAD)
+          fi
+
+          echo "sha=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
+          RELEASE_COMMIT: ${{ steps.persist_version.outputs.sha }}
+          NOTES_FILE: ${{ steps.changelog.outputs.notes_file }}
+        run: |
+          PLAY_APK="dist/the-universe-decides-${TAG}-play.apk"
+          FDROID_APK="dist/the-universe-decides-${TAG}-fdroid.apk"
+          PLAY_AAB="dist/the-universe-decides-${TAG}.aab"
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            git fetch origin "refs/tags/${TAG}:refs/tags/${TAG}"
+            EXISTING_TAG_SHA=$(git rev-list -n 1 "$TAG")
+
+            if [[ "$EXISTING_TAG_SHA" != "$RELEASE_COMMIT" ]]; then
+              echo "Existing tag $TAG points to $EXISTING_TAG_SHA, expected $RELEASE_COMMIT." >&2
+              exit 1
+            fi
+
+            gh release upload "$TAG" \
+              "$PLAY_APK" \
+              "$FDROID_APK" \
+              "$PLAY_AAB" \
+              --clobber \
+              --repo "$GITHUB_REPOSITORY"
+
+            gh release edit "$TAG" \
+              --title "$TAG" \
+              --notes-file "$NOTES_FILE" \
+              --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" \
+              "$PLAY_APK" \
+              "$FDROID_APK" \
+              "$PLAY_AAB" \
+              --target "$RELEASE_COMMIT" \
+              --title "$TAG" \
+              --notes-file "$NOTES_FILE" \
+              --repo "$GITHUB_REPOSITORY"
+          fi
+
+  deploy-play:
+    name: Deploy Google Play open testing
+    needs: [version, release]
+    if: needs.version.outputs.should_release == 'true'
+    uses: ./.github/workflows/android-play-deploy.yml
+    with:
+      version_name: ${{ needs.version.outputs.version_name }}
+      version_code: ${{ needs.version.outputs.version_code }}
+      source_ref: ${{ needs.release.outputs.release_commit }}
+    secrets: inherit

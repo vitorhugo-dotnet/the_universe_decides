@@ -116,6 +116,35 @@ class AppLocalizationsTr extends AppLocalizations {
   String get listChosenByUniverse => 'Evren tarafından seçildi';
 
   @override
+  String get listModeClassic => 'Liste';
+
+  @override
+  String get listModeWheel => 'Çark';
+
+  @override
+  String get listWheelSpinButton => 'Çarkı çevir';
+
+  @override
+  String get listWheelHint => 'En az iki seçenek ekle, sonra çevir.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Tekrar denemek için çevire dokun.';
+
+  @override
+  String get listDuplicateItem => 'Bu öğe listede zaten var.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count yinelenen öğe atlandı.',
+      one: '1 yinelenen öğe atlandı.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Tarot Ritüeli';
 
   @override
@@ -181,10 +210,41 @@ class AppLocalizationsTr extends AppLocalizations {
       'Uygulama neden sözde rastgele sayılardan kaçınır';
 
   @override
+  String get aboutHistoryCardTitle => 'Son sonuçlar';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Son sonuçlarını gözden geçir';
+
+  @override
   String get aboutProfileLoadError => 'Profil şu anda yüklenemedi.';
 
   @override
   String get aboutRetryButton => 'Tekrar dene';
+
+  @override
+  String get historyTitle => 'Son Geçmiş';
+
+  @override
+  String get historyEmptyState => 'Son sonuçların burada görünecek.';
+
+  @override
+  String get historyClearButton => 'Geçmişi temizle';
+
+  @override
+  String get historyClearDialogTitle => 'Geçmiş temizlensin mi?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Bu, bu cihazdaki tüm son sonuçları kaldırır. Bu işlem geri alınamaz.';
+
+  @override
+  String get historyClearDialogCancel => 'İptal';
+
+  @override
+  String get historyClearDialogConfirm => 'Temizle';
+
+  @override
+  String get historyClearedSnackbar => 'Geçmiş temizlendi.';
 
   @override
   String get quickTileCoinAdded => 'Para kısayolu panele eklendi.';

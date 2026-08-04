@@ -115,6 +115,35 @@ class AppLocalizationsHi extends AppLocalizations {
   String get listChosenByUniverse => 'ब्रह्मांड द्वारा चुना गया';
 
   @override
+  String get listModeClassic => 'सूची';
+
+  @override
+  String get listModeWheel => 'पहिया';
+
+  @override
+  String get listWheelSpinButton => 'पहिया घुमाएं';
+
+  @override
+  String get listWheelHint => 'कम से कम दो विकल्प जोड़ें, फिर घुमाएं।';
+
+  @override
+  String get listWheelSpinAgainHint => 'फिर से आज़माने के लिए घुमाएं दबाएं।';
+
+  @override
+  String get listDuplicateItem => 'यह आइटम पहले से सूची में मौजूद है।';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count डुप्लिकेट आइटम छोड़ दिए गए।',
+      one: '1 डुप्लिकेट आइटम छोड़ दिया गया।',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'टैरो अनुष्ठान';
 
   @override
@@ -181,10 +210,41 @@ class AppLocalizationsHi extends AppLocalizations {
       'ऐप छद्म-यादृच्छिक संख्याओं से क्यों बचता है';
 
   @override
+  String get aboutHistoryCardTitle => 'हाल के परिणाम';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'अपने पिछले परिणाम देखें';
+
+  @override
   String get aboutProfileLoadError => 'अभी प्रोफ़ाइल लोड नहीं हो सकी।';
 
   @override
   String get aboutRetryButton => 'फिर से प्रयास करें';
+
+  @override
+  String get historyTitle => 'हाल का इतिहास';
+
+  @override
+  String get historyEmptyState => 'आपके हाल के परिणाम यहाँ दिखेंगे।';
+
+  @override
+  String get historyClearButton => 'इतिहास साफ़ करें';
+
+  @override
+  String get historyClearDialogTitle => 'इतिहास साफ़ करें?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'इससे इस डिवाइस से सभी हाल के परिणाम हट जाएंगे। इसे पूर्ववत नहीं किया जा सकता।';
+
+  @override
+  String get historyClearDialogCancel => 'रद्द करें';
+
+  @override
+  String get historyClearDialogConfirm => 'साफ़ करें';
+
+  @override
+  String get historyClearedSnackbar => 'इतिहास साफ़ हो गया।';
 
   @override
   String get quickTileCoinAdded => 'सिक्का शॉर्टकट पैनल में जोड़ा गया।';

@@ -8,11 +8,15 @@ import android.service.quicksettings.TileService;
 abstract class QuickActionTileService extends TileService {
     abstract String getQuickAccessAction();
 
+    Class<?> getLaunchActivityClass() {
+        return MainActivity.class;
+    }
+
     @Override
     public void onClick() {
         super.onClick();
 
-        Intent intent = new Intent(this, MainActivity.class)
+        Intent intent = new Intent(this, getLaunchActivityClass())
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 .putExtra(QuickAccessContract.EXTRA_ACTION, getQuickAccessAction());
 

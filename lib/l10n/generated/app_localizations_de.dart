@@ -120,6 +120,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listChosenByUniverse => 'Vom Universum gewählt';
 
   @override
+  String get listModeClassic => 'Liste';
+
+  @override
+  String get listModeWheel => 'Glücksrad';
+
+  @override
+  String get listWheelSpinButton => 'Rad drehen';
+
+  @override
+  String get listWheelHint =>
+      'Füge mindestens zwei Optionen hinzu und dreh los.';
+
+  @override
+  String get listWheelSpinAgainHint =>
+      'Tippe auf Drehen, um es erneut zu versuchen.';
+
+  @override
+  String get listDuplicateItem => 'Dieser Eintrag ist bereits in der Liste.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count doppelte Einträge wurden übersprungen.',
+      one: '1 doppelter Eintrag wurde übersprungen.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Tarot-Ritual';
 
   @override
@@ -185,11 +216,42 @@ class AppLocalizationsDe extends AppLocalizations {
       'Warum die App pseudozufällige Zahlen vermeidet';
 
   @override
+  String get aboutHistoryCardTitle => 'Letzte Ergebnisse';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Deine letzten Ergebnisse ansehen';
+
+  @override
   String get aboutProfileLoadError =>
       'Das Profil konnte gerade nicht geladen werden.';
 
   @override
   String get aboutRetryButton => 'Erneut versuchen';
+
+  @override
+  String get historyTitle => 'Letzte Ergebnisse';
+
+  @override
+  String get historyEmptyState => 'Deine letzten Ergebnisse erscheinen hier.';
+
+  @override
+  String get historyClearButton => 'Verlauf löschen';
+
+  @override
+  String get historyClearDialogTitle => 'Verlauf löschen?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Dadurch werden alle letzten Ergebnisse von diesem Gerät entfernt. Das kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get historyClearDialogCancel => 'Abbrechen';
+
+  @override
+  String get historyClearDialogConfirm => 'Löschen';
+
+  @override
+  String get historyClearedSnackbar => 'Verlauf gelöscht.';
 
   @override
   String get quickTileCoinAdded => 'Münz-Verknüpfung zum Panel hinzugefügt.';

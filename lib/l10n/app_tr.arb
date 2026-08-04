@@ -41,6 +41,20 @@
   "listChooseButton": "Evrenin seçmesine izin ver",
   "listEmptyState": "Başlamak için en az iki seçenek ekle.",
   "listChosenByUniverse": "Evren tarafından seçildi",
+  "listModeClassic": "Liste",
+  "listModeWheel": "Çark",
+  "listWheelSpinButton": "Çarkı çevir",
+  "listWheelHint": "En az iki seçenek ekle, sonra çevir.",
+  "listWheelSpinAgainHint": "Tekrar denemek için çevire dokun.",
+  "listDuplicateItem": "Bu öğe listede zaten var.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{1 yinelenen öğe atlandı.} other{{count} yinelenen öğe atlandı.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Tarot Ritüeli",
   "tarotTitle": "Tarot Falı",
   "tarotSubtitle": "Saf şansla açığa çıkan tek bir kart.",
@@ -68,8 +82,18 @@
   "aboutSoundEffectsSubtitle": "Bir karar tamamlandığında hafif bir ses çal.",
   "aboutRandomnessCardTitle": "Gerçek rastgelelik nasıl çalışır?",
   "aboutRandomnessCardSubtitle": "Uygulama neden sözde rastgele sayılardan kaçınır",
+  "aboutHistoryCardTitle": "Son sonuçlar",
+  "aboutHistoryCardSubtitle": "Son sonuçlarını gözden geçir",
   "aboutProfileLoadError": "Profil şu anda yüklenemedi.",
   "aboutRetryButton": "Tekrar dene",
+  "historyTitle": "Son Geçmiş",
+  "historyEmptyState": "Son sonuçların burada görünecek.",
+  "historyClearButton": "Geçmişi temizle",
+  "historyClearDialogTitle": "Geçmiş temizlensin mi?",
+  "historyClearDialogMessage": "Bu, bu cihazdaki tüm son sonuçları kaldırır. Bu işlem geri alınamaz.",
+  "historyClearDialogCancel": "İptal",
+  "historyClearDialogConfirm": "Temizle",
+  "historyClearedSnackbar": "Geçmiş temizlendi.",
   "quickTileCoinAdded": "Para kısayolu panele eklendi.",
   "quickTileCoinAlreadyAdded": "Para kısayolu zaten panelde.",
   "quickTileCoinCancelled": "Para kısayolu isteği iptal edildi.",

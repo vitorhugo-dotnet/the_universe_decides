@@ -12,6 +12,7 @@ import 'package:theuniversedecides/main.dart';
 import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
+import 'package:theuniversedecides/widgets/ritual_background.dart';
 
 import 'support/fake_webview_platform.dart';
 
@@ -34,6 +35,14 @@ void main() {
   tearDown(() {
     TestWidgetsFlutterBinding.instance.platformDispatcher
         .clearAccessibilityFeaturesTestValue();
+  });
+
+  testWidgets('coin screen reuses the shell background', (
+    WidgetTester tester,
+  ) async {
+    await _pumpLocalizedApp(tester, const Locale('en'));
+
+    expect(find.byType(RitualBackground), findsOneWidget);
   });
 
   testWidgets('coin screen uses the random service', (

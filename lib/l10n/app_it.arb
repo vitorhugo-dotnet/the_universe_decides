@@ -41,6 +41,20 @@
   "listChooseButton": "Lascia scegliere l'universo",
   "listEmptyState": "Aggiungi almeno due opzioni per iniziare.",
   "listChosenByUniverse": "Scelto dall'universo",
+  "listModeClassic": "Lista",
+  "listModeWheel": "Ruota",
+  "listWheelSpinButton": "Gira la ruota",
+  "listWheelHint": "Aggiungi almeno due opzioni, poi girala.",
+  "listWheelSpinAgainHint": "Tocca gira per riprovare.",
+  "listDuplicateItem": "Questo elemento è già presente nella lista.",
+  "listDuplicateItemsDiscarded": "{count, plural, one{È stato ignorato 1 elemento duplicato.} other{Sono stati ignorati {count} elementi duplicati.}}",
+  "@listDuplicateItemsDiscarded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tarotEyebrow": "Rituale dei Tarocchi",
   "tarotTitle": "Lettura dei Tarocchi",
   "tarotSubtitle": "Una carta, rivelata dal puro caso.",
@@ -68,8 +82,18 @@
   "aboutSoundEffectsSubtitle": "Riproduci un suono discreto al termine di una decisione.",
   "aboutRandomnessCardTitle": "Come funziona la casualità reale?",
   "aboutRandomnessCardSubtitle": "Perché l'app evita i numeri pseudocasuali",
+  "aboutHistoryCardTitle": "Risultati recenti",
+  "aboutHistoryCardSubtitle": "Rivedi i tuoi ultimi risultati",
   "aboutProfileLoadError": "Al momento non è stato possibile caricare il profilo.",
   "aboutRetryButton": "Riprova",
+  "historyTitle": "Cronologia Recente",
+  "historyEmptyState": "I tuoi risultati recenti appariranno qui.",
+  "historyClearButton": "Cancella cronologia",
+  "historyClearDialogTitle": "Cancellare la cronologia?",
+  "historyClearDialogMessage": "Questo rimuove tutti i risultati recenti da questo dispositivo. Questa azione non può essere annullata.",
+  "historyClearDialogCancel": "Annulla",
+  "historyClearDialogConfirm": "Cancella",
+  "historyClearedSnackbar": "Cronologia cancellata.",
   "quickTileCoinAdded": "Scorciatoia della moneta aggiunta al pannello.",
   "quickTileCoinAlreadyAdded": "La scorciatoia della moneta è già nel pannello.",
   "quickTileCoinCancelled": "Richiesta della scorciatoia della moneta annullata.",

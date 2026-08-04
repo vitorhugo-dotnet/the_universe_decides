@@ -316,6 +316,48 @@ abstract class AppLocalizations {
   /// **'Chosen by the universe'**
   String get listChosenByUniverse;
 
+  /// No description provided for @listModeClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get listModeClassic;
+
+  /// No description provided for @listModeWheel.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheel'**
+  String get listModeWheel;
+
+  /// No description provided for @listWheelSpinButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Spin the wheel'**
+  String get listWheelSpinButton;
+
+  /// No description provided for @listWheelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two options, then give it a spin.'**
+  String get listWheelHint;
+
+  /// No description provided for @listWheelSpinAgainHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap spin to try again.'**
+  String get listWheelSpinAgainHint;
+
+  /// No description provided for @listDuplicateItem.
+  ///
+  /// In en, this message translates to:
+  /// **'This item already exists in the list.'**
+  String get listDuplicateItem;
+
+  /// No description provided for @listDuplicateItemsDiscarded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 duplicate item was skipped.} other{{count} duplicate items were skipped.}}'**
+  String listDuplicateItemsDiscarded(int count);
+
   /// No description provided for @tarotEyebrow.
   ///
   /// In en, this message translates to:
@@ -436,6 +478,18 @@ abstract class AppLocalizations {
   /// **'Why the app avoids pseudo-random numbers'**
   String get aboutRandomnessCardSubtitle;
 
+  /// No description provided for @aboutHistoryCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent results'**
+  String get aboutHistoryCardTitle;
+
+  /// No description provided for @aboutHistoryCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your last outcomes'**
+  String get aboutHistoryCardSubtitle;
+
   /// No description provided for @aboutProfileLoadError.
   ///
   /// In en, this message translates to:
@@ -447,6 +501,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get aboutRetryButton;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent History'**
+  String get historyTitle;
+
+  /// No description provided for @historyEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent results will appear here.'**
+  String get historyEmptyState;
+
+  /// No description provided for @historyClearButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get historyClearButton;
+
+  /// No description provided for @historyClearDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history?'**
+  String get historyClearDialogTitle;
+
+  /// No description provided for @historyClearDialogMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes all recent results from this device. This can\'t be undone.'**
+  String get historyClearDialogMessage;
+
+  /// No description provided for @historyClearDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get historyClearDialogCancel;
+
+  /// No description provided for @historyClearDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get historyClearDialogConfirm;
+
+  /// No description provided for @historyClearedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared.'**
+  String get historyClearedSnackbar;
 
   /// No description provided for @quickTileCoinAdded.
   ///

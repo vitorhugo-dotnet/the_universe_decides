@@ -8,9 +8,11 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:theuniversedecides/main.dart';
 import 'package:theuniversedecides/minigame/entropy_drift_screen.dart';
+import 'package:theuniversedecides/minigame/entropy_drift_play_games_service.dart';
 import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
+import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
 
 import '../support/fake_webview_platform.dart';
 
@@ -30,10 +32,11 @@ void main() {
         .clearAccessibilityFeaturesTestValue();
   });
 
-  testWidgets('7 taps on the header glyph opens Entropy Drift', (
+  testWidgets('normal taps select tabs and a long press opens Entropy Drift', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
+    final playGamesService = _FakePlayGamesService();
 
     await tester.pumpWidget(
       ProviderScope(
@@ -47,28 +50,38 @@ void main() {
           quickAccessServiceProvider.overrideWith(
             (ref) => _FakeQuickAccessService(),
           ),
+          entropyDriftPlayGamesProvider.overrideWithValue(playGamesService),
         ],
         child: const UniverseDecidesApp(),
       ),
     );
     await tester.pumpAndSettle();
 
-    final glyph = find.byIcon(Icons.auto_awesome);
-    expect(glyph, findsOneWidget);
+    final navButtons = find.descendant(
+      of: find.byType(RitualBottomNav),
+      matching: find.byType(InkWell),
+    );
+    expect(navButtons, findsNWidgets(6));
+    expect(find.byIcon(Icons.auto_awesome), findsWidgets);
+    expect(find.byType(EntropyDriftScreen), findsNothing);
+    expect(playGamesService.authenticationAttempts, 0);
 
-    for (var i = 0; i < 7; i++) {
-      await tester.tap(glyph);
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-    // The glyph's pulse animation runs forward then reverse before pushing
-    // the route; each stage needs its own pump to resolve its awaited
-    // AnimationController Future.
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.longPress(navButtons.first);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byType(EntropyDriftScreen), findsOneWidget);
+    expect(playGamesService.authenticationAttempts, 1);
   });
+}
+
+class _FakePlayGamesService extends EntropyDriftPlayGamesService {
+  int authenticationAttempts = 0;
+
+  @override
+  Future<void> authenticateOnGameOpen() async {
+    authenticationAttempts++;
+  }
 }
 
 class _FakeRandomOrgService extends RandomOrgService {

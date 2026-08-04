@@ -117,6 +117,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get listChosenByUniverse => 'Choisi par l\'univers';
 
   @override
+  String get listModeClassic => 'Liste';
+
+  @override
+  String get listModeWheel => 'Roue';
+
+  @override
+  String get listWheelSpinButton => 'Faire tourner la roue';
+
+  @override
+  String get listWheelHint =>
+      'Ajoute au moins deux options, puis lance la roue.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Touche tourner pour réessayer.';
+
+  @override
+  String get listDuplicateItem => 'Cet élément existe déjà dans la liste.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count éléments en double ont été ignorés.',
+      one: '1 élément en double a été ignoré.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Rituel du Tarot';
 
   @override
@@ -182,11 +212,42 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pourquoi l\'appli évite les nombres pseudo-aléatoires';
 
   @override
+  String get aboutHistoryCardTitle => 'Résultats récents';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Consulte tes derniers résultats';
+
+  @override
   String get aboutProfileLoadError =>
       'Impossible de charger le profil pour le moment.';
 
   @override
   String get aboutRetryButton => 'Réessayer';
+
+  @override
+  String get historyTitle => 'Historique Récent';
+
+  @override
+  String get historyEmptyState => 'Tes résultats récents apparaîtront ici.';
+
+  @override
+  String get historyClearButton => 'Effacer l\'historique';
+
+  @override
+  String get historyClearDialogTitle => 'Effacer l\'historique ?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Cela supprime tous les résultats récents de cet appareil. Cette action est irréversible.';
+
+  @override
+  String get historyClearDialogCancel => 'Annuler';
+
+  @override
+  String get historyClearDialogConfirm => 'Effacer';
+
+  @override
+  String get historyClearedSnackbar => 'Historique effacé.';
 
   @override
   String get quickTileCoinAdded => 'Raccourci de la pièce ajouté au panneau.';

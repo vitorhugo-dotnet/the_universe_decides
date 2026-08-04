@@ -115,6 +115,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String get listChosenByUniverse => 'Elegido por el universo';
 
   @override
+  String get listModeClassic => 'Lista';
+
+  @override
+  String get listModeWheel => 'Ruleta';
+
+  @override
+  String get listWheelSpinButton => 'Girar la ruleta';
+
+  @override
+  String get listWheelHint => 'Agrega al menos dos opciones y gira.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Toca girar para intentarlo de nuevo.';
+
+  @override
+  String get listDuplicateItem => 'Este elemento ya existe en la lista.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se omitieron $count elementos duplicados.',
+      one: 'Se omitió 1 elemento duplicado.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Ritual del Tarot';
 
   @override
@@ -180,11 +209,42 @@ class AppLocalizationsEs extends AppLocalizations {
       'Por qué la app evita los números pseudoaleatorios';
 
   @override
+  String get aboutHistoryCardTitle => 'Resultados recientes';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Revisa tus últimos resultados';
+
+  @override
   String get aboutProfileLoadError =>
       'No se pudo cargar el perfil en este momento.';
 
   @override
   String get aboutRetryButton => 'Reintentar';
+
+  @override
+  String get historyTitle => 'Historial Reciente';
+
+  @override
+  String get historyEmptyState => 'Tus resultados recientes aparecerán aquí.';
+
+  @override
+  String get historyClearButton => 'Borrar historial';
+
+  @override
+  String get historyClearDialogTitle => '¿Borrar historial?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Esto elimina todos los resultados recientes de este dispositivo. Esta acción no se puede deshacer.';
+
+  @override
+  String get historyClearDialogCancel => 'Cancelar';
+
+  @override
+  String get historyClearDialogConfirm => 'Borrar';
+
+  @override
+  String get historyClearedSnackbar => 'Historial borrado.';
 
   @override
   String get quickTileCoinAdded =>

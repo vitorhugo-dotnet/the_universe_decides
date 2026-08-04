@@ -114,6 +114,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listChosenByUniverse => 'Chosen by the universe';
 
   @override
+  String get listModeClassic => 'List';
+
+  @override
+  String get listModeWheel => 'Wheel';
+
+  @override
+  String get listWheelSpinButton => 'Spin the wheel';
+
+  @override
+  String get listWheelHint => 'Add at least two options, then give it a spin.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Tap spin to try again.';
+
+  @override
+  String get listDuplicateItem => 'This item already exists in the list.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplicate items were skipped.',
+      one: '1 duplicate item was skipped.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Tarot Ritual';
 
   @override
@@ -179,10 +208,41 @@ class AppLocalizationsEn extends AppLocalizations {
       'Why the app avoids pseudo-random numbers';
 
   @override
+  String get aboutHistoryCardTitle => 'Recent results';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Review your last outcomes';
+
+  @override
   String get aboutProfileLoadError => 'Could not load the profile right now.';
 
   @override
   String get aboutRetryButton => 'Try again';
+
+  @override
+  String get historyTitle => 'Recent History';
+
+  @override
+  String get historyEmptyState => 'Your recent results will appear here.';
+
+  @override
+  String get historyClearButton => 'Clear history';
+
+  @override
+  String get historyClearDialogTitle => 'Clear history?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'This removes all recent results from this device. This can\'t be undone.';
+
+  @override
+  String get historyClearDialogCancel => 'Cancel';
+
+  @override
+  String get historyClearDialogConfirm => 'Clear';
+
+  @override
+  String get historyClearedSnackbar => 'History cleared.';
 
   @override
   String get quickTileCoinAdded => 'Coin shortcut added to the panel.';

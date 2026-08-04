@@ -114,6 +114,35 @@ class AppLocalizationsPt extends AppLocalizations {
   String get listChosenByUniverse => 'Escolhido pelo universo';
 
   @override
+  String get listModeClassic => 'Lista';
+
+  @override
+  String get listModeWheel => 'Roleta';
+
+  @override
+  String get listWheelSpinButton => 'Girar a roleta';
+
+  @override
+  String get listWheelHint => 'Adicione ao menos duas opções e gire.';
+
+  @override
+  String get listWheelSpinAgainHint => 'Toque em girar para tentar de novo.';
+
+  @override
+  String get listDuplicateItem => 'Este item já existe na lista.';
+
+  @override
+  String listDuplicateItemsDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens duplicados foram ignorados.',
+      one: '1 item duplicado foi ignorado.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get tarotEyebrow => 'Ritual do Tarot';
 
   @override
@@ -179,11 +208,42 @@ class AppLocalizationsPt extends AppLocalizations {
       'Por que o app não usa números pseudoaleatórios';
 
   @override
+  String get aboutHistoryCardTitle => 'Resultados recentes';
+
+  @override
+  String get aboutHistoryCardSubtitle => 'Reveja seus últimos resultados';
+
+  @override
   String get aboutProfileLoadError =>
       'Não foi possível carregar o perfil agora.';
 
   @override
   String get aboutRetryButton => 'Tentar novamente';
+
+  @override
+  String get historyTitle => 'Histórico Recente';
+
+  @override
+  String get historyEmptyState => 'Seus resultados recentes vão aparecer aqui.';
+
+  @override
+  String get historyClearButton => 'Limpar histórico';
+
+  @override
+  String get historyClearDialogTitle => 'Limpar histórico?';
+
+  @override
+  String get historyClearDialogMessage =>
+      'Isso remove todos os resultados recentes deste dispositivo. Essa ação não pode ser desfeita.';
+
+  @override
+  String get historyClearDialogCancel => 'Cancelar';
+
+  @override
+  String get historyClearDialogConfirm => 'Limpar';
+
+  @override
+  String get historyClearedSnackbar => 'Histórico limpo.';
 
   @override
   String get quickTileCoinAdded => 'Atalho da moeda adicionado ao painel.';

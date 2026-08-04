@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:theuniversedecides/controllers/coin_flip_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
+import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_background.dart';
@@ -41,7 +42,16 @@ class _CoinTransform {
 }
 
 class CoinFlipScreen extends ConsumerStatefulWidget {
-  const CoinFlipScreen({super.key});
+  const CoinFlipScreen({
+    super.key,
+    this.quickMode = false,
+    this.autoStart = false,
+    this.autoClose = false,
+  });
+
+  final bool quickMode;
+  final bool autoStart;
+  final bool autoClose;
 
   @override
   ConsumerState<CoinFlipScreen> createState() => _CoinFlipScreenState();
@@ -95,6 +105,8 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   double _fromY = 0;
 
   bool _reduceMotion = false;
+  bool _autoStartQueued = false;
+  bool _autoCloseQueued = false;
 
   @override
   void initState() {
@@ -104,6 +116,44 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+
+    if (widget.autoStart) {
+      _queueAutoStart();
+    }
+  }
+
+  void _queueAutoStart() {
+    if (_autoStartQueued) {
+      return;
+    }
+    _autoStartQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _launchAuto();
+      }
+    });
+  }
+
+  void _queueAutoClose() {
+    if (!widget.autoClose || _autoCloseQueued) {
+      return;
+    }
+    _autoCloseQueued = true;
+    Future<void>.delayed(const Duration(milliseconds: 1800), () {
+      if (mounted) {
+        unawaited(_closeQuickMode());
+      }
+    });
+  }
+
+  Future<void> _closeQuickMode() async {
+    if (widget.quickMode) {
+      await SystemNavigator.pop();
+      return;
+    }
+    if (mounted) {
+      await Navigator.of(context).maybePop();
+    }
   }
 
   @override
@@ -200,6 +250,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     _dragOffset = Offset.zero;
     setState(() {});
     _frame.value++;
+    _queueAutoClose();
   }
 
   void _endReturn() {
@@ -251,6 +302,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     if (!mounted) return;
     _pendingResult = ref.read(coinFlipProvider).result ?? 0;
     _resultReady = true;
+    _recordHistory(_pendingResult!);
   }
 
   Future<void> _launchReduced() async {
@@ -264,6 +316,21 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     });
     HapticFeedback.selectionClick();
     unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
+    _recordHistory(result);
+    _queueAutoClose();
+  }
+
+  /// Records the completed flip in the results history. Reuses the same
+  /// heads/tails label the result banner shows, so the history stays in the
+  /// language the flip was made in.
+  void _recordHistory(int result) {
+    final l10n = AppLocalizations.of(context)!;
+    final label = result == 0 ? l10n.coinHeads : l10n.coinTails;
+    unawaited(
+      ref
+          .read(resultsHistoryProvider.notifier)
+          .addEntry(modality: HistoryModality.coin, resultLabel: label),
+    );
   }
 
   // --- drag -------------------------------------------------------------------
@@ -399,25 +466,29 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     final state = ref.watch(coinFlipProvider);
     final busy = _phase != _Phase.idle || state.isLoading;
 
-    return RitualBackground(
-      glowAlignment: const Alignment(0, -0.12),
-      glowRadius: 1.0,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: widget.quickMode ? () => unawaited(_closeQuickMode()) : null,
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        padding: widget.quickMode
+            ? const EdgeInsets.fromLTRB(24, 32, 24, 24)
+            : const EdgeInsets.fromLTRB(24, 24, 24, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!widget.quickMode)
               RitualHeader(
                 eyebrow: l10n.coinEyebrow,
                 title: l10n.coinTitle,
                 subtitle: l10n.coinRitualSubtitle,
                 titleSize: 28,
               ),
-              Expanded(child: Center(child: _buildArena())),
-              _buildResultBlock(l10n, state, busy),
-              const SizedBox(height: 10),
+            Expanded(child: Center(child: _buildArena())),
+            _buildResultBlock(l10n, state, busy),
+            const SizedBox(height: 10),
+            if (!widget.quickMode) ...[
               RitualButton(
                 label: l10n.coinButton,
                 onPressed: busy ? null : _launchAuto,
@@ -433,6 +504,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
               ),
               const SizedBox(height: 6),
             ],
+          ],
           ),
         ),
       ),
