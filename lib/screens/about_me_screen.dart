@@ -26,7 +26,7 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
     'https://www.buymeacoffee.com/vitorhugo1207',
   );
   static final _privacyPolicyUri = Uri.parse(
-    'https://hugodotnet.dev/the-universe-decides/privacy-policy',
+    'https://universe.hugojava.dev/pt/privacy-policy',
   );
 
   Future<void> _openDonationPage() async {
