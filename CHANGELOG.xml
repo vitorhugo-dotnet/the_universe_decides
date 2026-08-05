@@ -1,35 +1,35 @@
 <en-US>
-- Fixed Quick Settings coin flip transparency, removed debug baselines, and restored automatic closing after the result.
+- Removed debug baseline lines from the Quick Settings coin flip and kept its temporary window out of recent apps.
 </en-US>
 
 <pt-BR>
-- Corrigida a transparência do lançamento rápido da moeda, removidas as linhas de depuração e restaurado o fechamento automático após o resultado.
+- Removidas as linhas de base de depuração do lançamento rápido da moeda e sua janela temporária deixou de aparecer nos apps recentes.
 </pt-BR>
 
 <es-ES>
-- Corregida la transparencia del lanzamiento rápido, eliminadas las líneas de depuración y restaurado el cierre automático tras el resultado.
+- Se eliminaron las líneas de base de depuración del lanzamiento rápido de moneda y su ventana temporal dejó de aparecer en las aplicaciones recientes.
 </es-ES>
 
 <de>
-- Die Transparenz des Schnellwurfs wurde korrigiert, Debug-Linien entfernt und das automatische Schließen nach dem Ergebnis wiederhergestellt.
+- Die Debug-Grundlinien des schnellen Münzwurfs wurden entfernt und sein temporäres Fenster erscheint nicht mehr in den zuletzt verwendeten Apps.
 </de>
 
 <fr-FR>
-- Correction de la transparence du lancer rapide, suppression des lignes de débogage et rétablissement de la fermeture automatique après le résultat.
+- Les lignes de base de débogage du lancer rapide ont été supprimées et sa fenêtre temporaire n’apparaît plus parmi les applications récentes.
 </fr-FR>
 
 <hi>
-- क्विक कॉइन फ्लिप की पारदर्शिता ठीक की गई, डिबग लाइनें हटाई गईं और परिणाम के बाद अपने आप बंद होना बहाल किया गया।
+- क्विक कॉइन फ्लिप से डिबग बेसलाइन लाइनें हटा दी गईं और उसकी अस्थायी विंडो अब हाल के ऐप्स में नहीं दिखेगी।
 </hi>
 
 <it>
-- Corretta la trasparenza del lancio rapido, rimosse le linee di debug e ripristinata la chiusura automatica dopo il risultato.
+- Rimosse le linee di base di debug dal lancio rapido della moneta e la relativa finestra temporanea non appare più nelle app recenti.
 </it>
 
 <tr>
-- Hızlı yazı tura ekranının şeffaflığı düzeltildi, hata ayıklama çizgileri kaldırıldı ve sonuçtan sonra otomatik kapanma geri getirildi.
+- Hızlı yazı tura ekranındaki hata ayıklama taban çizgileri kaldırıldı ve geçici penceresi artık son kullanılan uygulamalarda görünmüyor.
 </tr>
 
 <uk>
-- Виправлено прозорість швидкого підкидання монети, прибрано лінії налагодження та відновлено автоматичне закриття після результату.
+- Прибрано налагоджувальні базові лінії зі швидкого підкидання монети, а його тимчасове вікно більше не відображається в нещодавніх програмах.
 </uk>
