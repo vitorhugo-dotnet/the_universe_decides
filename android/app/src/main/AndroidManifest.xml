@@ -35,6 +35,7 @@
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:noHistory="true"
+            android:showWhenLocked="true"
             android:theme="@style/QuickCoinTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true" />
