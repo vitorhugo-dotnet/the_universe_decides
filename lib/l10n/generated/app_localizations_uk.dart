@@ -194,9 +194,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get aboutAddCoinButton => 'Додати монету';
 
   @override
-  String get aboutAddDiceButton => 'Додати d20';
-
-  @override
   String get aboutDonationButton => 'Пригостіть мене кавою';
 
   @override
@@ -261,19 +258,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'Ваша версія Android не може додати цей ярлик із застосунку.';
-
-  @override
-  String get quickTileDiceAdded => 'Ярлик d20 додано на панель.';
-
-  @override
-  String get quickTileDiceAlreadyAdded => 'Ярлик d20 вже є на панелі.';
-
-  @override
-  String get quickTileDiceCancelled => 'Запит на ярлик d20 скасовано.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'Ваша версія Android не може додати цей ярлик із застосунку.';
 
   @override

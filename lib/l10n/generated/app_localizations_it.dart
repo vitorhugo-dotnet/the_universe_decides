@@ -190,9 +190,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get aboutAddCoinButton => 'Aggiungi moneta';
 
   @override
-  String get aboutAddDiceButton => 'Aggiungi d20';
-
-  @override
   String get aboutDonationButton => 'Offrimi un caffè';
 
   @override
@@ -261,21 +258,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'La tua versione di Android non può aggiungere questa scorciatoia dall\'app.';
-
-  @override
-  String get quickTileDiceAdded => 'Scorciatoia del d20 aggiunta al pannello.';
-
-  @override
-  String get quickTileDiceAlreadyAdded =>
-      'La scorciatoia del d20 è già nel pannello.';
-
-  @override
-  String get quickTileDiceCancelled =>
-      'Richiesta della scorciatoia del d20 annullata.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'La tua versione di Android non può aggiungere questa scorciatoia dall\'app.';
 
   @override

@@ -190,9 +190,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get aboutAddCoinButton => 'Para ekle';
 
   @override
-  String get aboutAddDiceButton => 'd20 ekle';
-
-  @override
   String get aboutDonationButton => 'Bana bir kahve ısmarla';
 
   @override
@@ -257,19 +254,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'Android sürümün bu kısayolu uygulamadan ekleyemiyor.';
-
-  @override
-  String get quickTileDiceAdded => 'd20 kısayolu panele eklendi.';
-
-  @override
-  String get quickTileDiceAlreadyAdded => 'd20 kısayolu zaten panelde.';
-
-  @override
-  String get quickTileDiceCancelled => 'd20 kısayolu isteği iptal edildi.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'Android sürümün bu kısayolu uygulamadan ekleyemiyor.';
 
   @override

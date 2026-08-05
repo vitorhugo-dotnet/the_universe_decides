@@ -192,9 +192,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aboutAddCoinButton => 'Ajouter la pièce';
 
   @override
-  String get aboutAddDiceButton => 'Ajouter le d20';
-
-  @override
   String get aboutDonationButton => 'Offrez-moi un café';
 
   @override
@@ -262,20 +259,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'Ta version d\'Android ne peut pas ajouter ce raccourci depuis l\'appli.';
-
-  @override
-  String get quickTileDiceAdded => 'Raccourci du d20 ajouté au panneau.';
-
-  @override
-  String get quickTileDiceAlreadyAdded =>
-      'Le raccourci du d20 est déjà dans le panneau.';
-
-  @override
-  String get quickTileDiceCancelled => 'Demande de raccourci du d20 annulée.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'Ta version d\'Android ne peut pas ajouter ce raccourci depuis l\'appli.';
 
   @override

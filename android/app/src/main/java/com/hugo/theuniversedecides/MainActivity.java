@@ -96,15 +96,7 @@ public class MainActivity extends FlutterActivity {
         }
 
         Object actionValue = argumentMap.get(QuickAccessContract.ARG_ACTION);
-        if (!(actionValue instanceof String action)) {
-            result.error("invalid_action", "Expected a valid quick access action.", null);
-            return;
-        }
-
-        ComponentName componentName = getTileComponentName(action);
-        int labelResId = getTileLabelResId(action);
-        int iconResId = getTileIconResId(action);
-        if (componentName == null || labelResId == 0 || iconResId == 0) {
+        if (!QuickAccessContract.ACTION_COIN.equals(actionValue)) {
             result.error("invalid_action", "Unsupported quick access action.", null);
             return;
         }
@@ -116,42 +108,12 @@ public class MainActivity extends FlutterActivity {
         }
 
         statusBarManager.requestAddTileService(
-                componentName,
-                getString(labelResId),
-                Icon.createWithResource(this, iconResId),
+                new ComponentName(this, CoinQuickTileService.class),
+                getString(R.string.quick_tile_coin_label),
+                Icon.createWithResource(this, R.drawable.ic_quick_tile_coin),
                 getMainExecutor(),
                 addTileResult -> result.success(mapTileResult(addTileResult))
         );
-    }
-
-    private ComponentName getTileComponentName(String action) {
-        if (QuickAccessContract.ACTION_COIN.equals(action)) {
-            return new ComponentName(this, CoinQuickTileService.class);
-        }
-        if (QuickAccessContract.ACTION_DICE.equals(action)) {
-            return new ComponentName(this, DiceQuickTileService.class);
-        }
-        return null;
-    }
-
-    private int getTileLabelResId(String action) {
-        if (QuickAccessContract.ACTION_COIN.equals(action)) {
-            return R.string.quick_tile_coin_label;
-        }
-        if (QuickAccessContract.ACTION_DICE.equals(action)) {
-            return R.string.quick_tile_dice_label;
-        }
-        return 0;
-    }
-
-    private int getTileIconResId(String action) {
-        if (QuickAccessContract.ACTION_COIN.equals(action)) {
-            return R.drawable.ic_quick_tile_coin;
-        }
-        if (QuickAccessContract.ACTION_DICE.equals(action)) {
-            return R.drawable.ic_quick_tile_dice;
-        }
-        return 0;
     }
 
     private String mapTileResult(int addTileResult) {
@@ -173,7 +135,7 @@ public class MainActivity extends FlutterActivity {
         }
 
         String action = intent.getStringExtra(QuickAccessContract.EXTRA_ACTION);
-        if (QuickAccessContract.ACTION_COIN.equals(action) || QuickAccessContract.ACTION_DICE.equals(action)) {
+        if (QuickAccessContract.ACTION_COIN.equals(action)) {
             return action;
         }
         return null;

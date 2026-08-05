@@ -189,9 +189,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get aboutAddCoinButton => 'Añadir moneda';
 
   @override
-  String get aboutAddDiceButton => 'Añadir d20';
-
-  @override
   String get aboutDonationButton => 'Invítame un café';
 
   @override
@@ -260,21 +257,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'Tu versión de Android no puede añadir este acceso directo desde la app.';
-
-  @override
-  String get quickTileDiceAdded => 'Acceso directo del d20 añadido al panel.';
-
-  @override
-  String get quickTileDiceAlreadyAdded =>
-      'El acceso directo del d20 ya está en el panel.';
-
-  @override
-  String get quickTileDiceCancelled =>
-      'Solicitud del acceso directo del d20 cancelada.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'Tu versión de Android no puede añadir este acceso directo desde la app.';
 
   @override

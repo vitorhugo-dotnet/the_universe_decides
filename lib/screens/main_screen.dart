@@ -93,8 +93,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       switch (action) {
         case QuickAccessAction.coin:
           ref.read(coinQuickAccessTriggerProvider.notifier).trigger();
-        case QuickAccessAction.dice:
-          ref.read(diceQuickAccessTriggerProvider.notifier).trigger();
       }
     });
   }

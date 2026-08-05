@@ -189,9 +189,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get aboutAddCoinButton => 'सिक्का जोड़ें';
 
   @override
-  String get aboutAddDiceButton => 'd20 जोड़ें';
-
-  @override
   String get aboutDonationButton => 'मुझे कॉफ़ी पिलाएं';
 
   @override
@@ -259,19 +256,6 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'आपका Android संस्करण ऐप से यह शॉर्टकट नहीं जोड़ सकता।';
-
-  @override
-  String get quickTileDiceAdded => 'd20 शॉर्टकट पैनल में जोड़ा गया।';
-
-  @override
-  String get quickTileDiceAlreadyAdded => 'd20 शॉर्टकट पहले से ही पैनल में है।';
-
-  @override
-  String get quickTileDiceCancelled => 'd20 शॉर्टकट का अनुरोध रद्द किया गया।';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'आपका Android संस्करण ऐप से यह शॉर्टकट नहीं जोड़ सकता।';
 
   @override

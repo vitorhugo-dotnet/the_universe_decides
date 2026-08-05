@@ -188,9 +188,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get aboutAddCoinButton => 'Adicionar moeda';
 
   @override
-  String get aboutAddDiceButton => 'Adicionar d20';
-
-  @override
   String get aboutDonationButton => 'Compre-me um café';
 
   @override
@@ -257,20 +254,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'Seu Android nao permite pedir esse atalho pelo app.';
-
-  @override
-  String get quickTileDiceAdded => 'Atalho do d20 adicionado ao painel.';
-
-  @override
-  String get quickTileDiceAlreadyAdded =>
-      'O atalho do d20 ja estava no painel.';
-
-  @override
-  String get quickTileDiceCancelled => 'Adicao do d20 cancelada.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'Seu Android nao permite pedir esse atalho pelo app.';
 
   @override
