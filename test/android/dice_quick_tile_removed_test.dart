@@ -48,6 +48,26 @@ void main() {
     expect(mainActivity, isNot(contains('ACTION_DICE')));
   });
 
+  test('no localized strings.xml variant keeps a stale dice translation', () {
+    // Android lint's ExtraTranslation check fails the release build if a
+    // localized strings.xml defines a key the default values/strings.xml no
+    // longer has - this caught quick_tile_dice_label surviving in
+    // values-pt-rBR after the default definition was removed.
+    final resFiles = Directory(
+      'android/app/src/main/res',
+    ).listSync(recursive: true).whereType<File>().where(
+      (file) => file.path.endsWith('strings.xml'),
+    );
+
+    for (final file in resFiles) {
+      expect(
+        file.readAsStringSync(),
+        isNot(contains('quick_tile_dice_label')),
+        reason: '${file.path} should no longer define quick_tile_dice_label',
+      );
+    }
+  });
+
   test('coin quick tile service still declares its Quick Settings entry', () {
     final manifest = File(
       'android/app/src/main/AndroidManifest.xml',

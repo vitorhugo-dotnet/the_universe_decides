@@ -2,5 +2,4 @@
 <resources>
     <string name="app_name">The Universe Decides</string>
     <string name="quick_tile_coin_label">Moeda</string>
-    <string name="quick_tile_dice_label">Dado d20</string>
 </resources>
