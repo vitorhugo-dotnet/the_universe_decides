@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/screens/coin_flip_screen.dart';
-import 'package:theuniversedecides/screens/main_screen.dart';
+import 'package:theuniversedecides/screens/splash_screen.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/theme/system_ui_overlay.dart';
 
@@ -39,7 +39,7 @@ Route<void> _buildRoute(RouteSettings settings) {
   }
 
   return MaterialPageRoute<void>(
-    builder: (_) => const MainScreen(),
+    builder: (_) => const SplashScreen(),
     settings: settings,
   );
 }

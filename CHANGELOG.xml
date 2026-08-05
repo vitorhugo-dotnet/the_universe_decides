@@ -1,35 +1,35 @@
 <en-US>
-- Removed debug baseline lines from the Quick Settings coin flip and kept its temporary window out of recent apps.
+- Added an animated splash screen: a mystic coin seal now flips and settles into place as the app opens.
 </en-US>
 
 <pt-BR>
-- Removidas as linhas de base de depuração do lançamento rápido da moeda e sua janela temporária deixou de aparecer nos apps recentes.
+- Adicionada uma tela de abertura animada: um selo místico em forma de moeda agora gira e se assenta ao abrir o app.
 </pt-BR>
 
 <es-ES>
-- Se eliminaron las líneas de base de depuración del lanzamiento rápido de moneda y su ventana temporal dejó de aparecer en las aplicaciones recientes.
+- Se añadió una pantalla de inicio animada: un sello místico con forma de moneda ahora gira y se asienta al abrir la app.
 </es-ES>
 
 <de>
-- Die Debug-Grundlinien des schnellen Münzwurfs wurden entfernt und sein temporäres Fenster erscheint nicht mehr in den zuletzt verwendeten Apps.
+- Neuer animierter Startbildschirm: Ein mystisches Münzsiegel dreht sich jetzt und setzt sich beim Start der App.
 </de>
 
 <fr-FR>
-- Les lignes de base de débogage du lancer rapide ont été supprimées et sa fenêtre temporaire n’apparaît plus parmi les applications récentes.
+- Ajout d'un écran de démarrage animé : un sceau mystique en forme de pièce tourne désormais et se stabilise à l'ouverture de l'application.
 </fr-FR>
 
 <hi>
-- क्विक कॉइन फ्लिप से डिबग बेसलाइन लाइनें हटा दी गईं और उसकी अस्थायी विंडो अब हाल के ऐप्स में नहीं दिखेगी।
+- एक एनिमेटेड स्प्लैश स्क्रीन जोड़ी गई: ऐप खुलने पर एक रहस्यमयी सिक्का मुहर अब घूमकर अपनी जगह टिक जाती है।
 </hi>
 
 <it>
-- Rimosse le linee di base di debug dal lancio rapido della moneta e la relativa finestra temporanea non appare più nelle app recenti.
+- Aggiunta una schermata iniziale animata: un sigillo mistico a forma di moneta ora ruota e si assesta all'apertura dell'app.
 </it>
 
 <tr>
-- Hızlı yazı tura ekranındaki hata ayıklama taban çizgileri kaldırıldı ve geçici penceresi artık son kullanılan uygulamalarda görünmüyor.
+- Animasyonlu bir açılış ekranı eklendi: gizemli bir para mührü artık uygulama açılırken dönüp yerine oturuyor.
 </tr>
 
 <uk>
-- Прибрано налагоджувальні базові лінії зі швидкого підкидання монети, а його тимчасове вікно більше не відображається в нещодавніх програмах.
+- Додано анімований екран запуску: містична печатка-монета тепер обертається і стає на місце під час відкриття застосунку.
 </uk>
