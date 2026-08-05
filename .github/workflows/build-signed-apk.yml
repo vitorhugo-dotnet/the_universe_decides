@@ -36,7 +36,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  FLUTTER_VERSION: "3.38.1"
+  FLUTTER_VERSION: "3.44.7"
   ANDROID_VERSION_CODE_OFFSET: "100000"
 
 jobs:
