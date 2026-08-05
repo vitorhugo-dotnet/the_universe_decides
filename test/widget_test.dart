@@ -277,52 +277,9 @@ void main() {
     expect(find.text('Vitor Hugo'), findsOneWidget);
     expect(find.text('@vitorhugo-dotnet'), findsOneWidget);
     expect(find.text('Add coin'), findsOneWidget);
-    expect(find.text('Add d20'), findsOneWidget);
     expect(find.text('Buy me a coffee'), findsOneWidget);
     expect(find.byIcon(Icons.monetization_on), findsOneWidget);
-    expect(find.byIcon(Icons.casino), findsOneWidget);
     expect(githubService.usernames, ['vitorhugo-dotnet']);
-  });
-
-  testWidgets('quick dice action opens dice and rolls d20 by default', (
-    WidgetTester tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(1080, 2400);
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-
-    final randomService = _FakeRandomOrgService([
-      [17],
-    ]);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          randomOrgServiceProvider.overrideWith((ref) => randomService),
-          githubProfileServiceProvider.overrideWith(
-            (ref) => _FakeGitHubProfileService(
-              const GitHubProfile(
-                login: 'vitorhugo-dotnet',
-                avatarUrl: '',
-                name: 'Vitor Hugo',
-              ),
-            ),
-          ),
-          quickAccessServiceProvider.overrideWith(
-            (ref) =>
-                _FakeQuickAccessService(initialAction: QuickAccessAction.dice),
-          ),
-        ],
-        child: const UniverseDecidesApp(),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Total: 17'), findsOneWidget);
-    expect(randomService.requests, [(1, 1, 20)]);
   });
 
   testWidgets('app shows portuguese labels for pt-BR locale', (
@@ -616,15 +573,11 @@ class _FakeGitHubProfileService extends GitHubProfileService {
 }
 
 class _FakeQuickAccessService implements QuickAccessService {
-  _FakeQuickAccessService({this.initialAction});
-
-  final QuickAccessAction? initialAction;
-
   @override
   Stream<QuickAccessAction> get actions => const Stream.empty();
 
   @override
-  Future<QuickAccessAction?> getInitialAction() async => initialAction;
+  Future<QuickAccessAction?> getInitialAction() async => null;
 
   @override
   Future<QuickAccessTileRequestResult> requestTile(

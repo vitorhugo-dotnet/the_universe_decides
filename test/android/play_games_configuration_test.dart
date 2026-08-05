@@ -55,7 +55,7 @@ void main() {
 
   test('coin quick tile opens the translucent quick coin activity', () {
     final tileService = File(
-      'android/app/src/main/java/com/hugo/theuniversedecides/QuickActionTileService.java',
+      'android/app/src/main/java/com/hugo/theuniversedecides/CoinQuickTileService.java',
     ).readAsStringSync();
     final quickActivity = File(
       'android/app/src/main/java/com/hugo/theuniversedecides/QuickCoinActivity.java',
@@ -64,8 +64,8 @@ void main() {
       'android/app/src/main/AndroidManifest.xml',
     ).readAsStringSync();
 
-    expect(tileService, contains('getLaunchActivityClass()'));
-    expect(tileService, contains('new Intent(this, getLaunchActivityClass())'));
+    expect(tileService, contains('extends TileService'));
+    expect(tileService, contains('new Intent(this, QuickCoinActivity.class)'));
     expect(
       quickActivity,
       contains('QuickCoinActivity extends FlutterActivity'),

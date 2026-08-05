@@ -5,23 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum QuickAccessAction {
-  coin,
-  dice;
+  coin;
 
   int get tabIndex => switch (this) {
     QuickAccessAction.coin => 0,
-    QuickAccessAction.dice => 1,
   };
 
   String get value => switch (this) {
     QuickAccessAction.coin => 'coin',
-    QuickAccessAction.dice => 'dice',
   };
 
   static QuickAccessAction? fromValue(String? value) {
     return switch (value) {
       'coin' => QuickAccessAction.coin,
-      'dice' => QuickAccessAction.dice,
       _ => null,
     };
   }
@@ -47,10 +43,6 @@ final quickAccessServiceProvider = Provider<QuickAccessService>(
 );
 
 final coinQuickAccessTriggerProvider =
-    NotifierProvider<QuickAccessTriggerNotifier, int>(
-      QuickAccessTriggerNotifier.new,
-    );
-final diceQuickAccessTriggerProvider =
     NotifierProvider<QuickAccessTriggerNotifier, int>(
       QuickAccessTriggerNotifier.new,
     );

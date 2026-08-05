@@ -35,6 +35,7 @@
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:noHistory="true"
+            android:showWhenLocked="true"
             android:theme="@style/QuickCoinTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true" />
@@ -43,16 +44,6 @@
             android:exported="true"
             android:icon="@drawable/ic_quick_tile_coin"
             android:label="@string/quick_tile_coin_label"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
-            </intent-filter>
-        </service>
-        <service
-            android:name=".DiceQuickTileService"
-            android:exported="true"
-            android:icon="@drawable/ic_quick_tile_dice"
-            android:label="@string/quick_tile_dice_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE"/>

@@ -6,7 +6,6 @@ final class QuickAccessContract {
     static final String EXTRA_ACTION = "quick_action";
     static final String ARG_ACTION = "action";
     static final String ACTION_COIN = "coin";
-    static final String ACTION_DICE = "dice";
 
     private QuickAccessContract() {}
 }

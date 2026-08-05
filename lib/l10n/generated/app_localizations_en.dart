@@ -188,9 +188,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutAddCoinButton => 'Add coin';
 
   @override
-  String get aboutAddDiceButton => 'Add d20';
-
-  @override
   String get aboutDonationButton => 'Buy me a coffee';
 
   @override
@@ -256,20 +253,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickTileCoinUnsupported =>
-      'Your Android version cannot add this shortcut from the app.';
-
-  @override
-  String get quickTileDiceAdded => 'd20 shortcut added to the panel.';
-
-  @override
-  String get quickTileDiceAlreadyAdded =>
-      'The d20 shortcut is already in the panel.';
-
-  @override
-  String get quickTileDiceCancelled => 'd20 shortcut request cancelled.';
-
-  @override
-  String get quickTileDiceUnsupported =>
       'Your Android version cannot add this shortcut from the app.';
 
   @override

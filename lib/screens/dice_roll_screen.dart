@@ -10,7 +10,6 @@ import 'package:theuniversedecides/dice/dice_bridge_message.dart';
 import 'package:theuniversedecides/dice/dice_roll_request.dart';
 import 'package:theuniversedecides/dice/dice_web_view.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
-import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
@@ -146,14 +145,6 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
           next.results.isNotEmpty) {
         _recordHistory(l10n, next);
       }
-    });
-    ref.listen<int>(diceQuickAccessTriggerProvider, (previous, next) {
-      if (previous == next) {
-        return;
-      }
-      controller.setDiceCount(1);
-      controller.setSelectedSides(20);
-      _startRoll();
     });
 
     return SingleChildScrollView(

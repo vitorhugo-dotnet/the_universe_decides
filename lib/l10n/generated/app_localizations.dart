@@ -442,12 +442,6 @@ abstract class AppLocalizations {
   /// **'Add coin'**
   String get aboutAddCoinButton;
 
-  /// No description provided for @aboutAddDiceButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Add d20'**
-  String get aboutAddDiceButton;
-
   /// No description provided for @aboutDonationButton.
   ///
   /// In en, this message translates to:
@@ -573,30 +567,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your Android version cannot add this shortcut from the app.'**
   String get quickTileCoinUnsupported;
-
-  /// No description provided for @quickTileDiceAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'d20 shortcut added to the panel.'**
-  String get quickTileDiceAdded;
-
-  /// No description provided for @quickTileDiceAlreadyAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'The d20 shortcut is already in the panel.'**
-  String get quickTileDiceAlreadyAdded;
-
-  /// No description provided for @quickTileDiceCancelled.
-  ///
-  /// In en, this message translates to:
-  /// **'d20 shortcut request cancelled.'**
-  String get quickTileDiceCancelled;
-
-  /// No description provided for @quickTileDiceUnsupported.
-  ///
-  /// In en, this message translates to:
-  /// **'Your Android version cannot add this shortcut from the app.'**
-  String get quickTileDiceUnsupported;
 
   /// No description provided for @randomnessSheetEyebrow.
   ///

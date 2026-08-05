@@ -56,14 +56,6 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
         l10n.quickTileCoinCancelled,
       (QuickAccessAction.coin, QuickAccessTileRequestResult.unsupported) =>
         l10n.quickTileCoinUnsupported,
-      (QuickAccessAction.dice, QuickAccessTileRequestResult.added) =>
-        l10n.quickTileDiceAdded,
-      (QuickAccessAction.dice, QuickAccessTileRequestResult.alreadyAdded) =>
-        l10n.quickTileDiceAlreadyAdded,
-      (QuickAccessAction.dice, QuickAccessTileRequestResult.cancelled) =>
-        l10n.quickTileDiceCancelled,
-      (QuickAccessAction.dice, QuickAccessTileRequestResult.unsupported) =>
-        l10n.quickTileDiceUnsupported,
     };
 
     messenger.showSnackBar(SnackBar(content: Text(message)));
@@ -126,24 +118,13 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _ShortcutButton(
-                  icon: Icons.monetization_on,
-                  label: l10n.aboutAddCoinButton,
-                  onTap: () => _requestTile(QuickAccessAction.coin),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _ShortcutButton(
-                  icon: Icons.casino,
-                  label: l10n.aboutAddDiceButton,
-                  onTap: () => _requestTile(QuickAccessAction.dice),
-                ),
-              ),
-            ],
+          SizedBox(
+            width: double.infinity,
+            child: _ShortcutButton(
+              icon: Icons.monetization_on,
+              label: l10n.aboutAddCoinButton,
+              onTap: () => _requestTile(QuickAccessAction.coin),
+            ),
           ),
           const SizedBox(height: 24),
           _RandomnessCard(

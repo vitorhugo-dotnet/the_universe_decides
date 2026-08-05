@@ -239,6 +239,14 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   void _fireImpact() {
     _impact.forward(from: 0);
     HapticFeedback.mediumImpact();
+    _playDecisionSoundIfAllowed();
+  }
+
+  void _playDecisionSoundIfAllowed() {
+    if (widget.quickMode) {
+      return;
+    }
+
     unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
   }
 
@@ -315,7 +323,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
       _revealed = true;
     });
     HapticFeedback.selectionClick();
-    unawaited(ref.read(soundEffectsProvider.notifier).playDecision());
+    _playDecisionSoundIfAllowed();
     _recordHistory(result);
     _queueAutoClose();
   }
