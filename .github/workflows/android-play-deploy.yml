@@ -39,7 +39,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  FLUTTER_VERSION: "3.38.1"
+  FLUTTER_VERSION: "3.44.7"
   RUBY_VERSION: "3.3"
   ANDROID_PACKAGE_NAME: "com.hugo.theuniversedecides"
   PLAY_TRACK: "beta"
