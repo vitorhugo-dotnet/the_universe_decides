@@ -98,7 +98,7 @@ void main() {
       contains(r'--base-href "/"'),
     );
     expect(workflow, contains("cp build/web/index.html build/web/404.html"));
-    expect(workflow, contains("grep -Fq '<base href=\\\"/\\\">' build/web/index.html"));
+    expect(workflow, contains("grep -Fq '<base href=\"/\">' build/web/index.html"));
     expect(workflow, contains('cmp --silent build/web/index.html build/web/404.html'));
     expect(workflow, contains('actions/upload-pages-artifact@v3'));
     expect(workflow, contains('actions/deploy-pages@v4'));
