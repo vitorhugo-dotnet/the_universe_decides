@@ -96,7 +96,7 @@ Pull requests and CI-only changes run validation and Android flavor builds witho
 ## GitHub Pages web deploy
 
 `.github/workflows/deploy-web.yml`, named `Deploy Web`, publishes the Flutter
-Web build to <https://vitorhugo-dotnet.github.io/the_universe_decides/>. It is
+Web build to <https://coin.hugojava.dev/>. It is
 deliberately separate from `CI/CD`: the Android release pipeline owns
 versioning, tagging, Play and F-Droid, and must not depend on the browser
 build.
