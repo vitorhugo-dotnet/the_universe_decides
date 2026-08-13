@@ -95,7 +95,7 @@ void main() {
     expect(workflow, contains('flutter test'));
     expect(
       workflow,
-      contains(r'--base-href "/${{ github.event.repository.name }}/"'),
+      contains(r'--base-href "/"'),
     );
     expect(workflow, contains("cp build/web/index.html build/web/404.html"));
     expect(workflow, contains("grep -Fq '<base href=\\\"/\\\">' build/web/index.html"));
