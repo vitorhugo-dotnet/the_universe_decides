@@ -73,13 +73,21 @@ jobs:
         run: flutter test
 
       - name: Build web
-        # GitHub Pages serves project sites from a sub-directory, so the base
-        # href has to match the repository name for assets and reloads to
-        # resolve. Reading it from the event keeps a rename from breaking it.
+        # Use a root base href so assets and client-side routes work on both
+        # GitHub Pages project deployments and custom-domain deployments.
         run: |
           flutter build web \
             --release \
-            --base-href "/${{ github.event.repository.name }}/"
+            --base-href "/"
+
+      - name: Verify web artifact
+        shell: bash
+        run: |
+          test -f build/web/index.html
+          cp build/web/index.html build/web/404.html
+          test -f build/web/404.html
+          grep -Fq '<base href="/">' build/web/index.html
+          cmp --silent build/web/index.html build/web/404.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
