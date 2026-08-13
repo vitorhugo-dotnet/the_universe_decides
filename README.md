@@ -79,6 +79,7 @@ The workflow runs only when a pull request or push to `master` changes a CI-rele
 - `pubspec.lock`
 - `analysis_options.yaml`
 - `l10n.yaml`
+- `flutter_native_splash.yaml`
 
 Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.xml`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
 

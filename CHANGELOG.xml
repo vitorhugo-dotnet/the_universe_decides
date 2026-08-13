@@ -1,62 +1,35 @@
 <en-US>
-- Flip a coin from Quick Settings even while your phone is locked — no unlock needed.
-- Removed the dice shortcut from Quick Settings; the in-app dice screen is unchanged.
-- Fixed stray debug lines that could appear under some text.
-- The quick coin popup is now fully silent and never interrupts music, calls, or other audio.
+- Fixed the app launch: the old coin image no longer flashes before the animated splash screen. ✨
 </en-US>
 
 <pt-BR>
-- Jogue a moeda pelo painel de Configurações Rápidas mesmo com o telefone bloqueado — sem precisar desbloquear.
-- Removido o atalho do dado do painel de Configurações Rápidas; a tela de dado no app continua igual.
-- Corrigidas linhas de depuração que apareciam sob alguns textos.
-- O pop-up rápido da moeda agora é totalmente silencioso e nunca interrompe música, ligações ou outro áudio.
+- Corrigida a abertura do app: a imagem da moeda antiga não aparece mais antes da splash screen animada. ✨
 </pt-BR>
 
 <es-ES>
-- Lanza la moneda desde el panel de Ajustes rápidos incluso con el teléfono bloqueado, sin necesidad de desbloquear.
-- Se eliminó el acceso directo de dados del panel de Ajustes rápidos; la pantalla de dados de la app sigue igual.
-- Se corrigieron líneas de depuración que aparecían bajo algunos textos.
-- La ventana rápida de la moneda ahora es totalmente silenciosa y nunca interrumpe música, llamadas u otro audio.
+- Corregido el inicio de la app: la imagen de la moneda antigua ya no aparece antes de la pantalla de inicio animada. ✨
 </es-ES>
 
 <de>
-- Münze jetzt auch bei gesperrtem Smartphone direkt über die Schnelleinstellungen werfen – kein Entsperren nötig.
-- Die Würfel-Kachel wurde aus den Schnelleinstellungen entfernt; der Würfelbildschirm in der App bleibt unverändert.
-- Fehlerhafte Debug-Linien unter manchen Texten wurden behoben.
-- Das Schnellmünz-Fenster ist jetzt komplett lautlos und unterbricht nie Musik, Anrufe oder anderes Audio.
+- Start der App korrigiert: Das alte Münzbild blitzt nicht mehr vor dem animierten Startbildschirm auf. ✨
 </de>
 
 <fr-FR>
-- Lance la pièce depuis les Réglages rapides même téléphone verrouillé, sans déverrouillage.
-- Le raccourci des dés a été retiré des Réglages rapides ; l'écran des dés dans l'appli reste inchangé.
-- Correction de lignes de débogage qui apparaissaient sous certains textes.
-- La fenêtre rapide de la pièce est désormais totalement silencieuse et n'interrompt jamais musique, appels ou autre audio.
+- Correction du lancement de l'appli : l'ancienne image de la pièce n'apparaît plus avant l'écran de démarrage animé. ✨
 </fr-FR>
 
 <hi>
-- अब फ़ोन लॉक होने पर भी क्विक सेटिंग्स पैनल से सिक्का उछालें — अनलॉक करने की ज़रूरत नहीं।
-- क्विक सेटिंग्स पैनल से डाइस शॉर्टकट हटाया गया; ऐप के अंदर डाइस स्क्रीन पहले जैसी है।
-- कुछ टेक्स्ट के नीचे दिखने वाली डिबग लाइनें ठीक की गईं।
-- क्विक कॉइन पॉपअप अब पूरी तरह साइलेंट है और संगीत, कॉल या अन्य ऑडियो में कभी बाधा नहीं डालता।
+- ऐप की शुरुआत ठीक की गई: एनिमेटेड स्प्लैश स्क्रीन से पहले अब पुरानी सिक्के की तस्वीर नहीं दिखती। ✨
 </hi>
 
 <it>
-- Lancia la moneta dal pannello Impostazioni rapide anche a telefono bloccato, senza sbloccare.
-- Rimossa la scorciatoia dei dadi dal pannello Impostazioni rapide; la schermata dei dadi nell'app resta invariata.
-- Corrette le righe di debug che comparivano sotto alcuni testi.
-- Il popup rapido della moneta ora è completamente silenzioso e non interrompe mai musica, chiamate o altri audio.
+- Corretto l'avvio dell'app: la vecchia immagine della moneta non compare più prima della schermata iniziale animata. ✨
 </it>
 
 <tr>
-- Telefon kilitliyken bile Hızlı Ayarlar panelinden yazı tura at — kilidi açmana gerek yok.
-- Hızlı Ayarlar panelinden zar kısayolu kaldırıldı; uygulama içindeki zar ekranı aynı kaldı.
-- Bazı metinlerin altında görünen hata ayıklama çizgileri düzeltildi.
-- Hızlı yazı tura penceresi artık tamamen sessiz ve müziği, aramaları veya diğer sesleri asla kesmiyor.
+- Uygulama açılışı düzeltildi: animasyonlu açılış ekranından önce artık eski para görseli görünmüyor. ✨
 </tr>
 
 <uk>
-- Кидайте монету з панелі швидких налаштувань навіть коли телефон заблокований — розблокування не потрібне.
-- Прибрано ярлик кубика з панелі швидких налаштувань; екран кубика в застосунку не змінився.
-- Виправлено налагоджувальні лінії, що з'являлися під деяким текстом.
-- Швидке вікно монети тепер повністю беззвучне і ніколи не перериває музику, дзвінки чи інше аудіо.
+- Виправлено запуск застосунку: старе зображення монети більше не з'являється перед анімованим екраном запуску. ✨
 </uk>
