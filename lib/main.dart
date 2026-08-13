@@ -32,10 +32,18 @@ Route<void> _buildRoute(RouteSettings settings) {
       settings: settings,
       opaque: false,
       barrierColor: Colors.transparent,
-      pageBuilder: (_, _, _) => const CoinFlipScreen(
-        quickMode: true,
-        autoStart: true,
-        autoClose: true,
+      // The quick coin route is pushed straight onto the navigator, so unlike
+      // the normal flow it has no Scaffold above it. Without a Material
+      // ancestor every Text falls back to MaterialApp's error style, whose
+      // double yellow underline looks exactly like a Flutter debug overlay.
+      // MaterialType.transparency keeps the see-through background intact.
+      pageBuilder: (_, _, _) => const Material(
+        type: MaterialType.transparency,
+        child: CoinFlipScreen(
+          quickMode: true,
+          autoStart: true,
+          autoClose: true,
+        ),
       ),
     );
   }
