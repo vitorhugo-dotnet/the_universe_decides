@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import 'dice_bridge_message.dart';
+import 'dice_renderer_native.dart'
+    if (dart.library.js_interop) 'dice_renderer_web.dart';
 import 'dice_roll_request.dart';
 
 typedef DiceRollCompleted = void Function(DiceBridgeMessage message);
@@ -80,41 +81,19 @@ class DiceWebViewController {
   }
 }
 
-class DiceWebView extends StatefulWidget {
+/// Hosts `assets/dice/index.html` and wires it to [DiceWebViewController].
+///
+/// Mobile renders it inside a platform web view; the browser renders it inside
+/// a same-origin iframe. Both hosts speak the identical `window.DiceBridge`
+/// contract, so the roll rules stay in Dart and only the animation is
+/// delegated to the shared HTML renderer.
+class DiceWebView extends StatelessWidget {
   const DiceWebView({super.key, required this.controller});
 
   final DiceWebViewController controller;
 
   @override
-  State<DiceWebView> createState() => _DiceWebViewState();
-}
-
-class _DiceWebViewState extends State<DiceWebView> {
-  late final WebViewController _webViewController;
-
-  @override
-  void initState() {
-    super.initState();
-    _webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.transparent)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (request) => NavigationDecision.prevent,
-        ),
-      )
-      ..addJavaScriptChannel(
-        'DiceBridgeChannel',
-        onMessageReceived: (message) {
-          widget.controller.handleBridgeMessage(message.message);
-        },
-      )
-      ..loadFlutterAsset('assets/dice/index.html');
-    widget.controller.attachJavaScriptRunner(_webViewController.runJavaScript);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return IgnorePointer(child: WebViewWidget(controller: _webViewController));
+    return IgnorePointer(child: buildDiceRenderer(controller));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -108,24 +109,29 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
             value: soundEffectsEnabled,
             onChanged: ref.read(soundEffectsProvider.notifier).setEnabled,
           ),
-          const SizedBox(height: 12),
-          Text(
-            l10n.aboutShortcutsTitle,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+          // Quick Settings tiles are an Android surface; the browser has
+          // nowhere to pin them, so the whole section is dropped rather than
+          // shown as a control that always reports "unsupported".
+          if (!kIsWeb) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n.aboutShortcutsTitle,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: _ShortcutButton(
-              icon: Icons.monetization_on,
-              label: l10n.aboutAddCoinButton,
-              onTap: () => _requestTile(QuickAccessAction.coin),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: _ShortcutButton(
+                icon: Icons.monetization_on,
+                label: l10n.aboutAddCoinButton,
+                onTap: () => _requestTile(QuickAccessAction.coin),
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 24),
           _RandomnessCard(
             icon: Icons.history,

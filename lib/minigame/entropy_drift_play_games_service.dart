@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +27,14 @@ final entropyDriftPlayGamesProvider = Provider<EntropyDriftPlayGamesService>(
   (ref) => EntropyDriftPlayGamesService(),
 );
 
+/// Whether Play Games can be reached at all on the current host.
+///
+/// Checked through `dart:ui` platform constants instead of `dart:io` so the
+/// file stays on the web compilation path, where the whole integration is
+/// simply inert.
+bool get isPlayGamesHost =>
+    !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
 /// Best-effort, Android-only Play Games integration. Every public operation
 /// absorbs platform/auth/network failures so the local game remains playable.
 class EntropyDriftPlayGamesService {
@@ -37,7 +43,7 @@ class EntropyDriftPlayGamesService {
     bool? isAndroid,
     String leaderboardId = EntropyDriftPlayGamesIds.leaderboard,
   }) : _gateway = gateway ?? const MethodChannelGamesGateway(),
-       _isAndroid = isAndroid ?? Platform.isAndroid,
+       _isAndroid = isAndroid ?? isPlayGamesHost,
        _leaderboardId = leaderboardId;
 
   final EntropyDriftGamesGateway _gateway;

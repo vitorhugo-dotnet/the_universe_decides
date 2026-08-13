@@ -25,6 +25,18 @@ When adding a new file or directory that becomes an input to `flutter analyze`, 
 
 CI execution does not always mean release publication. Changes limited to tests, analysis configuration, or workflow files must run validation without creating a GitHub/F-Droid/Google Play release.
 
+## Web deploy trigger policy
+
+`.github/workflows/deploy-web.yml` publishes the Flutter Web build to GitHub Pages and is separate from the Android pipeline on purpose. Keep them independent:
+
+- Web-relevant paths are `.github/workflows/deploy-web.yml`, `lib/**`, `test/**`, `web/**`, `assets/**`, `pubspec.yaml`, `pubspec.lock`, `analysis_options.yaml`, and `l10n.yaml`.
+- Do not add `android/**` to the web workflow, and do not add `web/**` to `build-signed-apk.yml`. `web/` is not an input to `flutter analyze`, `flutter test`, or the Android build, so browser-only changes must never build an APK or create a release tag.
+- Documentation-only changes must not redeploy the site.
+- The web workflow reads its Flutter version from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`. That declaration stays the single source of truth, because the F-Droid metadata parses the same line.
+- The deploy job depends on the build job, so a failing analyze, test, or build must never replace the published site.
+
+Shared Dart code must compile for Android, iOS, and the browser. Never import `dart:io` from `lib/**`; use `kIsWeb` with `defaultTargetPlatform`, or a conditional import, and keep `dart:js_interop`, `dart:ui_web`, and `package:web` behind the conditional import in `lib/dice/dice_web_view.dart`. `test/web/web_compilation_path_test.dart` enforces both directions.
+
 ## Release versioning
 
 Keep the semantic version name in `pubspec.yaml` under manual control:
