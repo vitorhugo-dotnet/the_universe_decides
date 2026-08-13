@@ -15,7 +15,7 @@ Whenever possible, the app obtains results from [RANDOM.ORG](https://www.random.
 - Pick an item from a custom list
 - Spin a wheel using the items from a custom list
 - Review and clear recent results
-- Access selected actions from Android quick settings
+- Access selected actions from Android quick settings (Android only)
 
 Common uses include choosing what to eat or watch, settling friendly disagreements, selecting a player or activity, supporting tabletop RPG sessions, and running small transparent draws.
 
@@ -41,10 +41,18 @@ The local fallback keeps decisions available when the external service cannot be
 
 Application identifier: `com.hugo.theuniversedecides`
 
-## Download
+## Use it
 
+- **Open in your browser:** <https://vitorhugo-dotnet.github.io/the_universe_decides/> — no install required
 - [Google Play](https://play.google.com/store/apps/details?id=com.hugo.theuniversedecides)
 - [F-Droid](https://f-droid.org/packages/com.hugo.theuniversedecides)
+
+The browser build runs the same code as the Android app. Android-only
+integrations degrade instead of breaking: Quick Settings shortcuts and Play
+Games leaderboards are hidden, and everything else — coin, dice, cards, tarot,
+lists, wheel, recent history and the RANDOM.ORG fallback warning — works the
+same way. Recent results are stored in the browser, so they survive a reload
+but do not sync with the installed app.
 
 ## Android release signing
 
@@ -83,6 +91,49 @@ The workflow runs only when a pull request or push to `master` changes a CI-rele
 Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.xml`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
 
 Pull requests and CI-only changes run validation and Android flavor builds without publishing. A release is created only when a successful push to `master` changes application inputs under `lib/**`, `android/**`, `assets/**`, `pubspec.yaml`, `pubspec.lock`, or `l10n.yaml`.
+
+## GitHub Pages web deploy
+
+`.github/workflows/deploy-web.yml`, named `Deploy Web`, publishes the Flutter
+Web build to <https://vitorhugo-dotnet.github.io/the_universe_decides/>. It is
+deliberately separate from `CI/CD`: the Android release pipeline owns
+versioning, tagging, Play and F-Droid, and must not depend on the browser
+build.
+
+The workflow runs on `workflow_dispatch` and on pushes to `master` that change:
+
+- `.github/workflows/deploy-web.yml`
+- `lib/**`
+- `test/**`
+- `web/**`
+- `assets/**`
+- `pubspec.yaml`
+- `pubspec.lock`
+- `analysis_options.yaml`
+- `l10n.yaml`
+
+`android/**`, `docs/**`, `README.md` and `CHANGELOG.xml` are intentionally
+absent: Android-only and documentation-only changes never redeploy the site.
+Conversely `web/**` is not a `CI/CD` input, so browser-only changes never build
+an APK or create a release.
+
+It runs `flutter analyze`, `flutter test` and
+`flutter build web --release --base-href /<repository>/` before uploading
+`build/web`; the deploy job needs the build job, so a failure at any step
+leaves the previously published site untouched. The Flutter version is read
+from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which is the
+single source of truth shared with F-Droid.
+
+Two details in `web/` matter for the deploy and are covered by
+`test/web/web_deployment_configuration_test.dart`:
+
+- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder, or every
+  asset 404s under the project sub-directory.
+- `web/flutter_bootstrap.js` overrides `canvasKitBaseUrl` so CanvasKit is
+  served from the deploy itself instead of `www.gstatic.com`.
+
+Enable the deploy once in **Settings → Pages → Build and deployment → Source →
+GitHub Actions**.
 
 ### Release versioning
 

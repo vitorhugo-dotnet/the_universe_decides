@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Replaced by the `--base-href` argument of `flutter build web`. GitHub Pages
+    serves this app from a project sub-directory, so the deploy workflow passes
+    `--base-href /the_universe_decides/` and every relative asset, icon and
+    manifest URL below resolves against it.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Flip a coin, roll dice, draw cards or tarot and spin a wheel. Powered by RANDOM.ORG with a transparent local fallback.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="The Universe Decides">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <meta name="theme-color" content="#090611">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>The Universe Decides</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    /*
+      The engine paints nothing until the first frame. Without a matching
+      backdrop the browser shows white for the whole download, which is a harsh
+      flash for an app that is dark everywhere else.
+    */
+    html, body {
+      height: 100%;
+      margin: 0;
+      background-color: #090611;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      background: radial-gradient(circle at 50% 42%, #2e1d55 0%, #12091e 45%, #090611 100%);
+      color: rgba(255, 255, 255, 0.55);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    #loading-orb {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: linear-gradient(140deg, #fce38a 0%, #f9b44c 100%);
+      box-shadow: 0 0 46px rgba(122, 79, 255, 0.55);
+      animation: loading-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes loading-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(0.88); opacity: 0.55; }
+    }
+
+    /* Honour the same accessibility preference the Flutter splash respects. */
+    @media (prefers-reduced-motion: reduce) {
+      #loading-orb { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div id="loading-orb"></div>
+    <div>The Universe Decides</div>
+  </div>
+
+  <script>
+    // `flutter-first-frame` is the earliest point at which the app is actually
+    // painted, so the placeholder is removed instead of merely faded.
+    window.addEventListener('flutter-first-frame', function () {
+      var loading = document.getElementById('loading');
+      if (loading) {
+        loading.remove();
+      }
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

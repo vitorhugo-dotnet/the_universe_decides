@@ -1,0 +1,104 @@
+name: Deploy Web
+
+# Publishes the Flutter Web build to GitHub Pages. Kept separate from the
+# `CI/CD` workflow on purpose: the Android release pipeline owns versioning,
+# tagging, Play and F-Droid, and must not gain a browser-only dependency.
+#
+# Requires "Settings -> Pages -> Build and deployment -> Source" to be set to
+# "GitHub Actions" once, in the repository settings.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/deploy-web.yml"
+      - "lib/**"
+      - "test/**"
+      - "web/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - "l10n.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Only the newest commit is worth publishing, so supersede in-flight deploys.
+  group: deploy-web
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build web bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve Flutter version
+        id: flutter
+        shell: bash
+        run: |
+          # `.github/workflows/build-signed-apk.yml` is the single source of the
+          # project's Flutter version; F-Droid reads the same declaration when
+          # it builds from source. Reading it here keeps web and Android on one
+          # toolchain instead of two values that silently drift apart.
+          VERSION=$(sed -nE 's/^[[:space:]]*FLUTTER_VERSION:[[:space:]]*"([^"]+)".*$/\1/p' \
+            .github/workflows/build-signed-apk.yml | head -n 1)
+
+          if [[ -z "$VERSION" ]]; then
+            echo "Unable to read FLUTTER_VERSION from build-signed-apk.yml." >&2
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build web
+        # GitHub Pages serves project sites from a sub-directory, so the base
+        # href has to match the repository name for assets and reloads to
+        # resolve. Reading it from the event keeps a rename from breaking it.
+        run: |
+          flutter build web \
+            --release \
+            --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    name: Deploy to GitHub Pages
+    # A failed analyze, test or build fails `build`, and this job never runs,
+    # so a broken commit can never replace a working published site.
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

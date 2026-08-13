@@ -1,7 +1,40 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:theuniversedecides/minigame/entropy_drift_play_games_service.dart';
 
 void main() {
+  group('host detection', () {
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
+    test('Android is the only platform that reaches Play Games', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      expect(isPlayGamesHost, isTrue);
+
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      expect(isPlayGamesHost, isFalse);
+    });
+
+    test('every online call is inert off Android', () async {
+      final gateway = _RecordingGateway(signedIn: true);
+      final service = EntropyDriftPlayGamesService(
+        gateway: gateway,
+        isAndroid: false,
+        leaderboardId: 'leaderboard',
+      );
+
+      await service.authenticateOnGameOpen();
+      await service.completeRun(
+        score: 150,
+        survivalDuration: const Duration(seconds: 40),
+        fragmentsCollected: 12,
+      );
+      await service.showLeaderboard();
+
+      expect(service.isAuthenticated, isFalse);
+      expect(gateway.calls, isEmpty);
+    });
+  });
+
   test('does not call game APIs before authentication', () async {
     final gateway = _RecordingGateway();
     final service = EntropyDriftPlayGamesService(

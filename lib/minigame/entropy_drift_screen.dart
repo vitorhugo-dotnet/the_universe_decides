@@ -173,9 +173,12 @@ class _EntropyDriftScreenState extends ConsumerState<EntropyDriftScreen>
                   strings: strings,
                   score: _engine.score.value,
                   onPlayAgain: _restart,
-                  onShowLeaderboard: ref
-                      .read(entropyDriftPlayGamesProvider)
-                      .showLeaderboard,
+                  // Play Games only exists on Android; the browser build
+                  // keeps the local high score and drops the entry point
+                  // instead of offering a control that can never work.
+                  onShowLeaderboard: isPlayGamesHost
+                      ? ref.read(entropyDriftPlayGamesProvider).showLeaderboard
+                      : null,
                 ),
             ],
           );
@@ -324,7 +327,7 @@ class _GameOverOverlay extends ConsumerWidget {
   final EntropyDriftStrings strings;
   final int score;
   final VoidCallback onPlayAgain;
-  final VoidCallback onShowLeaderboard;
+  final VoidCallback? onShowLeaderboard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -367,12 +370,17 @@ class _GameOverOverlay extends ConsumerWidget {
                 const SizedBox(height: 28),
                 RitualButton(label: strings.playAgain, onPressed: onPlayAgain),
                 const SizedBox(height: 12),
-                IconButton(
-                  tooltip: strings.leaderboard,
-                  onPressed: onShowLeaderboard,
-                  icon: const Icon(Icons.emoji_events, color: AppColors.gold1),
-                ),
-                const SizedBox(height: 4),
+                if (onShowLeaderboard != null) ...[
+                  IconButton(
+                    tooltip: strings.leaderboard,
+                    onPressed: onShowLeaderboard,
+                    icon: const Icon(
+                      Icons.emoji_events,
+                      color: AppColors.gold1,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                ],
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
