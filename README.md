@@ -43,7 +43,7 @@ Application identifier: `com.hugo.theuniversedecides`
 
 ## Use it
 
-- **Open in your browser:** <https://vitorhugo-dotnet.github.io/the_universe_decides/> — no install required
+- **Open in your browser:** <https://coin.hugojava.dev/> — no install required
 - [Google Play](https://play.google.com/store/apps/details?id=com.hugo.theuniversedecides)
 - [F-Droid](https://f-droid.org/packages/com.hugo.theuniversedecides)
 
@@ -119,7 +119,7 @@ Conversely `web/**` is not a `CI/CD` input, so browser-only changes never build
 an APK or create a release.
 
 It runs `flutter analyze`, `flutter test` and
-`flutter build web --release --base-href /<repository>/` before uploading
+`flutter build web --release --base-href "/"` before uploading
 `build/web`; the deploy job needs the build job, so a failure at any step
 leaves the previously published site untouched. The Flutter version is read
 from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which is the
@@ -128,13 +128,15 @@ single source of truth shared with F-Droid.
 Two details in `web/` matter for the deploy and are covered by
 `test/web/web_deployment_configuration_test.dart`:
 
-- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder, or every
-  asset 404s under the project sub-directory.
+- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder for the root
+  deployment, or every asset 404s.
 - `web/flutter_bootstrap.js` overrides `canvasKitBaseUrl` so CanvasKit is
   served from the deploy itself instead of `www.gstatic.com`.
 
-Enable the deploy once in **Settings → Pages → Build and deployment → Source →
-GitHub Actions**.
+After merging, enable the deploy in **Settings → Pages → Build and deployment →
+Source → GitHub Actions**, then register and validate the custom domain
+`coin.hugojava.dev` in Pages settings. The custom-domain registration happens
+after merge and Pages enablement.
 
 ### Release versioning
 
