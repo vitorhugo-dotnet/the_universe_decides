@@ -73,8 +73,8 @@ jobs:
         run: flutter test
 
       - name: Build web
-        # Use a root base href so assets and client-side routes work on both
-        # GitHub Pages project deployments and custom-domain deployments.
+        # Use a root base href because this deployment targets coin.hugojava.dev at the
+        # hostname root, so assets and client-side routes resolve correctly.
         run: |
           flutter build web \
             --release \
