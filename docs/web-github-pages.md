@@ -4,7 +4,7 @@ The browser build of The Universe Decides is published to GitHub Pages by
 `.github/workflows/deploy-web.yml`:
 
 ```text
-https://vitorhugo-dotnet.github.io/the_universe_decides/
+https://coin.hugojava.dev/
 ```
 
 ## One-time repository setup
@@ -12,23 +12,25 @@ https://vitorhugo-dotnet.github.io/the_universe_decides/
 1. Open **Settings → Pages → Build and deployment**.
 2. Set **Source** to **GitHub Actions**.
 
-Nothing else is required. The workflow creates the `github-pages`
-environment on its first run, and no branch is used to host the site.
+After merging, enable the Pages workflow and then register and validate the custom
+domain `coin.hugojava.dev` in Pages settings. Custom-domain registration happens
+after merge and Pages enablement; it is not part of the repository workflow.
 
 ## Building locally
 
 ```bash
-flutter build web --release --base-href /the_universe_decides/
+flutter build web --release --base-href "/"
 python3 -m http.server --directory build 8080   # then open /web/
 ```
 
-The `--base-href` value must match the repository name. GitHub Pages serves
-project sites from `/<repository>/`, and `web/index.html` keeps the
-`$FLUTTER_BASE_HREF` placeholder that `flutter build` substitutes. Without it
-every asset, the manifest and the icons resolve against `/` and 404.
+The custom domain serves the app from the hostname root, so the build uses
+`--base-href "/"`. `web/index.html` keeps the `$FLUTTER_BASE_HREF`
+placeholder that `flutter build` substitutes. Without the placeholder, every
+asset, the manifest and the icons fail to resolve correctly at the root.
 
-The workflow derives the value from `github.event.repository.name`, so a
-repository rename does not silently break the deploy.
+The workflow verifies that the built `index.html` is copied to `404.html`,
+that the literal root base href is present, and that the two files are
+byte-identical for client-side route fallback.
 
 ## What differs from the Android build
 
