@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// The web bundle is published to a GitHub Pages *project* site, which serves
-/// it from `/<repository>/`. Every assertion here protects a detail that turns
-/// the published page into a blank screen when it silently regresses.
+/// The web bundle is published to the custom domain at the hostname root.
+/// Every assertion here protects a detail that turns the published page into
+/// a blank screen when it silently regresses.
 void main() {
-  test('index.html keeps the sub-directory base href placeholder', () {
+  test('index.html keeps the root-deployment base href placeholder', () {
     final index = File('web/index.html').readAsStringSync();
 
     expect(
@@ -15,7 +15,7 @@ void main() {
       contains(r'<base href="$FLUTTER_BASE_HREF">'),
       reason:
           'Removing the placeholder makes --base-href a no-op and every asset '
-          '404s under the project sub-directory.',
+          '404s under the custom-domain root.',
     );
     expect(index, contains('<title>The Universe Decides</title>'));
     expect(index, contains('<link rel="manifest" href="manifest.json">'));
@@ -97,6 +97,9 @@ void main() {
       workflow,
       contains(r'--base-href "/${{ github.event.repository.name }}/"'),
     );
+    expect(workflow, contains("cp build/web/index.html build/web/404.html"));
+    expect(workflow, contains("grep -Fq '<base href=\\\"/\\\">' build/web/index.html"));
+    expect(workflow, contains('cmp --silent build/web/index.html build/web/404.html'));
     expect(workflow, contains('actions/upload-pages-artifact@v3'));
     expect(workflow, contains('actions/deploy-pages@v4'));
     expect(
