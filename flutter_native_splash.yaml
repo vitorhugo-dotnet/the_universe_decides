@@ -1,8 +1,19 @@
+# The native launch screen paints nothing but the app background color, which
+# matches AppColors.scaffoldBackground (#090611). The branded entrance is the
+# Flutter SplashScreen (lib/screens/splash_screen.dart), whose coin-orb fades in
+# from that same flat background, so the hand-off from the OS to Flutter shows
+# no image, icon or animation before it.
+#
+# Never configure `image:` here: a native image is drawn while the process
+# starts and flashes on screen ahead of the Flutter splash.
 flutter_native_splash:
   color: "#090611"
-  image: assets/splash/cosmic_coin_splash.png
   android: true
   ios: true
   android_12:
     color: "#090611"
-    image: assets/splash/cosmic_coin_splash.png
+    # Android 12+ always draws a system splash screen and falls back to the
+    # launcher icon when no icon is set, which would flash ahead of the Flutter
+    # splash just like the old coin did. A fully transparent icon leaves only
+    # the background color.
+    image: assets/splash/android12_icon_blank.png

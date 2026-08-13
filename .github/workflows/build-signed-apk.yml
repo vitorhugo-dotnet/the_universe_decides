@@ -14,6 +14,7 @@ on:
       - "pubspec.lock"
       - "analysis_options.yaml"
       - "l10n.yaml"
+      - "flutter_native_splash.yaml"
   pull_request:
     branches: [master]
     paths:
@@ -27,6 +28,7 @@ on:
       - "pubspec.lock"
       - "analysis_options.yaml"
       - "l10n.yaml"
+      - "flutter_native_splash.yaml"
 
 permissions:
   contents: read

@@ -1,53 +1,35 @@
 <en-US>
-- The Universe Decides now runs in the browser too: open it at vitorhugo-dotnet.github.io/the_universe_decides and let chance decide with no install.
-- Coin, dice, cards, tarot, lists and the wheel all work in the browser, with your recent results kept on that device.
-- Android features that need the system, like the Quick Settings tile, stay exclusive to the app.
+- Fixed the app launch: the old coin image no longer flashes before the animated splash screen. ✨
 </en-US>
 
 <pt-BR>
-- O The Universe Decides agora também roda no navegador: acesse vitorhugo-dotnet.github.io/the_universe_decides e deixe o acaso decidir sem instalar nada.
-- Moeda, dados, cartas, tarô, listas e roleta funcionam no navegador, com seus resultados recentes guardados naquele aparelho.
-- Recursos do Android que dependem do sistema, como o atalho nas Configurações Rápidas, continuam exclusivos do app.
+- Corrigida a abertura do app: a imagem da moeda antiga não aparece mais antes da splash screen animada. ✨
 </pt-BR>
 
 <es-ES>
-- The Universe Decides ya funciona también en el navegador: entra en vitorhugo-dotnet.github.io/the_universe_decides y deja que el azar decida sin instalar nada.
-- Moneda, dados, cartas, tarot, listas y ruleta funcionan en el navegador, y tus resultados recientes se guardan en ese dispositivo.
-- Las funciones de Android que dependen del sistema, como el acceso directo en Ajustes rápidos, siguen siendo exclusivas de la app.
+- Corregido el inicio de la app: la imagen de la moneda antigua ya no aparece antes de la pantalla de inicio animada. ✨
 </es-ES>
 
 <de>
-- The Universe Decides läuft jetzt auch im Browser: Öffne vitorhugo-dotnet.github.io/the_universe_decides und lass den Zufall ohne Installation entscheiden.
-- Münze, Würfel, Karten, Tarot, Listen und Glücksrad funktionieren im Browser, deine letzten Ergebnisse bleiben auf diesem Gerät gespeichert.
-- Android-Funktionen, die das System brauchen, etwa die Kachel in den Schnelleinstellungen, bleiben der App vorbehalten.
+- Start der App korrigiert: Das alte Münzbild blitzt nicht mehr vor dem animierten Startbildschirm auf. ✨
 </de>
 
 <fr-FR>
-- The Universe Decides fonctionne désormais aussi dans le navigateur : ouvrez vitorhugo-dotnet.github.io/the_universe_decides et laissez le hasard décider sans rien installer.
-- Pièce, dés, cartes, tarot, listes et roue fonctionnent dans le navigateur, et vos résultats récents restent sur cet appareil.
-- Les fonctions Android qui dépendent du système, comme le raccourci des Réglages rapides, restent réservées à l'application.
+- Correction du lancement de l'appli : l'ancienne image de la pièce n'apparaît plus avant l'écran de démarrage animé. ✨
 </fr-FR>
 
 <hi>
-- The Universe Decides अब ब्राउज़र में भी चलता है: vitorhugo-dotnet.github.io/the_universe_decides खोलें और बिना इंस्टॉल किए संयोग को फैसला करने दें।
-- सिक्का, पासा, ताश, टैरो, सूचियाँ और चक्र ब्राउज़र में काम करते हैं, और आपके हालिया परिणाम उसी डिवाइस पर सहेजे रहते हैं।
-- सिस्टम पर निर्भर एंड्रॉइड सुविधाएँ, जैसे क्विक सेटिंग्स टाइल, ऐप तक ही सीमित रहती हैं।
+- ऐप की शुरुआत ठीक की गई: एनिमेटेड स्प्लैश स्क्रीन से पहले अब पुरानी सिक्के की तस्वीर नहीं दिखती। ✨
 </hi>
 
 <it>
-- The Universe Decides ora funziona anche nel browser: apri vitorhugo-dotnet.github.io/the_universe_decides e lascia decidere il caso senza installare nulla.
-- Moneta, dadi, carte, tarocchi, liste e ruota funzionano nel browser e i risultati recenti restano su quel dispositivo.
-- Le funzioni Android che dipendono dal sistema, come il riquadro nelle Impostazioni rapide, restano esclusive dell'app.
+- Corretto l'avvio dell'app: la vecchia immagine della moneta non compare più prima della schermata iniziale animata. ✨
 </it>
 
 <tr>
-- The Universe Decides artık tarayıcıda da çalışıyor: vitorhugo-dotnet.github.io/the_universe_decides adresini açın ve hiçbir şey kurmadan kararı şansa bırakın.
-- Yazı tura, zar, kart, tarot, listeler ve çark tarayıcıda çalışır; son sonuçlarınız o cihazda saklanır.
-- Hızlı Ayarlar kutucuğu gibi sistemi gerektiren Android özellikleri yalnızca uygulamada kalır.
+- Uygulama açılışı düzeltildi: animasyonlu açılış ekranından önce artık eski para görseli görünmüyor. ✨
 </tr>
 
 <uk>
-- The Universe Decides тепер працює і в браузері: відкрийте vitorhugo-dotnet.github.io/the_universe_decides і дозвольте випадку вирішити без встановлення.
-- Монета, кубики, карти, таро, списки та колесо працюють у браузері, а нещодавні результати зберігаються на цьому пристрої.
-- Функції Android, які залежать від системи, як-от плитка у швидких налаштуваннях, залишаються лише в застосунку.
+- Виправлено запуск застосунку: старе зображення монети більше не з'являється перед анімованим екраном запуску. ✨
 </uk>
