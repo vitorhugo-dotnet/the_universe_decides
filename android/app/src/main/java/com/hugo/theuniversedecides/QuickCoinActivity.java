@@ -10,8 +10,12 @@ import androidx.annotation.Nullable;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode;
 import io.flutter.embedding.android.RenderMode;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugin.common.EventChannel;
 
 public class QuickCoinActivity extends FlutterActivity {
+    private EventChannel.EventSink windowFocusEventSink;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +29,46 @@ public class QuickCoinActivity extends FlutterActivity {
             setShowWhenLocked(true);
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        }
+    }
+
+    @Override
+    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+        super.configureFlutterEngine(flutterEngine);
+
+        // Reports whether this window owns the screen, so the quick coin can
+        // hold its flip until the notification panel is out of the way.
+        //
+        // AppLifecycleState cannot answer that here. Flutter only leaves
+        // "resumed" once onWindowFocusChanged(false) arrives, and this activity
+        // is launched *behind* an open panel: the window never held focus, so
+        // there is no focus change to report and the engine keeps assuming it
+        // is focused. hasWindowFocus() is the real state rather than the
+        // accumulated one, which is why the first event below reads it
+        // directly instead of waiting for a callback.
+        new EventChannel(
+                flutterEngine.getDartExecutor().getBinaryMessenger(),
+                QuickAccessContract.WINDOW_FOCUS_EVENT_CHANNEL
+        ).setStreamHandler(new EventChannel.StreamHandler() {
+            @Override
+            public void onListen(Object arguments, EventChannel.EventSink events) {
+                windowFocusEventSink = events;
+                events.success(hasWindowFocus());
+            }
+
+            @Override
+            public void onCancel(Object arguments) {
+                windowFocusEventSink = null;
+            }
+        });
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if (windowFocusEventSink != null) {
+            windowFocusEventSink.success(hasFocus);
         }
     }
 
