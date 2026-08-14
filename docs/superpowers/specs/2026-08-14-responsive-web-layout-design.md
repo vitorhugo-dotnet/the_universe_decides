@@ -123,8 +123,10 @@ Existing analysis, tests and the capture goldens continue to run unchanged.
 ## Versioning
 
 This is a user-visible `feat`, so the semantic version name takes a `MINOR`
-increment, `2.6.4` to `2.7.0`, preserving the build number after `+` exactly.
-`CHANGELOG.xml` is rewritten for this change across all nine supported locales.
+increment, which resets the patch component to `0` and preserves the build
+number after `+` exactly. From the `2.6.x` line currently on `master` that
+lands on `2.7.0`. `CHANGELOG.xml` is rewritten for this change across all nine
+supported locales.
 
 ## Out of scope
 
