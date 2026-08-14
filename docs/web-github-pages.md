@@ -1,22 +1,29 @@
 # Web build and GitHub Pages deploy
 
 The browser build of The Universe Decides is published to GitHub Pages by
-`.github/workflows/deploy-web.yml`. Two URLs can serve it:
+`.github/workflows/deploy-web.yml`. The public address is the custom domain:
 
 ```text
-https://vitorhugo-dotnet.github.io/the_universe_decides/   # project path
-https://coin.hugojava.dev/                                 # once registered
+https://coin.hugojava.dev/
 ```
+
+Until that domain is registered in Pages settings, GitHub serves the same build
+from the project path `https://vitorhugo-dotnet.github.io/the_universe_decides/`
+instead. That fallback is not advertised, but it must still work, because it is
+what answers whenever the custom domain is pending or removed.
 
 ## One-time repository setup
 
 1. Open **Settings → Pages → Build and deployment**.
 2. Set **Source** to **GitHub Actions**.
+3. Register `coin.hugojava.dev` as the custom domain on the same page and wait
+   for GitHub to validate it, then enable HTTPS enforcement once the
+   certificate is provisioned.
 
-Registering the custom domain `coin.hugojava.dev` in Pages settings is a
-separate, optional step; it is not part of the repository workflow. Until it is
-done, Pages serves the site from the project path, and the deploy adapts on its
-own — see below.
+Step 3 is what makes the public URL answer. The Cloudflare `CNAME` from
+`coin.hugojava.dev` to `vitorhugo-dotnet.github.io` is necessary but not
+sufficient on its own: without the Pages-side registration GitHub serves no
+certificate for the hostname, and the domain fails TLS verification.
 
 ## The base href is read, not hardcoded
 
@@ -24,20 +31,20 @@ A Flutter Web bundle only works under the path its `<base href>` names.
 `web/index.html` keeps the `$FLUTTER_BASE_HREF` placeholder that
 `flutter build web --base-href` substitutes, and the workflow resolves that
 argument from `actions/configure-pages`, which reports the path Pages actually
-publishes to: `/the_universe_decides/` for the project site, `/` for the custom
-domain.
+publishes to: `/` for the custom domain, `/the_universe_decides/` for the
+project site.
 
 This matters because the failure mode is total rather than partial. With a root
-base href on the project path, the browser requests
+base href while Pages is still serving the project path, the browser requests
 `https://vitorhugo-dotnet.github.io/flutter_bootstrap.js` instead of
 `https://vitorhugo-dotnet.github.io/the_universe_decides/flutter_bootstrap.js`,
 gets a 404, never boots the engine, never fires `flutter-first-frame`, and never
 removes the placeholder in `web/index.html`. The page shows the loading orb
 forever with no visible error.
 
-Because the path is read at build time, registering or removing the custom
-domain is a Pages settings change followed by a re-run of the workflow — no code
-change and no second source of truth.
+Reading the path instead of pinning it keeps that window survivable, and means
+the deploy needs no code change on the day the domain goes live — or if it is
+ever moved or dropped.
 
 The workflow verifies that the built `index.html` is copied to `404.html`, that
 the resolved base href is present in it, and that the two files are
@@ -45,7 +52,16 @@ byte-identical for client-side route fallback.
 
 ## Building locally
 
-Pass the path you intend to serve from, and serve from exactly that path:
+Pass the path you intend to serve from, and serve from exactly that path. For
+the custom domain, that is the root:
+
+```bash
+flutter build web --release --base-href "/"
+python3 -m http.server --directory build/web 8080   # then open /
+```
+
+To reproduce the project-path fallback instead, build with the project path and
+serve it from a matching subdirectory:
 
 ```bash
 flutter build web --release --base-href "/the_universe_decides/"
@@ -54,7 +70,9 @@ python3 -m http.server --directory /tmp/site 8080
 # then open http://localhost:8080/the_universe_decides/
 ```
 
-For the root deployment, use `--base-href "/"` and serve `build/web` itself.
+Mismatching the two is exactly the bug described above, and it reproduces
+locally: the page keeps the loading orb and the console shows a 404 for
+`flutter_bootstrap.js`.
 
 ## What differs from the Android build
 

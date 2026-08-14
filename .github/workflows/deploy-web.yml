@@ -52,16 +52,17 @@ jobs:
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: |
-          # Pages serves this repository under the project path
-          # `/the_universe_decides/` until the custom domain is registered, and
-          # from the hostname root `/` once it is. Either value is hardcoded
-          # wrong on the other host, and the failure is total rather than
-          # partial: `flutter_bootstrap.js` 404s, the engine never boots, no
-          # `flutter-first-frame` event fires, and the static placeholder in
-          # `web/index.html` stays on screen forever. Reading the live Pages
-          # settings keeps the base href correct wherever the site is actually
-          # published, and makes registering or removing the custom domain a
-          # settings change instead of a code change.
+          # The public address is `https://coin.hugojava.dev/` at the hostname
+          # root, but Pages only serves it there once the custom domain is
+          # registered in the repository settings; until then it serves the
+          # same build from the project path `/the_universe_decides/`. Either
+          # value is hardcoded wrong on the other host, and the failure is
+          # total rather than partial: `flutter_bootstrap.js` 404s, the engine
+          # never boots, no `flutter-first-frame` event fires, and the static
+          # placeholder in `web/index.html` stays on screen forever. Reading
+          # the live Pages settings keeps the base href correct wherever the
+          # site is actually published, so the pending-registration window
+          # stays usable and going live needs no code change.
           HREF="$BASE_PATH"
 
           if [[ -z "$HREF" ]]; then

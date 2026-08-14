@@ -43,7 +43,7 @@ Application identifier: `com.hugo.theuniversedecides`
 
 ## Use it
 
-- **Open in your browser:** <https://vitorhugo-dotnet.github.io/the_universe_decides/> — no install required (moves to <https://coin.hugojava.dev/> once the custom domain is registered)
+- **Open in your browser:** <https://coin.hugojava.dev/> — no install required
 - [Google Play](https://play.google.com/store/apps/details?id=com.hugo.theuniversedecides)
 - [F-Droid](https://f-droid.org/packages/com.hugo.theuniversedecides)
 
@@ -96,11 +96,9 @@ Pull requests and CI-only changes run validation and Android flavor builds witho
 ## GitHub Pages web deploy
 
 `.github/workflows/deploy-web.yml`, named `Deploy Web`, publishes the Flutter
-Web build to GitHub Pages — at
-<https://vitorhugo-dotnet.github.io/the_universe_decides/> today, and at
-<https://coin.hugojava.dev/> once that custom domain is registered in Pages
-settings. It is deliberately separate from `CI/CD`: the Android release pipeline
-owns versioning, tagging, Play and F-Droid, and must not depend on the browser
+Web build to <https://coin.hugojava.dev/>, the app's public address. It is
+deliberately separate from `CI/CD`: the Android release pipeline owns
+versioning, tagging, Play and F-Droid, and must not depend on the browser
 build.
 
 The workflow runs on `workflow_dispatch` and on pushes to `master` that change:
@@ -127,12 +125,13 @@ is read from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which
 is the single source of truth shared with F-Droid.
 
 The `--base-href` argument is **not** hardcoded. `actions/configure-pages`
-reports the path Pages actually serves — `/the_universe_decides/` for the
-project site, `/` for the custom domain — and the workflow passes that through.
-A base href that does not match the serving path makes `flutter_bootstrap.js`
-404, so the engine never boots and the page shows the loading placeholder
-forever with no visible error. Registering the custom domain is therefore a
-Pages settings change plus a workflow re-run, not a code change.
+reports the path Pages actually serves — `/` once `coin.hugojava.dev` is
+registered, `/the_universe_decides/` while it is not — and the workflow passes
+that through. A base href that does not match the serving path makes
+`flutter_bootstrap.js` 404, so the engine never boots and the page shows the
+loading placeholder forever with no visible error. Reading the path keeps the
+fallback usable while DNS or the custom-domain registration is pending, and
+needs no code change when the domain goes live.
 
 Three details matter for the deploy and are covered by
 `test/web/web_deployment_configuration_test.dart`:
@@ -144,10 +143,12 @@ Three details matter for the deploy and are covered by
 - `web/flutter_bootstrap.js` overrides `canvasKitBaseUrl` so CanvasKit is
   served from the deploy itself instead of `www.gstatic.com`.
 
-After merging, enable the deploy in **Settings → Pages → Build and deployment →
-Source → GitHub Actions**. Registering and validating the custom domain
-`coin.hugojava.dev` in Pages settings is an optional follow-up; until it is
-done the site is served, and works, from the project path.
+Enable the deploy in **Settings → Pages → Build and deployment → Source →
+GitHub Actions**, then register and validate the custom domain
+`coin.hugojava.dev` in the same settings page and enable HTTPS enforcement once
+GitHub provisions the certificate. The public URL only answers after that
+registration: the Cloudflare CNAME alone is not enough, and without it Pages
+serves the site from the project path instead.
 
 ### Release versioning
 
