@@ -34,7 +34,18 @@ void main() {
     expect(source, contains('if (!widget.autoClose || _autoCloseQueued)'));
     expect(source, contains('_autoCloseQueued = true;'));
     expect(source, contains('SystemNavigator.pop()'));
-    expect(source, contains('if (widget.quickMode) {'));
-    expect(source, contains('onTap: () => unawaited(_closeQuickMode())'));
+    // Adjacency-preserving: the guard and the handler must stay textually
+    // contiguous, so a future refactor cannot hoist the tap-to-dismiss
+    // handler onto an unconditional GestureDetector reachable outside quick
+    // mode while leaving both substrings present elsewhere in the file.
+    expect(
+      source,
+      contains(
+        'if (widget.quickMode) {\n'
+        '      return GestureDetector(\n'
+        '        behavior: HitTestBehavior.translucent,\n'
+        '        onTap: () => unawaited(_closeQuickMode()),',
+      ),
+    );
   });
 }
