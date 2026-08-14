@@ -43,7 +43,7 @@ Application identifier: `com.hugo.theuniversedecides`
 
 ## Use it
 
-- **Open in your browser:** <https://coin.hugojava.dev/> — no install required
+- **Open in your browser:** <https://vitorhugo-dotnet.github.io/the_universe_decides/> — no install required (moves to <https://coin.hugojava.dev/> once the custom domain is registered)
 - [Google Play](https://play.google.com/store/apps/details?id=com.hugo.theuniversedecides)
 - [F-Droid](https://f-droid.org/packages/com.hugo.theuniversedecides)
 
@@ -96,9 +96,11 @@ Pull requests and CI-only changes run validation and Android flavor builds witho
 ## GitHub Pages web deploy
 
 `.github/workflows/deploy-web.yml`, named `Deploy Web`, publishes the Flutter
-Web build to <https://coin.hugojava.dev/>. It is
-deliberately separate from `CI/CD`: the Android release pipeline owns
-versioning, tagging, Play and F-Droid, and must not depend on the browser
+Web build to GitHub Pages — at
+<https://vitorhugo-dotnet.github.io/the_universe_decides/> today, and at
+<https://coin.hugojava.dev/> once that custom domain is registered in Pages
+settings. It is deliberately separate from `CI/CD`: the Android release pipeline
+owns versioning, tagging, Play and F-Droid, and must not depend on the browser
 build.
 
 The workflow runs on `workflow_dispatch` and on pushes to `master` that change:
@@ -118,25 +120,34 @@ absent: Android-only and documentation-only changes never redeploy the site.
 Conversely `web/**` is not a `CI/CD` input, so browser-only changes never build
 an APK or create a release.
 
-It runs `flutter analyze`, `flutter test` and
-`flutter build web --release --base-href "/"` before uploading
-`build/web`; the deploy job needs the build job, so a failure at any step
-leaves the previously published site untouched. The Flutter version is read
-from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which is the
-single source of truth shared with F-Droid.
+It runs `flutter analyze`, `flutter test` and `flutter build web --release`
+before uploading `build/web`; the deploy job needs the build job, so a failure
+at any step leaves the previously published site untouched. The Flutter version
+is read from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which
+is the single source of truth shared with F-Droid.
 
-Two details in `web/` matter for the deploy and are covered by
+The `--base-href` argument is **not** hardcoded. `actions/configure-pages`
+reports the path Pages actually serves — `/the_universe_decides/` for the
+project site, `/` for the custom domain — and the workflow passes that through.
+A base href that does not match the serving path makes `flutter_bootstrap.js`
+404, so the engine never boots and the page shows the loading placeholder
+forever with no visible error. Registering the custom domain is therefore a
+Pages settings change plus a workflow re-run, not a code change.
+
+Three details matter for the deploy and are covered by
 `test/web/web_deployment_configuration_test.dart`:
 
-- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder for the root
-  deployment, or every asset 404s.
+- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder, or
+  `--base-href` is a no-op and every asset 404s.
+- The workflow must resolve the base href from the Pages configuration rather
+  than pinning a literal.
 - `web/flutter_bootstrap.js` overrides `canvasKitBaseUrl` so CanvasKit is
   served from the deploy itself instead of `www.gstatic.com`.
 
 After merging, enable the deploy in **Settings → Pages → Build and deployment →
-Source → GitHub Actions**, then register and validate the custom domain
-`coin.hugojava.dev` in Pages settings. The custom-domain registration happens
-after merge and Pages enablement.
+Source → GitHub Actions**. Registering and validating the custom domain
+`coin.hugojava.dev` in Pages settings is an optional follow-up; until it is
+done the site is served, and works, from the project path.
 
 ### Release versioning
 

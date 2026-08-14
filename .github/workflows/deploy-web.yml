@@ -34,9 +34,48 @@ jobs:
   build:
     name: Build web bundle
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # `actions/configure-pages` reads the repository's Pages settings.
+      pages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Read Pages configuration
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Resolve base href
+        id: base
+        shell: bash
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          # Pages serves this repository under the project path
+          # `/the_universe_decides/` until the custom domain is registered, and
+          # from the hostname root `/` once it is. Either value is hardcoded
+          # wrong on the other host, and the failure is total rather than
+          # partial: `flutter_bootstrap.js` 404s, the engine never boots, no
+          # `flutter-first-frame` event fires, and the static placeholder in
+          # `web/index.html` stays on screen forever. Reading the live Pages
+          # settings keeps the base href correct wherever the site is actually
+          # published, and makes registering or removing the custom domain a
+          # settings change instead of a code change.
+          HREF="$BASE_PATH"
+
+          if [[ -z "$HREF" ]]; then
+            echo "actions/configure-pages returned no base path." >&2
+            exit 1
+          fi
+
+          # Flutter requires a leading and a trailing slash; the action reports
+          # the path without the trailing one.
+          [[ "$HREF" == /* ]] || HREF="/$HREF"
+          [[ "$HREF" == */ ]] || HREF="$HREF/"
+
+          echo "Publishing with base href $HREF"
+          echo "href=$HREF" >> "$GITHUB_OUTPUT"
 
       - name: Resolve Flutter version
         id: flutter
@@ -73,20 +112,23 @@ jobs:
         run: flutter test
 
       - name: Build web
-        # Use a root base href because this deployment targets coin.hugojava.dev at the
-        # hostname root, so assets and client-side routes resolve correctly.
+        # The base href comes from the live Pages configuration, so assets and
+        # client-side routes resolve on the project path and on the custom
+        # domain alike.
         run: |
           flutter build web \
             --release \
-            --base-href "/"
+            --base-href "${{ steps.base.outputs.href }}"
 
       - name: Verify web artifact
         shell: bash
+        env:
+          BASE_HREF: ${{ steps.base.outputs.href }}
         run: |
           test -f build/web/index.html
           cp build/web/index.html build/web/404.html
           test -f build/web/404.html
-          grep -Fq '<base href="/">' build/web/index.html
+          grep -Fq "<base href=\"$BASE_HREF\">" build/web/index.html
           cmp --silent build/web/index.html build/web/404.html
 
       - name: Upload Pages artifact

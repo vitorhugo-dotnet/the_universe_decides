@@ -1,10 +1,11 @@
 # Web build and GitHub Pages deploy
 
 The browser build of The Universe Decides is published to GitHub Pages by
-`.github/workflows/deploy-web.yml`:
+`.github/workflows/deploy-web.yml`. Two URLs can serve it:
 
 ```text
-https://coin.hugojava.dev/
+https://vitorhugo-dotnet.github.io/the_universe_decides/   # project path
+https://coin.hugojava.dev/                                 # once registered
 ```
 
 ## One-time repository setup
@@ -12,25 +13,48 @@ https://coin.hugojava.dev/
 1. Open **Settings → Pages → Build and deployment**.
 2. Set **Source** to **GitHub Actions**.
 
-After merging, enable the Pages workflow and then register and validate the custom
-domain `coin.hugojava.dev` in Pages settings. Custom-domain registration happens
-after merge and Pages enablement; it is not part of the repository workflow.
+Registering the custom domain `coin.hugojava.dev` in Pages settings is a
+separate, optional step; it is not part of the repository workflow. Until it is
+done, Pages serves the site from the project path, and the deploy adapts on its
+own — see below.
+
+## The base href is read, not hardcoded
+
+A Flutter Web bundle only works under the path its `<base href>` names.
+`web/index.html` keeps the `$FLUTTER_BASE_HREF` placeholder that
+`flutter build web --base-href` substitutes, and the workflow resolves that
+argument from `actions/configure-pages`, which reports the path Pages actually
+publishes to: `/the_universe_decides/` for the project site, `/` for the custom
+domain.
+
+This matters because the failure mode is total rather than partial. With a root
+base href on the project path, the browser requests
+`https://vitorhugo-dotnet.github.io/flutter_bootstrap.js` instead of
+`https://vitorhugo-dotnet.github.io/the_universe_decides/flutter_bootstrap.js`,
+gets a 404, never boots the engine, never fires `flutter-first-frame`, and never
+removes the placeholder in `web/index.html`. The page shows the loading orb
+forever with no visible error.
+
+Because the path is read at build time, registering or removing the custom
+domain is a Pages settings change followed by a re-run of the workflow — no code
+change and no second source of truth.
+
+The workflow verifies that the built `index.html` is copied to `404.html`, that
+the resolved base href is present in it, and that the two files are
+byte-identical for client-side route fallback.
 
 ## Building locally
 
+Pass the path you intend to serve from, and serve from exactly that path:
+
 ```bash
-flutter build web --release --base-href "/"
-python3 -m http.server --directory build 8080   # then open /web/
+flutter build web --release --base-href "/the_universe_decides/"
+mkdir -p /tmp/site && cp -r build/web /tmp/site/the_universe_decides
+python3 -m http.server --directory /tmp/site 8080
+# then open http://localhost:8080/the_universe_decides/
 ```
 
-The custom domain serves the app from the hostname root, so the build uses
-`--base-href "/"`. `web/index.html` keeps the `$FLUTTER_BASE_HREF`
-placeholder that `flutter build` substitutes. Without the placeholder, every
-asset, the manifest and the icons fail to resolve correctly at the root.
-
-The workflow verifies that the built `index.html` is copied to `404.html`,
-that the literal root base href is present, and that the two files are
-byte-identical for client-side route fallback.
+For the root deployment, use `--base-href "/"` and serve `build/web` itself.
 
 ## What differs from the Android build
 

@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// The web bundle is published to the custom domain at the hostname root.
-/// Every assertion here protects a detail that turns the published page into
-/// a blank screen when it silently regresses.
+/// The web bundle is published to GitHub Pages, under the project path until
+/// the custom domain is registered and at the hostname root afterwards. Every
+/// assertion here protects a detail that turns the published page into a blank
+/// screen, or into the loading placeholder forever, when it silently regresses.
 void main() {
-  test('index.html keeps the root-deployment base href placeholder', () {
+  test('index.html keeps the base href placeholder', () {
     final index = File('web/index.html').readAsStringSync();
 
     expect(
@@ -15,7 +16,7 @@ void main() {
       contains(r'<base href="$FLUTTER_BASE_HREF">'),
       reason:
           'Removing the placeholder makes --base-href a no-op and every asset '
-          '404s under the custom-domain root.',
+          '404s on whichever host does not happen to match the literal.',
     );
     expect(index, contains('<title>The Universe Decides</title>'));
     expect(index, contains('<link rel="manifest" href="manifest.json">'));
@@ -95,10 +96,30 @@ void main() {
     expect(workflow, contains('flutter test'));
     expect(
       workflow,
-      contains(r'--base-href "/"'),
+      contains('actions/configure-pages@v5'),
+      reason:
+          'A hardcoded base href is wrong on whichever host the site is not '
+          'currently served from, and every asset 404s there. The published '
+          'path must be read from the live Pages configuration instead.',
+    );
+    expect(
+      workflow,
+      contains(r'--base-href "${{ steps.base.outputs.href }}"'),
+      reason: 'The build must consume the resolved base href, not a literal.',
+    );
+    expect(
+      workflow,
+      isNot(contains(r'--base-href "/"')),
+      reason:
+          'Pinning the root base href is what left the project-path deploy '
+          'stuck on the loading placeholder.',
     );
     expect(workflow, contains("cp build/web/index.html build/web/404.html"));
-    expect(workflow, contains("grep -Fq '<base href=\"/\">' build/web/index.html"));
+    expect(
+      workflow,
+      contains(r'grep -Fq "<base href=\"$BASE_HREF\">" build/web/index.html'),
+      reason: 'The artifact check must assert the resolved base href.',
+    );
     expect(workflow, contains('cmp --silent build/web/index.html build/web/404.html'));
     expect(workflow, contains('actions/upload-pages-artifact@v3'));
     expect(workflow, contains('actions/deploy-pages@v4'));
