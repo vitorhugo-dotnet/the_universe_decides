@@ -3,7 +3,7 @@ description: "A mystical Flutter decision app powered by Random.org with local f
 
 publish_to: 'none'
 
-version: 2.6.2+100172
+version: 2.6.3+100172
 
 environment:
   sdk: ^3.10.0
