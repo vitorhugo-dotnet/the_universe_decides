@@ -50,19 +50,27 @@ class RitualScreenFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (ritualBandOf(context)) {
       case RitualBand.compact:
-        return Padding(padding: compactPadding, child: _stacked());
+        // Non-flexing screens scroll: the padding must travel inside the
+        // SingleChildScrollView so it scrolls away with the content, exactly
+        // as the pre-plan `SingleChildScrollView(padding: ...)` did. Flexing
+        // screens (the coin) don't scroll, so the padding stays as an
+        // enclosing Padding around the whole arrangement.
+        final content = _stacked(scrollPadding: compactPadding);
+        return stageFlexes
+            ? Padding(padding: compactPadding, child: content)
+            : content;
       case RitualBand.medium:
-        return Padding(
-          padding: compactPadding,
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: kRitualMediumMaxWidth,
-              ),
-              child: _stacked(),
+        final content = Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: kRitualMediumMaxWidth,
             ),
+            child: _stacked(scrollPadding: compactPadding),
           ),
         );
+        return stageFlexes
+            ? Padding(padding: compactPadding, child: content)
+            : content;
       case RitualBand.expanded:
         return Padding(
           padding: const EdgeInsets.fromLTRB(32, 28, 32, 24),
@@ -71,7 +79,10 @@ class RitualScreenFrame extends StatelessWidget {
     }
   }
 
-  Widget _stacked() {
+  /// [scrollPadding] is only applied when the screen scrolls (`!stageFlexes`):
+  /// it is passed straight to the [SingleChildScrollView] so it remains part
+  /// of the scrollable content, rather than fixed chrome around the viewport.
+  Widget _stacked({EdgeInsets? scrollPadding}) {
     final stage = this.stage;
 
     if (stageFlexes) {
@@ -86,6 +97,7 @@ class RitualScreenFrame extends StatelessWidget {
     }
 
     return SingleChildScrollView(
+      padding: scrollPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

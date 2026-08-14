@@ -84,6 +84,94 @@ void main() {
     );
   });
 
+  testWidgets(
+    'compact scrolls the padding with the content instead of fixing it '
+    'outside the viewport',
+    (tester) async {
+      // A distinctive value (not the default) so a false pass can't be
+      // explained by some other, unrelated padding happening to match.
+      const padding = EdgeInsets.fromLTRB(11, 13, 17, 19);
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(
+          header: _header,
+          body: _body,
+          compactPadding: padding,
+        ),
+        width: 400,
+      );
+
+      final scrollView = tester.widget<SingleChildScrollView>(
+        find.byType(SingleChildScrollView),
+      );
+      expect(
+        scrollView.padding,
+        padding,
+        reason:
+            'compactPadding must be passed to SingleChildChildScrollView so '
+            'it scrolls away with the content, exactly like the pre-plan '
+            '`SingleChildScrollView(padding: ...)`. An enclosing Padding '
+            'around the scroll view instead leaves scrollView.padding null '
+            'and fixes the inset outside the viewport as chrome.',
+      );
+    },
+  );
+
+  testWidgets(
+    'medium scrolls the padding with the content, matching compact',
+    (tester) async {
+      const padding = EdgeInsets.fromLTRB(11, 13, 17, 19);
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(
+          header: _header,
+          body: _body,
+          compactPadding: padding,
+        ),
+        width: 800,
+      );
+
+      final scrollView = tester.widget<SingleChildScrollView>(
+        find.byType(SingleChildScrollView),
+      );
+      expect(
+        scrollView.padding,
+        padding,
+        reason: 'medium must give the scrolling path the same '
+            'inside-vs-outside padding treatment as compact',
+      );
+    },
+  );
+
+  testWidgets(
+    'compact keeps the flexing stage (the coin) unscrolled with its '
+    'padding enclosing the whole arrangement',
+    (tester) async {
+      const padding = EdgeInsets.fromLTRB(11, 13, 17, 19);
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(
+          header: _header,
+          body: _body,
+          stage: _stage,
+          stageFlexes: true,
+          compactPadding: padding,
+        ),
+        width: 400,
+      );
+
+      // The flexing path never scrolls, so there is nothing to fix here:
+      // the compactPadding must still enclose the arrangement as a Padding.
+      expect(find.byType(SingleChildScrollView), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Padding && widget.padding == padding,
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
   testWidgets('no band overflows', (tester) async {
     for (final width in const [400.0, 600.0, 1023.0, 1024.0, 1400.0]) {
       await pumpAtWidth(
