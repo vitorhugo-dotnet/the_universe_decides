@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
 import 'package:theuniversedecides/widgets/ritual_nav_rail.dart';
 
 void main() {
