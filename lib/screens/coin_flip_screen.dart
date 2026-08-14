@@ -58,7 +58,7 @@ class CoinFlipScreen extends ConsumerStatefulWidget {
 }
 
 class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   // Physics constants tuned to the ritual variant (lift 120, ~4.6 spins).
   static const double _maxLiftValue = 120;
   static const double _riseMs = 360;
@@ -67,6 +67,11 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   static const double _minSpinMs = 520;
   static const double _spinDegPerMs = 0.95;
   static const double _wobbleDeg = 12;
+
+  /// How long an automatic flip waits for the notification panel to get out of
+  /// the way before flipping anyway. Without this escape hatch a device that
+  /// never reports a focused window would leave the coin idle forever.
+  static const Duration _autoStartFocusTimeout = Duration(seconds: 3);
 
   final math.Random _rand = math.Random();
 
@@ -107,6 +112,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
   bool _reduceMotion = false;
   bool _autoStartQueued = false;
   bool _autoCloseQueued = false;
+  Timer? _autoStartFocusTimer;
 
   @override
   void initState() {
@@ -118,8 +124,26 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     );
 
     if (widget.autoStart) {
+      WidgetsBinding.instance.addObserver(this);
       _queueAutoStart();
     }
+  }
+
+  /// Whether the app window — and not a system window — currently owns the
+  /// screen.
+  ///
+  /// The quick coin route is launched by the Quick Settings tile, which asks
+  /// the system to collapse the notification panel (see
+  /// `CoinQuickTileService`). Some OEM skins ignore that request, or animate
+  /// it slowly, so an immediately started flip can play out hidden behind the
+  /// panel. Android reports [AppLifecycleState.resumed] only once no system
+  /// window holds the focus, which makes it a reliable "the coin is really on
+  /// screen" signal. A null state means the platform never reported one (unit
+  /// tests, and the web build), so it counts as visible.
+  bool get _windowOwnsTheScreen {
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    return lifecycleState == null ||
+        lifecycleState == AppLifecycleState.resumed;
   }
 
   void _queueAutoStart() {
@@ -128,10 +152,43 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     }
     _autoStartQueued = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _launchAuto();
+      if (!mounted) {
+        return;
       }
+      if (!_windowOwnsTheScreen) {
+        // Hold the flip until didChangeAppLifecycleState reports the panel is
+        // gone, so the user never misses the coin.
+        _autoStartQueued = false;
+        _startAutoStartFocusTimer();
+        return;
+      }
+      _cancelAutoStartFocusTimer();
+      _launchAuto();
     });
+  }
+
+  void _startAutoStartFocusTimer() {
+    _autoStartFocusTimer ??= Timer(_autoStartFocusTimeout, () {
+      _autoStartFocusTimer = null;
+      if (!mounted || _autoStartQueued || _phase != _Phase.idle) {
+        return;
+      }
+      _autoStartQueued = true;
+      unawaited(_launchAuto());
+    });
+  }
+
+  void _cancelAutoStartFocusTimer() {
+    _autoStartFocusTimer?.cancel();
+    _autoStartFocusTimer = null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (widget.autoStart && state == AppLifecycleState.resumed) {
+      _queueAutoStart();
+    }
   }
 
   void _queueAutoClose() {
@@ -158,6 +215,8 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
 
   @override
   void dispose() {
+    _cancelAutoStartFocusTimer();
+    WidgetsBinding.instance.removeObserver(this);
     _ticker.dispose();
     _impact.dispose();
     _frame.dispose();
