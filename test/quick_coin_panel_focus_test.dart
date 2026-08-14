@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,11 +9,18 @@ import 'package:http/testing.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/screens/coin_flip_screen.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
+import 'package:theuniversedecides/services/window_focus_service.dart';
 
 /// The Quick Settings tile asks the system to collapse the notification panel
-/// before the quick coin shows up, but OEM skins are free to ignore that. These
-/// tests pin the app-side guarantee: an automatic flip waits until the app
-/// window owns the screen again, so the coin is never spent behind the panel.
+/// before the quick coin shows up, and One UI ignores that. These tests pin the
+/// app-side guarantee: an automatic flip waits until the window really owns the
+/// screen, so the coin is never spent behind the panel.
+///
+/// The focus has to come from `Activity.hasWindowFocus()`. An earlier version
+/// read [AppLifecycleState] instead and shipped broken: Flutter only leaves
+/// `resumed` on a focus *change*, and a window launched behind the panel never
+/// held the focus, so no change was ever reported and every flip started
+/// immediately. A fake service stands in for the native channel here.
 void main() {
   Widget buildApp(Widget home) {
     return MaterialApp(
@@ -21,12 +30,18 @@ void main() {
     );
   }
 
-  Future<_RecordingRandomOrgService> pumpQuickCoin(WidgetTester tester) async {
+  Future<_RecordingRandomOrgService> pumpQuickCoin(
+    WidgetTester tester,
+    WindowFocusService focus,
+  ) async {
     final service = _RecordingRandomOrgService();
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [randomOrgServiceProvider.overrideWith((ref) => service)],
+        overrides: [
+          randomOrgServiceProvider.overrideWith((ref) => service),
+          windowFocusServiceProvider.overrideWithValue(focus),
+        ],
         child: buildApp(
           const CoinFlipScreen(
             quickMode: true,
@@ -40,12 +55,13 @@ void main() {
     return service;
   }
 
-  testWidgets('the automatic flip waits while a system panel holds the focus', (
+  testWidgets('the flip waits while the panel holds the window focus', (
     tester,
   ) async {
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    final focus = _FakeWindowFocusService();
 
-    final service = await pumpQuickCoin(tester);
+    final service = await pumpQuickCoin(tester, focus);
+    focus.emit(false);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
@@ -55,23 +71,48 @@ void main() {
       reason: 'The coin must not flip behind the notification panel.',
     );
 
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    focus.emit(true);
     await tester.pump();
     await tester.pump();
 
     expect(
       service.fetchCallCount,
       1,
-      reason: 'The coin flips as soon as the panel releases the focus.',
+      reason: 'The coin flips as soon as the window owns the screen.',
     );
+
+    focus.close();
   });
 
-  testWidgets('the automatic flip runs anyway when the focus never comes back', (
+  testWidgets('an unfocused window that never reports a change still waits', (
     tester,
   ) async {
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    // The regression that shipped: no focus event at all, because the window
+    // never had focus to lose. Silence must read as "wait", not as "go".
+    final focus = _FakeWindowFocusService();
 
-    final service = await pumpQuickCoin(tester);
+    final service = await pumpQuickCoin(tester, focus);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(service.fetchCallCount, 0);
+
+    focus.emit(true);
+    await tester.pump();
+    await tester.pump();
+
+    expect(service.fetchCallCount, 1);
+
+    focus.close();
+  });
+
+  testWidgets('the flip runs anyway when the focus never arrives', (
+    tester,
+  ) async {
+    final focus = _FakeWindowFocusService();
+
+    final service = await pumpQuickCoin(tester, focus);
+    focus.emit(false);
     await tester.pump();
 
     expect(service.fetchCallCount, 0);
@@ -81,18 +122,35 @@ void main() {
     expect(
       service.fetchCallCount,
       1,
-      reason: 'A skin that never restores the focus must not strand the coin.',
+      reason: 'A skin that never releases the focus must not strand the coin.',
     );
+
+    focus.close();
   });
 
-  testWidgets('a focused window still flips immediately', (tester) async {
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+  testWidgets('a focused window flips immediately', (tester) async {
+    final focus = _FakeWindowFocusService();
 
-    final service = await pumpQuickCoin(tester);
+    final service = await pumpQuickCoin(tester, focus);
+    focus.emit(true);
+    await tester.pump();
     await tester.pump();
 
     expect(service.fetchCallCount, 1);
+
+    focus.close();
   });
+}
+
+class _FakeWindowFocusService implements WindowFocusService {
+  final _controller = StreamController<bool>.broadcast();
+
+  void emit(bool hasFocus) => _controller.add(hasFocus);
+
+  void close() => unawaited(_controller.close());
+
+  @override
+  Stream<bool> get focusChanges => _controller.stream;
 }
 
 class _RecordingRandomOrgService extends RandomOrgService {
