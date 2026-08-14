@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/coin_flip_controller.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
+import 'package:theuniversedecides/layout/ritual_screen_frame.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
@@ -533,46 +534,58 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
     final state = ref.watch(coinFlipProvider);
     final busy = _phase != _Phase.idle || state.isLoading;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: widget.quickMode ? () => unawaited(_closeQuickMode()) : null,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-        padding: widget.quickMode
-            ? const EdgeInsets.fromLTRB(24, 32, 24, 24)
-            : const EdgeInsets.fromLTRB(24, 24, 24, 6),
-        child: Column(
+    // Quick mode is a bare full-screen coin launched from the tile: no header,
+    // no controls, and nothing for the frame to arrange.
+    if (widget.quickMode) {
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => unawaited(_closeQuickMode()),
+        child: SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: Center(child: _buildArena())),
+                _buildResultBlock(l10n, state, busy),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SafeArea(
+      bottom: false,
+      child: RitualScreenFrame(
+        stageFlexes: true,
+        compactPadding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
+        header: RitualHeader(
+          eyebrow: l10n.coinEyebrow,
+          title: l10n.coinTitle,
+          subtitle: l10n.coinRitualSubtitle,
+          titleSize: 28,
+        ),
+        stage: _buildArena(),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!widget.quickMode)
-              RitualHeader(
-                eyebrow: l10n.coinEyebrow,
-                title: l10n.coinTitle,
-                subtitle: l10n.coinRitualSubtitle,
-                titleSize: 28,
-              ),
-            Expanded(child: Center(child: _buildArena())),
             _buildResultBlock(l10n, state, busy),
             const SizedBox(height: 10),
-            if (!widget.quickMode) ...[
-              RitualButton(
-                label: l10n.coinButton,
-                onPressed: busy ? null : _launchAuto,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l10n.coinDragHelper,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textFaint,
-                ),
-              ),
-              const SizedBox(height: 6),
-            ],
+            RitualButton(
+              label: l10n.coinButton,
+              onPressed: busy ? null : _launchAuto,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              l10n.coinDragHelper,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: AppColors.textFaint),
+            ),
+            const SizedBox(height: 6),
           ],
-          ),
         ),
       ),
     );

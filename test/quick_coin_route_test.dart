@@ -34,6 +34,7 @@ void main() {
     expect(source, contains('if (!widget.autoClose || _autoCloseQueued)'));
     expect(source, contains('_autoCloseQueued = true;'));
     expect(source, contains('SystemNavigator.pop()'));
-    expect(source, contains('onTap: widget.quickMode'));
+    expect(source, contains('if (widget.quickMode) {'));
+    expect(source, contains('onTap: () => unawaited(_closeQuickMode())'));
   });
 }
