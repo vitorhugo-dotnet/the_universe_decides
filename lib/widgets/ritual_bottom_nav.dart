@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:theuniversedecides/theme/app_colors.dart';
+import 'package:theuniversedecides/widgets/ritual_nav_icon.dart';
 
 typedef RitualNavItem = ({String id, String label});
 
@@ -91,7 +92,7 @@ class _NavButton extends StatelessWidget {
             SizedBox(
               height: 24,
               child: Center(
-                child: _NavIcon(id: item.id, color: color),
+                child: RitualNavIcon(id: item.id, color: color),
               ),
             ),
             const SizedBox(height: 5),
@@ -110,77 +111,5 @@ class _NavButton extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _NavIcon extends StatelessWidget {
-  const _NavIcon({required this.id, required this.color});
-
-  final String id;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final side = BorderSide(color: color, width: 2);
-
-    switch (id) {
-      case 'coin':
-      case 'about':
-        return Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.fromBorderSide(side),
-          ),
-        );
-      case 'dice':
-        return Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            border: Border.fromBorderSide(side),
-            borderRadius: BorderRadius.circular(6),
-          ),
-        );
-      case 'cards':
-        return Transform.rotate(
-          angle: -8 * 3.1415926535 / 180,
-          child: Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              border: Border.fromBorderSide(side),
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-        );
-      case 'lists':
-        return Container(
-          width: 20,
-          height: 14,
-          decoration: BoxDecoration(
-            border: Border(left: side, top: side, bottom: side),
-          ),
-        );
-      case 'tarot':
-        return Container(
-          width: 20,
-          height: 24,
-          decoration: BoxDecoration(
-            border: Border.fromBorderSide(side),
-            borderRadius: BorderRadius.circular(5),
-          ),
-        );
-      default:
-        return Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.fromBorderSide(side),
-          ),
-        );
-    }
   }
 }
