@@ -4,48 +4,47 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
 import 'package:theuniversedecides/widgets/ritual_nav_rail.dart';
 
-const _items = <RitualNavItem>[
-  (id: 'coin', label: 'Coin'),
-  (id: 'dice', label: 'Dice'),
-  (id: 'cards', label: 'Cards'),
-  (id: 'lists', label: 'Lists'),
-  (id: 'tarot', label: 'Tarot'),
-  (id: 'about', label: 'About'),
-];
-
 void main() {
-  testWidgets('renders one entry per item and reports taps by index', (
-    tester,
-  ) async {
-    final tapped = <int>[];
+  testWidgets('normal taps report every navigation item', (tester) async {
+    final selected = <int>[];
+    final items = List.generate(
+      6,
+      (index) => (id: 'item-$index', label: 'Item $index'),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: RitualNavRail(
-            items: _items,
+            items: items,
             selectedIndex: 0,
-            onSelected: tapped.add,
+            onSelected: selected.add,
           ),
         ),
       ),
     );
 
-    expect(find.text('Tarot'), findsOneWidget);
-    await tester.tap(find.text('Tarot'));
-    expect(tapped, [4]);
+    for (var index = 0; index < items.length; index++) {
+      await tester.tap(find.text('Item $index'));
+    }
+
+    expect(selected, [0, 1, 2, 3, 4, 5]);
   });
 
-  testWidgets('reports a long press by index, so Entropy Drift still opens', (
+  testWidgets('long press reports every navigation item exactly once', (
     tester,
   ) async {
     final pressed = <int>[];
+    final items = List.generate(
+      6,
+      (index) => (id: 'item-$index', label: 'Item $index'),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: RitualNavRail(
-            items: _items,
+            items: items,
             selectedIndex: 0,
             onSelected: (_) {},
             onLongPress: pressed.add,
@@ -54,18 +53,26 @@ void main() {
       ),
     );
 
-    await tester.longPress(find.text('Coin'));
-    expect(pressed, [0]);
+    for (var index = 0; index < items.length; index++) {
+      await tester.longPress(find.text('Item $index'));
+    }
+
+    expect(pressed, [0, 1, 2, 3, 4, 5]);
   });
 
   testWidgets('occupies the documented rail width', (tester) async {
+    final items = List.generate(
+      6,
+      (index) => (id: 'item-$index', label: 'Item $index'),
+    );
+
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: Row(
             children: [
               RitualNavRail(
-                items: _items,
+                items: items,
                 selectedIndex: 0,
                 onSelected: (_) {},
               ),
