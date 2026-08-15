@@ -23,6 +23,12 @@ Three bands, selected from the window width:
 | `medium` | 600-1023 | Bottom nav, single centred column up to 720, larger spacing and type |
 | `expanded` | >= 1024 | Vertical navigation rail, content in two panes |
 
+**Shipped narrower than designed.** `medium` ships with the centred 720px
+column cap only; the "larger spacing and type" described above were not
+built. This was a deliberate narrowing made during implementation, not an
+oversight discovered after the fact — `medium` is the one band with no golden
+coverage, so a new type-and-spacing scale had no way to be checked.
+
 `1024` is where the rail and the two-pane split begin. The rail occupies about
 88 logical pixels, leaving 936; two panes of roughly 440 with a 48 gutter need
 928. Below that the two panes squeeze both sides and a single column reads
