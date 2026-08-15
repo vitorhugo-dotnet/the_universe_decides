@@ -1732,39 +1732,39 @@ Write exactly this content:
 
 ```xml
 <en-US>
-- The web version now adapts to your screen: wide windows get a side menu and a two-column layout. 🖥️
+- Bigger screens now get a layout of their own: a side menu and two columns on tablets and in desktop browsers. 🖥️
 </en-US>
 
 <pt-BR>
-- A versão web agora se adapta à sua tela: janelas largas ganham menu lateral e layout em duas colunas. 🖥️
+- Telas grandes agora têm um layout próprio: menu lateral e duas colunas em tablets e no navegador. 🖥️
 </pt-BR>
 
 <es-ES>
-- La versión web ahora se adapta a tu pantalla: las ventanas anchas tienen menú lateral y diseño a dos columnas. 🖥️
+- Las pantallas grandes ahora tienen su propio diseño: menú lateral y dos columnas en tablets y en el navegador. 🖥️
 </es-ES>
 
 <de>
-- Die Web-Version passt sich jetzt deinem Bildschirm an: breite Fenster erhalten ein Seitenmenü und ein zweispaltiges Layout. 🖥️
+- Große Bildschirme haben jetzt ein eigenes Layout: Seitenmenü und zwei Spalten auf Tablets und im Browser. 🖥️
 </de>
 
 <fr-FR>
-- La version web s'adapte désormais à votre écran : les fenêtres larges obtiennent un menu latéral et une mise en page sur deux colonnes. 🖥️
+- Les grands écrans ont désormais leur propre mise en page : menu latéral et deux colonnes sur tablette et dans le navigateur. 🖥️
 </fr-FR>
 
 <hi>
-- वेब संस्करण अब आपकी स्क्रीन के अनुसार ढल जाता है: चौड़ी विंडो में साइड मेन्यू और दो-कॉलम लेआउट मिलता है। 🖥️
+- बड़ी स्क्रीन को अब अपना लेआउट मिलता है: टैबलेट और ब्राउज़र में साइड मेन्यू और दो कॉलम। 🖥️
 </hi>
 
 <it>
-- La versione web ora si adatta al tuo schermo: le finestre larghe hanno un menu laterale e un layout a due colonne. 🖥️
+- Gli schermi grandi ora hanno un layout dedicato: menu laterale e due colonne su tablet e nel browser. 🖥️
 </it>
 
 <tr>
-- Web sürümü artık ekranınıza uyum sağlıyor: geniş pencerelerde yan menü ve iki sütunlu düzen geliyor. 🖥️
+- Büyük ekranlar artık kendi düzenine sahip: tabletlerde ve tarayıcıda yan menü ve iki sütun. 🖥️
 </tr>
 
 <uk>
-- Веб-версія тепер підлаштовується під ваш екран: широкі вікна отримують бічне меню та макет у дві колонки. 🖥️
+- Великі екрани тепер мають власний макет: бічне меню та дві колонки на планшетах і в браузері. 🖥️
 </uk>
 ```
 
