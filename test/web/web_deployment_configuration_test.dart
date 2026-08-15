@@ -155,17 +155,108 @@ void main() {
     );
   });
 
-  test('the Android pipeline is not triggered by browser-only changes', () {
-    final androidWorkflow = File(
+  test('the deploy workflow is callable and skips validation only when the '
+      'caller already ran it', () {
+    final workflow = File(
+      '.github/workflows/deploy-web.yml',
+    ).readAsStringSync();
+
+    expect(
+      workflow,
+      contains('workflow_call:'),
+      reason: 'CI/CD publishes the site once analyze and tests have passed.',
+    );
+    expect(
+      workflow,
+      contains('workflow_dispatch:'),
+      reason:
+          'Republishing the current master head must not require a code '
+          'change.',
+    );
+    expect(
+      workflow,
+      contains(r'if: ${{ !inputs.validated }}'),
+      reason:
+          'A direct dispatch has no caller to vouch for the commit, so it '
+          'must analyze and test before it publishes. Dropping the guard '
+          'instead of the steps would let a dispatch replace a working site '
+          'with an unvalidated build.',
+    );
+  });
+
+  test('CI/CD publishes the commit it validated', () {
+    final ci = File(
       '.github/workflows/build-signed-apk.yml',
     ).readAsStringSync();
 
     expect(
-      androidWorkflow,
-      isNot(contains('"web/**"')),
+      ci,
+      contains('"web/**"'),
       reason:
-          'web/ is not an input to analyze, tests or the Android build, so it '
-          'must not spend CI minutes or create a release.',
+          'test/web/ reads web/index.html, web/manifest.json and '
+          'web/flutter_bootstrap.js, so web/ is an input to flutter test. A '
+          'browser-only change must reach the pipeline that validates and '
+          'publishes it, or the site never picks the change up.',
+    );
+    expect(
+      ci,
+      contains('uses: ./.github/workflows/deploy-web.yml'),
+      reason: 'The site is published by the pipeline that ran the tests.',
+    );
+    expect(
+      ci,
+      contains('needs: [analyze, test]'),
+      reason: 'A commit failing analyze or test must never reach Pages.',
+    );
+    expect(
+      ci,
+      contains('validated: true'),
+      reason:
+          'Only a caller that gated the deploy behind analyze and test may '
+          'tell the deploy workflow to skip its own validation.',
+    );
+  });
+
+  test('a browser-only change never builds Android and never releases', () {
+    final ci = File(
+      '.github/workflows/build-signed-apk.yml',
+    ).readAsStringSync();
+
+    expect(
+      ci,
+      contains(r"if: needs.version.outputs.android_relevant == 'true'"),
+      reason:
+          'web/ reaching the pipeline is what lets the site deploy, but it is '
+          'not an input to the Android build. Without this gate every '
+          'browser-only change spends CI minutes on the Play APK, the Play '
+          'AAB and the F-Droid APK.',
+    );
+    expect(
+      ci,
+      contains(r'android_relevant: ${{ steps.version.outputs.android_relevant }}'),
+      reason: 'The gate needs the value the version job resolved.',
+    );
+  });
+
+  test('a failing web deploy cannot block the Android release chain', () {
+    final ci = File(
+      '.github/workflows/build-signed-apk.yml',
+    ).readAsStringSync();
+
+    final dependents = ci
+        .split('\n')
+        .where((line) => line.trimLeft().startsWith('needs:'))
+        .where((line) => line.contains('deploy-web'))
+        .toList();
+
+    expect(
+      dependents,
+      isEmpty,
+      reason:
+          'Nothing may depend on the web deploy. A GitHub Pages outage must '
+          'still leave the Play APK, the Play AAB, the F-Droid APK, the '
+          'GitHub Release and the Play deployment free to run, so these are '
+          'the jobs that must never wait on it: $dependents',
     );
   });
 }

@@ -1,14 +1,25 @@
 name: Deploy Web
 
 # Publishes the Flutter Web build to GitHub Pages.
-# This workflow is intentionally reusable-only: CI/CD owns validation and is
-# the single entry point that may invoke a web deployment.
+#
+# `CI/CD` calls this workflow once analyze and tests have passed, so the commit
+# that reaches Pages is always a validated one. Nothing in the Android release
+# chain depends on this workflow in return: a failed or unavailable Pages
+# deploy must never hold back the APK, the AAB, F-Droid or Play.
 #
 # Requires "Settings -> Pages -> Build and deployment -> Source" to be set to
 # "GitHub Actions" once, in the repository settings.
 
 on:
   workflow_call:
+    inputs:
+      validated:
+        description: >-
+          Set by a caller that already ran `flutter analyze` and `flutter test`
+          against this exact commit, so this workflow does not run them twice.
+        type: boolean
+        default: false
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -97,10 +108,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # A `workflow_dispatch` run has no caller to vouch for the commit, so it
+      # validates before it publishes. When `CI/CD` calls this workflow it has
+      # already run both against this same commit and says so, and repeating
+      # them would only delay the deploy.
+      - name: Analyze
+        if: ${{ !inputs.validated }}
+        run: flutter analyze
+
+      - name: Test
+        if: ${{ !inputs.validated }}
+        run: flutter test
+
       - name: Build web
-        # Analyze and tests already passed in the caller CI/CD workflow before
-        # this reusable workflow can start. Do not duplicate them here.
-        #
         # The base href comes from the live Pages configuration, so assets and
         # client-side routes resolve on the project path and on the custom
         # domain alike. --wasm emits main.dart.wasm alongside main.dart.js;
@@ -130,8 +150,10 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    # A failed web build fails `build`, and this job never runs, so a broken
-    # bundle can never replace a working published site.
+    # A failed build fails `build`, and this job never runs, so a broken
+    # bundle can never replace a working published site. The commit itself was
+    # already validated, either by the caller or by the analyze and test steps
+    # a direct dispatch runs.
     needs: build
     runs-on: ubuntu-latest
     permissions:

@@ -4,15 +4,17 @@ Repository-wide instructions for coding agents working on **The Universe Decides
 
 ## CI trigger policy
 
-The Flutter `CI/CD` workflow must run only when a change can affect analysis, tests, or the Android build.
+The Flutter `CI/CD` workflow must run only when a change can affect analysis, tests, the Android build, or the published web build.
 
 Current CI-relevant paths:
 
 - `.github/workflows/build-signed-apk.yml`
+- `.github/workflows/deploy-web.yml`
 - `lib/**`
 - `test/**`
 - `integration_test/**`
 - `android/**`
+- `web/**`
 - `assets/**`
 - `pubspec.yaml`
 - `pubspec.lock`
@@ -27,13 +29,17 @@ CI execution does not always mean release publication. Changes limited to tests,
 
 ## Web deploy trigger policy
 
-`.github/workflows/deploy-web.yml` publishes the Flutter Web build to GitHub Pages and is separate from the Android pipeline on purpose. Keep them independent:
+`.github/workflows/deploy-web.yml` publishes the Flutter Web build to GitHub Pages. It carries no trigger of its own beyond `workflow_dispatch`: `CI/CD` owns the schedule and calls it through `workflow_call`, so the site is always published from a commit that `flutter analyze` and `flutter test` already passed on. Keep these properties:
 
-- Web-relevant paths are `.github/workflows/deploy-web.yml`, `lib/**`, `test/**`, `web/**`, `assets/**`, `pubspec.yaml`, `pubspec.lock`, `analysis_options.yaml`, and `l10n.yaml`.
-- Do not add `android/**` to the web workflow, and do not add `web/**` to `build-signed-apk.yml`. `web/` is not an input to `flutter analyze`, `flutter test`, or the Android build, so browser-only changes must never build an APK or create a release tag.
+- The `deploy-web` job in `CI/CD` needs `analyze` and `test`, and it runs only for a push to `master`. Never let it publish ahead of validation.
+- Nothing may `needs:` the `deploy-web` job. A GitHub Pages outage must leave the Play APK, the Play AAB, the F-Droid APK, the GitHub Release and the Play deployment free to run. The web deploy fails the run without blocking a release.
+- `web/**` is a `CI/CD` input because `test/web/` asserts on `web/index.html`, `web/manifest.json` and `web/flutter_bootstrap.js`, and because the site is published from this pipeline. It is not an Android input, so the `version` job resolves `android_relevant` and `build-android` is gated on it: a change confined to `web/**` and `.github/workflows/deploy-web.yml` never builds an APK and never creates a release tag.
+- `android_relevant` answers "did anything outside the browser bundle change", not "did an Android path change". Keep it that way, so a path nobody classified keeps the Android builds running instead of silently skipping them.
+- Do not add `android/**` to the web workflow, and do not give it a `push` trigger. Two entry points would publish the same commit twice.
+- A direct `workflow_dispatch` has no caller to vouch for the commit, so it runs analyze and tests itself. Only a caller that already ran both may pass `validated: true`.
 - Documentation-only changes must not redeploy the site.
 - The web workflow reads its Flutter version from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`. That declaration stays the single source of truth, because the F-Droid metadata parses the same line.
-- The deploy job depends on the build job, so a failing analyze, test, or build must never replace the published site.
+- The deploy job depends on the build job, so a failing build must never replace the published site.
 
 Shared Dart code must compile for Android, iOS, and the browser. Never import `dart:io` from `lib/**`; use `kIsWeb` with `defaultTargetPlatform`, or a conditional import, and keep `dart:js_interop`, `dart:ui_web`, and `package:web` behind the conditional import in `lib/dice/dice_web_view.dart`. `test/web/web_compilation_path_test.dart` enforces both directions.
 
