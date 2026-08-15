@@ -148,62 +148,88 @@ fallback transparent, and the two sources stay clearly distinguishable.
 
 ## Standard build vs WebAssembly
 
-Measured with Flutter 3.44.7 on this repository, both at `--release` with the
-same `--base-href`.
+`--wasm` is not an either/or switch: `flutter build web --release --wasm`
+emits `main.dart.wasm` *and* `main.dart.js` into the same `build/web`, and
+`flutter_bootstrap.js` picks between them per browser at load time — a
+browser without WasmGC silently takes the `dart2js`/CanvasKit path instead.
+Both paths therefore ship in the one artifact the workflow publishes; the
+tables below measure both from that single build.
+
+Measured with Flutter 3.47.0 on this repository, `--release` with
+`--base-href "/"`.
 
 ### Transferred payload (gzip, what a first visit downloads)
 
-| File | Standard | `--wasm` |
+| File | JS fallback path | WebAssembly path |
 | --- | ---: | ---: |
-| App code | `main.dart.js` 929 KiB | `main.dart.wasm` 1012 KiB + `main.dart.mjs` 8 KiB |
+| App code | `main.dart.js` 936 KiB | `main.dart.wasm` 1012 KiB + `main.dart.mjs` 8 KiB |
 | Renderer loader | `canvaskit.js` 27 KiB | `skwasm.js` 17 KiB |
-| Renderer binary | `canvaskit.wasm` 2833 KiB | `skwasm.wasm` 1496 KiB |
-| **Total** | **3789 KiB** | **2533 KiB** |
+| Renderer binary | `canvaskit.wasm` 2848 KiB | `skwasm.wasm` 1501 KiB |
+| **Total** | **3811 KiB** | **2539 KiB** |
+
+A WasmGC browser (current Chrome, Edge, Firefox) downloads only the
+WebAssembly path's rows; the JS-fallback rows stay unfetched. A browser
+without WasmGC downloads only the JS-fallback rows instead.
 
 ### Published artifact
 
-| | Standard | `--wasm` |
-| --- | ---: | ---: |
-| `build/web` on disk | 41.9 MiB | 44.7 MiB |
+| | Size |
+| --- | ---: |
+| `build/web` on disk | 44.1 MiB |
 
-`--wasm` is not an either/or switch: it emits `main.dart.wasm` *and*
-`main.dart.js`, and the loader picks per browser. That is why the artifact
-grows while the download shrinks.
+This is the single build now published: it contains both compiled outputs, so
+there is no separate "standard artifact" size to compare it against anymore.
 
 ### Compatibility findings
 
 - `flutter build web` already reports **"Wasm dry run succeeded"** for this
-  app, so every dependency is compatible today. `webview_flutter` is not on
-  the web compilation path at all.
-- `flutter build web --wasm` completes, loads, and the dice bridge round-trip
-  (`rollStarted` → animation → `rollCompleted`) works unchanged under
-  `dart:js_interop`.
+  app, so every dependency is compatible. `webview_flutter` is not on the web
+  compilation path at all.
+- `flutter build web --release --wasm --base-href "/"` completes, and both
+  `main.dart.wasm` and `main.dart.js` are present in `build/web` afterwards.
+- Verified in headless Chromium (which supports WasmGC, so it takes the
+  WebAssembly path): the build boots, `flutter-first-frame` fires, the
+  `#loading` placeholder is removed, and the dice bridge round-trip
+  (`rollStarted` → physics animation in the `<iframe>` → `rollCompleted`)
+  completes under `dart:js_interop`, producing a real result. No request
+  404s.
 - Chromium selects `skwasm.wasm`, the **single-threaded** variant. The
   multi-threaded `skwasm_heavy` build needs cross-origin isolation via
   `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` headers.
-  **GitHub Pages cannot set response headers**, so the fastest skwasm path is
-  unavailable on this host regardless of how the app is built.
+  **GitHub Pages cannot set response headers**, so the fastest skwasm path
+  stays unavailable on this host regardless of how the app is built.
 - Cross-origin isolation would also change how the dice `<iframe>` is
-  embedded, so it is not a free upgrade.
+  embedded, so `skwasm_heavy` is not a free upgrade even once a host that can
+  set those headers is available.
 
 ### Decision
 
-Ship the standard build for the MVP, as the issue recommends. The download
-saving is real but is not the bottleneck for an app with no heavy computation,
-and the renderer that would justify the switch is capped at single-threaded on
-GitHub Pages.
+Ship `--wasm`. The measured download saving (3811 KiB → 2539 KiB gzipped,
+about a third smaller) is real and reaches every WasmGC-capable visitor
+automatically, with no loss of compatibility: the JS fallback keeps shipping
+in the same artifact for browsers without WasmGC, so nobody regresses. The
+published artifact is correspondingly larger on disk than a single-renderer
+build would be (44.1 MiB, since it now carries both compiled outputs in one
+bundle), which GitHub Pages storage absorbs without issue.
 
-### Before revisiting
+What this does *not* unlock: GitHub Pages sets no response headers, so
+`Cross-Origin-Opener-Policy` / `Cross-Origin-Embedder-Policy` are absent and
+the browser keeps selecting the single-threaded `skwasm.wasm` rather than
+`skwasm_heavy`. The multi-threaded renderer remains unavailable on this host
+regardless of the `--wasm` switch.
 
-The numbers above are size and compatibility only. A migration decision needs
-what a software-rendered CI container cannot measure:
+### Before enabling `skwasm_heavy`
+
+Unlocking the multi-threaded renderer needs a host that can set
+`Cross-Origin-Opener-Policy: same-origin` and
+`Cross-Origin-Embedder-Policy: require-corp`, which GitHub Pages cannot do.
+Revisit only if the app moves to a host that can, and only after also
+confirming:
 
 1. First-frame and time-to-interactive on real hardware, cable and mobile.
 2. Animation smoothness for the wheel, the coin and the dice physics.
-3. Chrome, Edge, Firefox, Safari desktop and Safari on iOS — a WasmGC-less
-   browser silently takes the JS fallback, so both paths need testing.
-4. Memory use on low-end Android devices in Chrome.
-5. Whether a host that can set COOP/COEP (and therefore unlock
-   `skwasm_heavy`) is worth moving to.
-
-Switch only if there is a measurable win with no relevant compatibility loss.
+3. Chrome, Edge, Firefox, Safari desktop and Safari on iOS under real
+   cross-origin isolation.
+4. That cross-origin isolation does not break the dice `<iframe>` embedding,
+   which is same-origin today but would need `Cross-Origin-Embedder-Policy`
+   compliance from every embedded resource.

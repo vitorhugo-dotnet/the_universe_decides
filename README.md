@@ -118,8 +118,9 @@ absent: Android-only and documentation-only changes never redeploy the site.
 Conversely `web/**` is not a `CI/CD` input, so browser-only changes never build
 an APK or create a release.
 
-It runs `flutter analyze`, `flutter test` and `flutter build web --release`
-before uploading `build/web`; the deploy job needs the build job, so a failure
+It runs `flutter analyze`, `flutter test` and
+`flutter build web --release --wasm` before uploading `build/web`; the deploy
+job needs the build job, so a failure
 at any step leaves the previously published site untouched. The Flutter version
 is read from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which
 is the single source of truth shared with F-Droid.

@@ -114,6 +114,13 @@ void main() {
           'Pinning the root base href is what left the project-path deploy '
           'stuck on the loading placeholder.',
     );
+    expect(
+      workflow,
+      contains('--wasm'),
+      reason:
+          'The browser build ships WebAssembly. Dropping the flag silently '
+          'returns every visitor to the larger JavaScript-only payload.',
+    );
     expect(workflow, contains("cp build/web/index.html build/web/404.html"));
     expect(
       workflow,

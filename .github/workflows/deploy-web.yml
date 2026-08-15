@@ -115,10 +115,13 @@ jobs:
       - name: Build web
         # The base href comes from the live Pages configuration, so assets and
         # client-side routes resolve on the project path and on the custom
-        # domain alike.
+        # domain alike. --wasm emits main.dart.wasm alongside main.dart.js;
+        # the bootstrap loader picks per browser, so a browser without WasmGC
+        # still gets the JavaScript build.
         run: |
           flutter build web \
             --release \
+            --wasm \
             --base-href "${{ steps.base.outputs.href }}"
 
       - name: Verify web artifact
