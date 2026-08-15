@@ -65,9 +65,12 @@ jobs:
           # stays usable and going live needs no code change.
           HREF="$BASE_PATH"
 
+          # An empty base path is the action's way of saying "the hostname
+          # root", which is what a registered custom domain serves from. It
+          # does not report `/`. Treating empty as an error failed the deploy
+          # the first time this ran with `coin.hugojava.dev` registered.
           if [[ -z "$HREF" ]]; then
-            echo "actions/configure-pages returned no base path." >&2
-            exit 1
+            HREF="/"
           fi
 
           # Flutter requires a leading and a trailing slash; the action reports
