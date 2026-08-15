@@ -147,7 +147,8 @@ class RitualScreenFrame extends StatelessWidget {
             SizedBox(height: stageSpacing),
             Align(alignment: stageAlignment, child: stage),
             SizedBox(height: stageSpacingAfter ?? stageSpacing),
-          ],
+          ] else
+            const SizedBox(height: 20),
           body,
         ],
       ),

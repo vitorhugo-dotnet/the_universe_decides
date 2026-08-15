@@ -118,6 +118,33 @@ void main() {
   );
 
   testWidgets(
+    'a stageless frame still gets a gap between header and body in the '
+    'stacked (compact/medium) arrangement, matching _readingColumn',
+    (tester) async {
+      for (final width in const [400.0, 800.0]) {
+        await pumpAtWidth(
+          tester,
+          const RitualScreenFrame(header: _header, body: _body),
+          width: width,
+        );
+
+        final header = tester.getRect(find.text('HEADER'));
+        final body = tester.getRect(find.text('BODY'));
+
+        expect(
+          body.top - header.bottom,
+          20.0,
+          reason:
+              'a stageless _stacked() must supply the same 20px gap that '
+              '_readingColumn() already supplies between header and body; a '
+              'frame that renders them with no gap in between (the bug this '
+              'test exists to catch) would report 0.0 here at width $width',
+        );
+      }
+    },
+  );
+
+  testWidgets(
     'medium scrolls the padding with the content, matching compact',
     (tester) async {
       const padding = EdgeInsets.fromLTRB(11, 13, 17, 19);
