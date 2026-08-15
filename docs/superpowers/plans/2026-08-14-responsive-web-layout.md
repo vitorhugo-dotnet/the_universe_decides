@@ -1795,3 +1795,105 @@ flutter build web --release --base-href "/"
 ```
 
 Then serve `build/web` and open it at three window sizes — roughly 400, 800 and 1400 logical pixels wide — confirming: the bottom bar at the two narrow sizes and the rail at the widest; no horizontal scrollbar at any size; the coin, dice, cards, tarot and wheel all reachable and operable; and the dice animation completing without the surface resizing.
+
+---
+
+### Task 13: Build the browser bundle as WebAssembly
+
+**Execute this before Task 12**, so one release carries both the responsive layout and the
+renderer change and `CHANGELOG.xml` is written once.
+
+This reverses the decision recorded in `docs/web-github-pages.md`. That decision was not
+wrong on its facts — it is the owner's call, made with the trade-off known. The measured
+position, from the same document: the transferred payload drops from 3789 KiB to 2533 KiB
+gzipped, the published artifact grows from 41.9 MiB to 44.7 MiB, and `flutter build web`
+already reports "Wasm dry run succeeded" for this app. What the host cannot give is
+cross-origin isolation: GitHub Pages sets no response headers, so `Cross-Origin-Opener-Policy`
+and `Cross-Origin-Embedder-Policy` are absent and the browser selects the single-threaded
+`skwasm.wasm` rather than `skwasm_heavy`. The download saving is real; the multi-threaded
+renderer is not available on this host.
+
+`--wasm` is not a switch between two outputs. It emits `main.dart.wasm` **and**
+`main.dart.js`, and the loader picks per browser: a browser without WasmGC silently takes
+the JavaScript path. Both paths must therefore keep working.
+
+**Files:**
+- Modify: `.github/workflows/deploy-web.yml:118-122` (the `Build web` step)
+- Modify: `test/web/web_deployment_configuration_test.dart` (assert the flag is present)
+- Modify: `docs/web-github-pages.md` (rewrite the "Decision" subsection)
+- Modify: `README.md` (the `Deploy Web` description, if it names the build command)
+
+**Interfaces:**
+- Consumes: the resolved base href from `steps.base.outputs.href`, unchanged.
+- Produces: nothing other tasks read.
+
+- [ ] **Step 1: Write the failing test**
+
+Add to the `the deploy workflow validates before it publishes` test in
+`test/web/web_deployment_configuration_test.dart`:
+
+```dart
+    expect(
+      workflow,
+      contains('--wasm'),
+      reason:
+          'The browser build ships WebAssembly. Dropping the flag silently '
+          'returns every visitor to the larger JavaScript-only payload.',
+    );
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `flutter test test/web/web_deployment_configuration_test.dart`
+Expected: FAIL — the workflow does not contain `--wasm`.
+
+- [ ] **Step 3: Add the flag**
+
+In `.github/workflows/deploy-web.yml`, change the `Build web` step's command to:
+
+```yaml
+          flutter build web \
+            --release \
+            --wasm \
+            --base-href "${{ steps.base.outputs.href }}"
+```
+
+Leave the comment above it accurate, and leave the `Verify web artifact` step alone: it
+checks `index.html`, the `404.html` copy and the resolved base href, all of which are
+unchanged by the renderer.
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `flutter test test/web/web_deployment_configuration_test.dart`
+Expected: PASS.
+
+- [ ] **Step 5: Build both paths and verify locally**
+
+Run: `flutter build web --release --wasm --base-href "/"`
+
+Confirm the build succeeds and that `build/web` contains **both** `main.dart.wasm` and
+`main.dart.js` — the JavaScript fallback must still be emitted, or browsers without WasmGC
+get nothing. Record the gzipped transfer sizes of `main.dart.wasm`, `main.dart.js`,
+`skwasm.js` and `skwasm.wasm`, and the total `build/web` size on disk, so the numbers in
+`docs/web-github-pages.md` can be replaced with measurements rather than inherited claims.
+
+Then serve the bundle and load it in Chromium, confirming the app boots, the first frame
+paints, and the dice `<iframe>` bridge still completes a roll. The dice renderer reaches
+Dart through `dart:js_interop`; it is the one part of this app whose behaviour genuinely
+differs between the two compilation paths.
+
+- [ ] **Step 6: Update the documentation**
+
+In `docs/web-github-pages.md`, replace the "Decision" subsection under "Standard build vs
+WebAssembly" so it records what now ships and why, keeping the measured tables and the
+COOP/COEP finding. State plainly that the single-threaded `skwasm` path is what this host
+allows, and that the multi-threaded `skwasm_heavy` renderer remains unavailable until a host
+that can set those headers is used. Replace the inherited size numbers with the ones you
+measured in Step 5. Update `README.md` if it names the build command.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add .github/workflows/deploy-web.yml test/web/web_deployment_configuration_test.dart docs/web-github-pages.md README.md
+git commit -m "perf(web): ship the browser bundle as WebAssembly"
+```
