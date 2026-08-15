@@ -5,12 +5,10 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/build-signed-apk.yml"
-      - ".github/workflows/deploy-web.yml"
       - "lib/**"
       - "test/**"
       - "integration_test/**"
       - "android/**"
-      - "web/**"
       - "assets/**"
       - "pubspec.yaml"
       - "pubspec.lock"
@@ -21,12 +19,10 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/build-signed-apk.yml"
-      - ".github/workflows/deploy-web.yml"
       - "lib/**"
       - "test/**"
       - "integration_test/**"
       - "android/**"
-      - "web/**"
       - "assets/**"
       - "pubspec.yaml"
       - "pubspec.lock"
@@ -197,16 +193,6 @@ jobs:
 
       - name: Test
         run: flutter test
-
-  deploy-web:
-    name: Deploy Web
-    needs: [analyze, test]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/deploy-web.yml
 
   build-android:
     name: Build ${{ matrix.name }}

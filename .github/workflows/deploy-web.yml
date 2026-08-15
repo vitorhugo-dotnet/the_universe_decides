@@ -1,14 +1,26 @@
 name: Deploy Web
 
-# Publishes the Flutter Web build to GitHub Pages.
-# This workflow is intentionally reusable-only: CI/CD owns validation and is
-# the single entry point that may invoke a web deployment.
+# Publishes the Flutter Web build to GitHub Pages. Kept separate from the
+# `CI/CD` workflow on purpose: the Android release pipeline owns versioning,
+# tagging, Play and F-Droid, and must not gain a browser-only dependency.
 #
 # Requires "Settings -> Pages -> Build and deployment -> Source" to be set to
 # "GitHub Actions" once, in the repository settings.
 
 on:
-  workflow_call:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/deploy-web.yml"
+      - "lib/**"
+      - "test/**"
+      - "web/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - "l10n.yaml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -97,10 +109,13 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
       - name: Build web
-        # Analyze and tests already passed in the caller CI/CD workflow before
-        # this reusable workflow can start. Do not duplicate them here.
-        #
         # The base href comes from the live Pages configuration, so assets and
         # client-side routes resolve on the project path and on the custom
         # domain alike. --wasm emits main.dart.wasm alongside main.dart.js;
@@ -130,8 +145,8 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    # A failed web build fails `build`, and this job never runs, so a broken
-    # bundle can never replace a working published site.
+    # A failed analyze, test or build fails `build`, and this job never runs,
+    # so a broken commit can never replace a working published site.
     needs: build
     runs-on: ubuntu-latest
     permissions:
