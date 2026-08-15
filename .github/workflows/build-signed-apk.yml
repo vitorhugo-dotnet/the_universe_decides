@@ -5,10 +5,12 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/build-signed-apk.yml"
+      - ".github/workflows/deploy-web.yml"
       - "lib/**"
       - "test/**"
       - "integration_test/**"
       - "android/**"
+      - "web/**"
       - "assets/**"
       - "pubspec.yaml"
       - "pubspec.lock"
@@ -19,10 +21,12 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/build-signed-apk.yml"
+      - ".github/workflows/deploy-web.yml"
       - "lib/**"
       - "test/**"
       - "integration_test/**"
       - "android/**"
+      - "web/**"
       - "assets/**"
       - "pubspec.yaml"
       - "pubspec.lock"
@@ -58,6 +62,7 @@ jobs:
       version_code: ${{ steps.version.outputs.version_code }}
       tag: ${{ steps.version.outputs.tag }}
       should_release: ${{ steps.version.outputs.should_release }}
+      android_relevant: ${{ steps.version.outputs.android_relevant }}
     steps:
       - name: Checkout with tags
         uses: actions/checkout@v4
@@ -69,6 +74,7 @@ jobs:
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
           RELEASE_INPUT: ${{ inputs.release }}
         run: |
           VERSION_DECLARATION=$(sed -nE 's/^version:[[:space:]]*//p' pubspec.yaml | head -n 1)
@@ -131,28 +137,52 @@ jobs:
             SHOULD_RELEASE=true
           fi
 
-          if [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/master" ]]; then
+          CHANGED_FILES=""
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
             if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
               CHANGED_FILES=$(git show --pretty='' --name-only "$GITHUB_SHA")
             else
               CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")
             fi
+          elif [[ "$GITHUB_EVENT_NAME" == "pull_request" && -n "$BASE_SHA" ]]; then
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA")
+          fi
 
-            echo "Changed files:"
-            printf '%s\n' "$CHANGED_FILES"
+          echo "Changed files:"
+          printf '%s\n' "$CHANGED_FILES"
 
+          if [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/master" ]]; then
             if grep -Eq '^(lib/|android/|assets/|pubspec\.yaml$|pubspec\.lock$|l10n\.yaml$)' <<< "$CHANGED_FILES"; then
               SHOULD_RELEASE=true
             fi
+          fi
+
+          # `web/**` is a CI input because `test/web/` asserts on the contents
+          # of `web/index.html`, `web/manifest.json` and
+          # `web/flutter_bootstrap.js`, and because the site is published from
+          # this pipeline. It is not an input to the Android build, so a change
+          # confined to the browser bundle must not spend CI minutes on the
+          # Play APK, the Play AAB and the F-Droid APK.
+          #
+          # The test is deliberately "nothing outside the browser bundle
+          # changed" rather than a list of Android paths: an unrecognised path
+          # keeps the Android builds running instead of silently skipping them.
+          ANDROID_RELEVANT=true
+
+          if [[ -n "$CHANGED_FILES" ]] \
+            && ! grep -qEv '^(web/|\.github/workflows/deploy-web\.yml$)' <<< "$CHANGED_FILES"; then
+            ANDROID_RELEVANT=false
           fi
 
           echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "android_relevant=$ANDROID_RELEVANT" >> "$GITHUB_OUTPUT"
 
           echo "Resolved release: $TAG"
           echo "Release eligible: $SHOULD_RELEASE"
+          echo "Android build relevant: $ANDROID_RELEVANT"
 
   analyze:
     name: Analyze
@@ -194,9 +224,26 @@ jobs:
       - name: Test
         run: flutter test
 
+  deploy-web:
+    name: Deploy Web
+    # Analyze and tests gate the deploy, so only a validated commit reaches
+    # Pages. Nothing below depends on this job in return: if the deploy fails
+    # the run goes red, but the Android builds, the GitHub Release and the Play
+    # deployment carry on, because a browser outage must not hold a release.
+    needs: [analyze, test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-web.yml
+    with:
+      validated: true
+
   build-android:
     name: Build ${{ matrix.name }}
     needs: [version, analyze, test]
+    if: needs.version.outputs.android_relevant == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true

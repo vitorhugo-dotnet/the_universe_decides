@@ -1,25 +1,24 @@
 name: Deploy Web
 
-# Publishes the Flutter Web build to GitHub Pages. Kept separate from the
-# `CI/CD` workflow on purpose: the Android release pipeline owns versioning,
-# tagging, Play and F-Droid, and must not gain a browser-only dependency.
+# Publishes the Flutter Web build to GitHub Pages.
+#
+# `CI/CD` calls this workflow once analyze and tests have passed, so the commit
+# that reaches Pages is always a validated one. Nothing in the Android release
+# chain depends on this workflow in return: a failed or unavailable Pages
+# deploy must never hold back the APK, the AAB, F-Droid or Play.
 #
 # Requires "Settings -> Pages -> Build and deployment -> Source" to be set to
 # "GitHub Actions" once, in the repository settings.
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - ".github/workflows/deploy-web.yml"
-      - "lib/**"
-      - "test/**"
-      - "web/**"
-      - "assets/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - "analysis_options.yaml"
-      - "l10n.yaml"
+  workflow_call:
+    inputs:
+      validated:
+        description: >-
+          Set by a caller that already ran `flutter analyze` and `flutter test`
+          against this exact commit, so this workflow does not run them twice.
+        type: boolean
+        default: false
   workflow_dispatch:
 
 permissions:
@@ -109,10 +108,16 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # A `workflow_dispatch` run has no caller to vouch for the commit, so it
+      # validates before it publishes. When `CI/CD` calls this workflow it has
+      # already run both against this same commit and says so, and repeating
+      # them would only delay the deploy.
       - name: Analyze
+        if: ${{ !inputs.validated }}
         run: flutter analyze
 
       - name: Test
+        if: ${{ !inputs.validated }}
         run: flutter test
 
       - name: Build web
@@ -145,8 +150,10 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    # A failed analyze, test or build fails `build`, and this job never runs,
-    # so a broken commit can never replace a working published site.
+    # A failed build fails `build`, and this job never runs, so a broken
+    # bundle can never replace a working published site. The commit itself was
+    # already validated, either by the caller or by the analyze and test steps
+    # a direct dispatch runs.
     needs: build
     runs-on: ubuntu-latest
     permissions:

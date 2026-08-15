@@ -73,15 +73,17 @@ When `android/key.properties` is present, release builds use that keystore autom
 
 ## GitHub Actions CI/CD
 
-The repository includes `.github/workflows/build-signed-apk.yml`, named `CI/CD`, to run Flutter analyze, tests, Android release APK/AAB builds, release versioning, and GitHub Release publishing.
+The repository includes `.github/workflows/build-signed-apk.yml`, named `CI/CD`, to run Flutter analyze, tests, the GitHub Pages web deploy, Android release APK/AAB builds, release versioning, and GitHub Release publishing.
 
 The workflow runs only when a pull request or push to `master` changes a CI-relevant path:
 
 - `.github/workflows/build-signed-apk.yml`
+- `.github/workflows/deploy-web.yml`
 - `lib/**`
 - `test/**`
 - `integration_test/**`
 - `android/**`
+- `web/**`
 - `assets/**`
 - `pubspec.yaml`
 - `pubspec.lock`
@@ -89,41 +91,35 @@ The workflow runs only when a pull request or push to `master` changes a CI-rele
 - `l10n.yaml`
 - `flutter_native_splash.yaml`
 
-Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.xml`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, or Android builds, add its path to the workflow filter.
+Documentation-only changes, including changes limited to `README.md`, `docs/**`, `CHANGELOG.xml`, or unrelated YAML files, do not trigger the Flutter CI/CD workflow. When a new file becomes an input to analysis, tests, the web build, or Android builds, add its path to the workflow filter.
 
 Pull requests and CI-only changes run validation and Android flavor builds without publishing. A release is created only when a successful push to `master` changes application inputs under `lib/**`, `android/**`, `assets/**`, `pubspec.yaml`, `pubspec.lock`, or `l10n.yaml`.
+
+A change confined to `web/**` and `.github/workflows/deploy-web.yml` is validated and deployed to Pages, but skips the Android builds entirely: the `version` job resolves `android_relevant` by asking whether anything outside the browser bundle changed, and `build-android` is gated on it. A path that matches no rule keeps the Android builds running, so an unclassified input is never skipped by accident.
 
 ## GitHub Pages web deploy
 
 `.github/workflows/deploy-web.yml`, named `Deploy Web`, publishes the Flutter
-Web build to <https://coin.hugojava.dev/>, the app's public address. It is
-deliberately separate from `CI/CD`: the Android release pipeline owns
-versioning, tagging, Play and F-Droid, and must not depend on the browser
-build.
+Web build to <https://coin.hugojava.dev/>, the app's public address.
 
-The workflow runs on `workflow_dispatch` and on pushes to `master` that change:
+It has no push trigger of its own. `CI/CD` calls it through `workflow_call`
+from the `deploy-web` job, which needs `analyze` and `test` and runs only for a
+push to `master`, so the commit that reaches Pages has always passed
+validation. A `workflow_dispatch` run is the manual escape hatch for
+republishing the current `master` head without a code change; having no caller
+to vouch for the commit, it runs `flutter analyze` and `flutter test` itself
+before publishing.
 
-- `.github/workflows/deploy-web.yml`
-- `lib/**`
-- `test/**`
-- `web/**`
-- `assets/**`
-- `pubspec.yaml`
-- `pubspec.lock`
-- `analysis_options.yaml`
-- `l10n.yaml`
+The dependency only points one way. No job in the Android release chain needs
+`deploy-web`, so a Pages outage or a failed web build turns the run red without
+holding back the Play APK, the Play AAB, the F-Droid APK, the GitHub Release or
+the Play deployment.
 
-`android/**`, `docs/**`, `README.md` and `CHANGELOG.xml` are intentionally
-absent: Android-only and documentation-only changes never redeploy the site.
-Conversely `web/**` is not a `CI/CD` input, so browser-only changes never build
-an APK or create a release.
-
-It runs `flutter analyze`, `flutter test` and
-`flutter build web --release --wasm` before uploading `build/web`; the deploy
-job needs the build job, so a failure
-at any step leaves the previously published site untouched. The Flutter version
-is read from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which
-is the single source of truth shared with F-Droid.
+It runs `flutter build web --release --wasm` before uploading `build/web`; the
+deploy job needs the build job, so a failure at any step leaves the previously
+published site untouched. The Flutter version is read from the
+`FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which is the single
+source of truth shared with F-Droid.
 
 The `--base-href` argument is **not** hardcoded. `actions/configure-pages`
 reports the path Pages actually serves — `/` once `coin.hugojava.dev` is
