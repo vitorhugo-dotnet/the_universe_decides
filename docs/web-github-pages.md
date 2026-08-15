@@ -156,7 +156,13 @@ Both paths therefore ship in the one artifact the workflow publishes; the
 tables below measure both from that single build.
 
 Measured with Flutter 3.47.0 on this repository, `--release` with
-`--base-href "/"`.
+`--base-href "/"`. This is *not* the version the deploy workflow actually
+builds with: `.github/workflows/deploy-web.yml` reads `FLUTTER_VERSION` from
+`.github/workflows/build-signed-apk.yml`, which pins **3.44.7**, and CI
+publishes the site on that pinned version, not on whatever is newest wherever
+someone happens to measure. The figures below describe the newer toolchain
+available locally; the compatibility finding that `--wasm` and the dice
+bridge work on the pinned 3.44.7 itself is carried forward separately below.
 
 ### Transferred payload (gzip, what a first visit downloads)
 
@@ -185,14 +191,20 @@ there is no separate "standard artifact" size to compare it against anymore.
 - `flutter build web` already reports **"Wasm dry run succeeded"** for this
   app, so every dependency is compatible. `webview_flutter` is not on the web
   compilation path at all.
+- On **Flutter 3.44.7, the version CI actually builds with**, this was
+  confirmed when the standard-vs-wasm comparison was first written:
+  "`flutter build web --wasm` completes, loads, and the dice bridge
+  round-trip (`rollStarted` → animation → `rollCompleted`) works unchanged
+  under `dart:js_interop`." That finding is what makes shipping `--wasm` on
+  the pinned toolchain safe, independent of anything measured below on 3.47.0.
 - `flutter build web --release --wasm --base-href "/"` completes, and both
   `main.dart.wasm` and `main.dart.js` are present in `build/web` afterwards.
-- Verified in headless Chromium (which supports WasmGC, so it takes the
-  WebAssembly path): the build boots, `flutter-first-frame` fires, the
-  `#loading` placeholder is removed, and the dice bridge round-trip
-  (`rollStarted` → physics animation in the `<iframe>` → `rollCompleted`)
-  completes under `dart:js_interop`, producing a real result. No request
-  404s.
+- Verified in headless Chromium on **Flutter 3.47.0** (which supports
+  WasmGC, so it takes the WebAssembly path): the build boots,
+  `flutter-first-frame` fires, the `#loading` placeholder is removed, and the
+  dice bridge round-trip (`rollStarted` → physics animation in the
+  `<iframe>` → `rollCompleted`) completes under `dart:js_interop`, producing
+  a real result. No request 404s.
 - Chromium selects `skwasm.wasm`, the **single-threaded** variant. The
   multi-threaded `skwasm_heavy` build needs cross-origin isolation via
   `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` headers.

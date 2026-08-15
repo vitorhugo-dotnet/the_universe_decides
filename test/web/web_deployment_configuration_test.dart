@@ -116,10 +116,16 @@ void main() {
     );
     expect(
       workflow,
-      contains('--wasm'),
+      contains(r'''
+          flutter build web \
+            --release \
+            --wasm \
+            --base-href "${{ steps.base.outputs.href }}"'''),
       reason:
-          'The browser build ships WebAssembly. Dropping the flag silently '
-          'returns every visitor to the larger JavaScript-only payload.',
+          'The browser build ships WebAssembly. Dropping the flag from the '
+          'build invocation silently returns every visitor to the larger '
+          'JavaScript-only payload — an explanatory comment mentioning '
+          '"--wasm" is not enough to keep this passing, and must not be.',
     );
     expect(workflow, contains("cp build/web/index.html build/web/404.html"));
     expect(
