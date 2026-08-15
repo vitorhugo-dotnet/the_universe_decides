@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
+import 'package:theuniversedecides/layout/ritual_breakpoint.dart';
 import 'package:theuniversedecides/minigame/entropy_drift_screen.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
@@ -18,10 +18,8 @@ import 'package:theuniversedecides/screens/list_picker_screen.dart';
 import 'package:theuniversedecides/screens/tarot_draw_screen.dart';
 import 'package:theuniversedecides/widgets/ritual_background.dart';
 import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
+import 'package:theuniversedecides/widgets/ritual_nav_rail.dart';
 import 'package:theuniversedecides/widgets/snack_bar_custom.dart';
-
-/// Widest the browser shell grows before it stops stretching and centres.
-const double _webShellMaxWidth = 560;
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -139,48 +137,48 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       (id: 'about', label: l10n.navAboutMe),
     ];
 
-    final shell = Column(
-      children: [
-        Expanded(
-          child: SafeArea(
-            bottom: false,
-            child: IndexedStack(index: _selectedIndex, children: _screens),
-          ),
-        ),
-        RitualBottomNav(
-          items: navItems,
-          selectedIndex: _selectedIndex,
-          onSelected: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          onLongPress: _openEntropyDrift,
-        ),
-      ],
+    final band = ritualBandOf(context);
+    final content = SafeArea(
+      bottom: false,
+      child: IndexedStack(index: _selectedIndex, children: _screens),
     );
+
+    void select(int index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+
+    // The rail replaces the bar rather than joining it: a window wide enough
+    // for two panes strands a bottom bar far below the content it drives.
+    final shell = band.isExpanded
+        ? Row(
+            children: [
+              RitualNavRail(
+                items: navItems,
+                selectedIndex: _selectedIndex,
+                onSelected: select,
+                onLongPress: _openEntropyDrift,
+              ),
+              Expanded(child: content),
+            ],
+          )
+        : Column(
+            children: [
+              Expanded(child: content),
+              RitualBottomNav(
+                items: navItems,
+                selectedIndex: _selectedIndex,
+                onSelected: select,
+                onLongPress: _openEntropyDrift,
+              ),
+            ],
+          );
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       body: RitualBackground(
-        child: Stack(
-          children: [
-            const ShellRuneRings(),
-            // Every screen is composed for a hand-held column. A desktop
-            // browser window is far wider than any phone, so the web build
-            // keeps the ritual centred at a readable width and lets the
-            // cosmic backdrop fill the rest. Mobile keeps the full bleed.
-            if (kIsWeb)
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: _webShellMaxWidth),
-                  child: shell,
-                ),
-              )
-            else
-              shell,
-          ],
-        ),
+        child: Stack(children: [const ShellRuneRings(), shell]),
       ),
     );
   }

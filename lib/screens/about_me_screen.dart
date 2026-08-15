@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:theuniversedecides/layout/ritual_screen_frame.dart';
 import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
 import 'package:theuniversedecides/screens/results_history_screen.dart';
@@ -74,13 +75,11 @@ class _AboutMeScreenState extends ConsumerState<AboutMeScreen> {
     );
     final soundEffectsEnabled = ref.watch(soundEffectsProvider);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
-      child: Column(
+    return RitualScreenFrame(
+      header: RitualHeader(eyebrow: l10n.aboutEyebrow, title: l10n.aboutTitle),
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RitualHeader(eyebrow: l10n.aboutEyebrow, title: l10n.aboutTitle),
-          const SizedBox(height: 20),
           profileAsync.when(
             data: (profile) => _ProfileBlock(profile: profile, l10n: l10n),
             loading: () => const Padding(

@@ -116,6 +116,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get listChosenByUniverse => 'Evren tarafından seçildi';
 
   @override
+  String get listReadyHint =>
+      'Listen hazır. Seçmek için yukarıdaki düğmeye dokun.';
+
+  @override
   String get listModeClassic => 'Liste';
 
   @override

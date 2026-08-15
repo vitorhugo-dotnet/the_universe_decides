@@ -316,6 +316,12 @@ abstract class AppLocalizations {
   /// **'Chosen by the universe'**
   String get listChosenByUniverse;
 
+  /// No description provided for @listReadyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your list is ready. Tap the button above to choose.'**
+  String get listReadyHint;
+
   /// No description provided for @listModeClassic.
   ///
   /// In en, this message translates to:

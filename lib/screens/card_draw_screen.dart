@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/card_draw_controller.dart';
+import 'package:theuniversedecides/layout/ritual_screen_frame.dart';
 import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
@@ -68,69 +69,59 @@ class _CardDrawScreenState extends ConsumerState<CardDrawScreen> {
     final cardKey = ValueKey<int>(_flipCount);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RitualHeader(
-            eyebrow: l10n.cardEyebrow,
-            title: l10n.cardTitle,
-            subtitle: l10n.cardSubtitle,
+    return RitualScreenFrame(
+      header: RitualHeader(
+        eyebrow: l10n.cardEyebrow,
+        title: l10n.cardTitle,
+        subtitle: l10n.cardSubtitle,
+      ),
+      stage: SizedBox(
+        width: 210,
+        height: 296,
+        child: AnimatedSwitcher(
+          duration: reduceMotion ? Duration.zero : _flipDuration,
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          layoutBuilder: (currentChild, previousChildren) => Stack(
+            alignment: Alignment.center,
+            children: [...previousChildren, ?currentChild],
           ),
-          const SizedBox(height: 24),
-          Center(
-            child: SizedBox(
-              width: 210,
-              height: 296,
-              child: AnimatedSwitcher(
-                duration: reduceMotion ? Duration.zero : _flipDuration,
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                layoutBuilder: (currentChild, previousChildren) => Stack(
-                  alignment: Alignment.center,
-                  children: [...previousChildren, ?currentChild],
-                ),
-                transitionBuilder: (child, animation) {
-                  final isIncoming = child.key == cardKey;
-                  final rotation = Tween<double>(
-                    begin: isIncoming ? math.pi : -math.pi,
-                    end: 0,
-                  ).animate(animation);
-                  return AnimatedBuilder(
-                    animation: rotation,
-                    child: child,
-                    builder: (context, child) {
-                      final angle = rotation.value;
-                      final needsMirror = angle.abs() > (math.pi / 2);
-                      final display = needsMirror
-                          ? Transform(
-                              alignment: Alignment.center,
-                              transform: Matrix4.identity()..rotateY(math.pi),
-                              child: child,
-                            )
-                          : child;
-                      return Transform(
+          transitionBuilder: (child, animation) {
+            final isIncoming = child.key == cardKey;
+            final rotation = Tween<double>(
+              begin: isIncoming ? math.pi : -math.pi,
+              end: 0,
+            ).animate(animation);
+            return AnimatedBuilder(
+              animation: rotation,
+              child: child,
+              builder: (context, child) {
+                final angle = rotation.value;
+                final needsMirror = angle.abs() > (math.pi / 2);
+                final display = needsMirror
+                    ? Transform(
                         alignment: Alignment.center,
-                        transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.0016)
-                          ..rotateY(angle),
-                        child: display,
-                      );
-                    },
-                  );
-                },
-                child: _CardFace(key: cardKey, card: state.card),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          RitualButton(
-            label: l10n.cardDrawButton,
-            onPressed: state.isLoading ? null : _drawCard,
-            maxWidth: double.infinity,
-          ),
-        ],
+                        transform: Matrix4.identity()..rotateY(math.pi),
+                        child: child,
+                      )
+                    : child;
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.0016)
+                    ..rotateY(angle),
+                  child: display,
+                );
+              },
+            );
+          },
+          child: _CardFace(key: cardKey, card: state.card),
+        ),
+      ),
+      body: RitualButton(
+        label: l10n.cardDrawButton,
+        onPressed: state.isLoading ? null : _drawCard,
+        maxWidth: double.infinity,
       ),
     );
   }

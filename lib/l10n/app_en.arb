@@ -41,6 +41,7 @@
   "listChooseButton": "Let the universe choose",
   "listEmptyState": "Add at least two options to begin.",
   "listChosenByUniverse": "Chosen by the universe",
+  "listReadyHint": "Your list is ready. Tap the button above to choose.",
   "listModeClassic": "List",
   "listModeWheel": "Wheel",
   "listWheelSpinButton": "Spin the wheel",

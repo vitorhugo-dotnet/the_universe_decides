@@ -3,15 +3,19 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:theuniversedecides/theme/app_colors.dart';
+import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
 import 'package:theuniversedecides/widgets/ritual_nav_icon.dart';
 
-typedef RitualNavItem = ({String id, String label});
+/// Width the rail reserves. `kRitualExpandedMinWidth` is derived from it.
+const double kRitualNavRailWidth = 88;
 
-/// Custom bottom navigation from the prototype: geometric outline icons drawn
-/// with borders, gold when active and 40%-white when inactive, over a blurred
-/// translucent bar.
-class RitualBottomNav extends StatelessWidget {
-  const RitualBottomNav({
+/// The ritual navigation, turned on its side for a window wide enough that a
+/// bottom bar would strand the controls far from the content.
+///
+/// Same items, same icons, same gold-on-active treatment and the same blurred
+/// translucent surface as [RitualBottomNav]; only the axis changes.
+class RitualNavRail extends StatelessWidget {
+  const RitualNavRail({
     super.key,
     required this.items,
     required this.selectedIndex,
@@ -26,25 +30,25 @@ class RitualBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).padding.bottom;
-
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(14, 6, 14, bottomInset + 12),
-          decoration: const BoxDecoration(
-            color: AppColors.navBarBackground,
-            border: Border(top: BorderSide(color: Color(0x14FFFFFF))),
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 380),
-              child: Row(
+    return SizedBox(
+      width: kRitualNavRailWidth,
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+              color: AppColors.navBarBackground,
+              border: Border(right: BorderSide(color: Color(0x14FFFFFF))),
+            ),
+            child: SafeArea(
+              right: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   for (var i = 0; i < items.length; i++)
-                    Expanded(
-                      child: _NavButton(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: _RailButton(
                         item: items[i],
                         active: i == selectedIndex,
                         onTap: () => onSelected(i),
@@ -63,8 +67,8 @@ class RitualBottomNav extends StatelessWidget {
   }
 }
 
-class _NavButton extends StatelessWidget {
-  const _NavButton({
+class _RailButton extends StatelessWidget {
+  const _RailButton({
     required this.item,
     required this.active,
     required this.onTap,
@@ -83,25 +87,24 @@ class _NavButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
               height: 24,
-              child: Center(
-                child: RitualNavIcon(id: item.id, color: color),
-              ),
+              child: Center(child: RitualNavIcon(id: item.id, color: color)),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 6),
             Text(
               item.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 9,
+                fontSize: 10,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.1,
                 color: color,

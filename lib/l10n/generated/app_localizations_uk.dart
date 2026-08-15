@@ -116,6 +116,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get listChosenByUniverse => 'Обрано всесвітом';
 
   @override
+  String get listReadyHint =>
+      'Ваш список готовий. Натисніть кнопку вище, щоб обрати.';
+
+  @override
   String get listModeClassic => 'Список';
 
   @override

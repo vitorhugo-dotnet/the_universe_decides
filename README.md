@@ -96,7 +96,7 @@ Pull requests and CI-only changes run validation and Android flavor builds witho
 ## GitHub Pages web deploy
 
 `.github/workflows/deploy-web.yml`, named `Deploy Web`, publishes the Flutter
-Web build to <https://coin.hugojava.dev/>. It is
+Web build to <https://coin.hugojava.dev/>, the app's public address. It is
 deliberately separate from `CI/CD`: the Android release pipeline owns
 versioning, tagging, Play and F-Droid, and must not depend on the browser
 build.
@@ -119,24 +119,37 @@ Conversely `web/**` is not a `CI/CD` input, so browser-only changes never build
 an APK or create a release.
 
 It runs `flutter analyze`, `flutter test` and
-`flutter build web --release --base-href "/"` before uploading
-`build/web`; the deploy job needs the build job, so a failure at any step
-leaves the previously published site untouched. The Flutter version is read
-from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which is the
-single source of truth shared with F-Droid.
+`flutter build web --release --wasm` before uploading `build/web`; the deploy
+job needs the build job, so a failure
+at any step leaves the previously published site untouched. The Flutter version
+is read from the `FLUTTER_VERSION` declaration in `build-signed-apk.yml`, which
+is the single source of truth shared with F-Droid.
 
-Two details in `web/` matter for the deploy and are covered by
+The `--base-href` argument is **not** hardcoded. `actions/configure-pages`
+reports the path Pages actually serves — `/` once `coin.hugojava.dev` is
+registered, `/the_universe_decides/` while it is not — and the workflow passes
+that through. A base href that does not match the serving path makes
+`flutter_bootstrap.js` 404, so the engine never boots and the page shows the
+loading placeholder forever with no visible error. Reading the path keeps the
+fallback usable while DNS or the custom-domain registration is pending, and
+needs no code change when the domain goes live.
+
+Three details matter for the deploy and are covered by
 `test/web/web_deployment_configuration_test.dart`:
 
-- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder for the root
-  deployment, or every asset 404s.
+- `web/index.html` must keep the `$FLUTTER_BASE_HREF` placeholder, or
+  `--base-href` is a no-op and every asset 404s.
+- The workflow must resolve the base href from the Pages configuration rather
+  than pinning a literal.
 - `web/flutter_bootstrap.js` overrides `canvasKitBaseUrl` so CanvasKit is
   served from the deploy itself instead of `www.gstatic.com`.
 
-After merging, enable the deploy in **Settings → Pages → Build and deployment →
-Source → GitHub Actions**, then register and validate the custom domain
-`coin.hugojava.dev` in Pages settings. The custom-domain registration happens
-after merge and Pages enablement.
+Enable the deploy in **Settings → Pages → Build and deployment → Source →
+GitHub Actions**, then register and validate the custom domain
+`coin.hugojava.dev` in the same settings page and enable HTTPS enforcement once
+GitHub provisions the certificate. The public URL only answers after that
+registration: the Cloudflare CNAME alone is not enough, and without it Pages
+serves the site from the project path instead.
 
 ### Release versioning
 

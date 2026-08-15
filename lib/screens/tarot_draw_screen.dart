@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/tarot_draw_controller.dart';
+import 'package:theuniversedecides/layout/ritual_breakpoint.dart';
+import 'package:theuniversedecides/layout/ritual_screen_frame.dart';
 import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/services/sound_effects_service.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
@@ -27,66 +29,64 @@ class TarotDrawScreen extends ConsumerWidget {
         ? Duration.zero
         : const Duration(milliseconds: 900);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
-      child: Column(
+    return RitualScreenFrame(
+      stageSpacing: 22,
+      header: RitualHeader(
+        eyebrow: l10n.tarotEyebrow,
+        title: l10n.tarotTitle,
+        subtitle: l10n.tarotSubtitle,
+      ),
+      stage: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 220),
+          child: AnimatedSwitcher(
+            duration: animationDuration,
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            layoutBuilder: (currentChild, previousChildren) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [...previousChildren, ?currentChild],
+              );
+            },
+            transitionBuilder: (child, animation) {
+              final isIncoming = child.key == cardKey;
+              final rotation = Tween<double>(
+                begin: isIncoming ? math.pi : -math.pi,
+                end: 0,
+              ).animate(animation);
+
+              return AnimatedBuilder(
+                animation: rotation,
+                child: child,
+                builder: (context, child) {
+                  final angle = rotation.value;
+                  final needsMirror = angle.abs() > (math.pi / 2);
+                  final displayChild = needsMirror
+                      ? Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()..rotateY(math.pi),
+                          child: child,
+                        )
+                      : child;
+
+                  return Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.0018)
+                      ..rotateY(angle),
+                    child: displayChild,
+                  );
+                },
+              );
+            },
+            child: _TarotCardFace(key: cardKey, card: state.card),
+          ),
+        ),
+      ),
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RitualHeader(
-            eyebrow: l10n.tarotEyebrow,
-            title: l10n.tarotTitle,
-            subtitle: l10n.tarotSubtitle,
-          ),
-          const SizedBox(height: 22),
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 220),
-              child: AnimatedSwitcher(
-                duration: animationDuration,
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                layoutBuilder: (currentChild, previousChildren) {
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: [...previousChildren, ?currentChild],
-                  );
-                },
-                transitionBuilder: (child, animation) {
-                  final isIncoming = child.key == cardKey;
-                  final rotation = Tween<double>(
-                    begin: isIncoming ? math.pi : -math.pi,
-                    end: 0,
-                  ).animate(animation);
-
-                  return AnimatedBuilder(
-                    animation: rotation,
-                    child: child,
-                    builder: (context, child) {
-                      final angle = rotation.value;
-                      final needsMirror = angle.abs() > (math.pi / 2);
-                      final displayChild = needsMirror
-                          ? Transform(
-                              alignment: Alignment.center,
-                              transform: Matrix4.identity()..rotateY(math.pi),
-                              child: child,
-                            )
-                          : child;
-
-                      return Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.0018)
-                          ..rotateY(angle),
-                        child: displayChild,
-                      );
-                    },
-                  );
-                },
-                child: _TarotCardFace(key: cardKey, card: state.card),
-              ),
-            ),
-          ),
-          const SizedBox(height: 22),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: state.isLoading
@@ -170,7 +170,11 @@ class _TarotCardFace extends StatelessWidget {
       aspectRatio: 2 / 3,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isCompact = constraints.maxHeight < 400;
+          // The band, not a private height threshold: a wide window gives the
+          // card a tall pane, and two disagreeing notions of "compact" would
+          // shrink the type while the card grows.
+          final isCompact =
+              ritualBandOf(context).isCompact && constraints.maxHeight < 400;
           final cardPadding = isCompact ? 16.0 : 22.0;
           final iconSize = isCompact ? 42.0 : 54.0;
           final mainGap = isCompact ? 10.0 : 20.0;

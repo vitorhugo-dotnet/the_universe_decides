@@ -41,6 +41,7 @@
   "listChooseButton": "Дозволити всесвіту обрати",
   "listEmptyState": "Додайте щонайменше два варіанти, щоб почати.",
   "listChosenByUniverse": "Обрано всесвітом",
+  "listReadyHint": "Ваш список готовий. Натисніть кнопку вище, щоб обрати.",
   "listModeClassic": "Список",
   "listModeWheel": "Колесо",
   "listWheelSpinButton": "Крутити колесо",

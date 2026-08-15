@@ -13,6 +13,7 @@ import 'package:theuniversedecides/services/github_profile_service.dart';
 import 'package:theuniversedecides/services/quick_access_service.dart';
 import 'package:theuniversedecides/services/random_org_service.dart';
 import 'package:theuniversedecides/widgets/ritual_bottom_nav.dart';
+import 'package:theuniversedecides/widgets/ritual_nav_rail.dart';
 
 import '../support/fake_webview_platform.dart';
 
@@ -73,6 +74,60 @@ void main() {
     expect(find.byType(EntropyDriftScreen), findsOneWidget);
     expect(playGamesService.authenticationAttempts, 1);
   });
+
+  testWidgets(
+    'a long press on the rail also opens Entropy Drift, at a width wide '
+    'enough for the rail to replace the bar',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final playGamesService = _FakePlayGamesService();
+
+      // 1400 is `expanded` band territory: the rail replaces the bottom bar
+      // here, the same identical onLongPress callback wired to a different
+      // widget. Nothing exercised that wiring before this test.
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1400, 900);
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            randomOrgServiceProvider.overrideWith(
+              (ref) => _FakeRandomOrgService(),
+            ),
+            githubProfileServiceProvider.overrideWith(
+              (ref) => _FakeGitHubProfileService(),
+            ),
+            quickAccessServiceProvider.overrideWith(
+              (ref) => _FakeQuickAccessService(),
+            ),
+            entropyDriftPlayGamesProvider.overrideWithValue(playGamesService),
+          ],
+          child: const UniverseDecidesApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final railButtons = find.descendant(
+        of: find.byType(RitualNavRail),
+        matching: find.byType(InkWell),
+      );
+      expect(railButtons, findsNWidgets(6));
+      expect(find.byType(RitualBottomNav), findsNothing);
+      expect(find.byType(EntropyDriftScreen), findsNothing);
+      expect(playGamesService.authenticationAttempts, 0);
+
+      await tester.longPress(railButtons.first);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(EntropyDriftScreen), findsOneWidget);
+      expect(playGamesService.authenticationAttempts, 1);
+    },
+  );
 }
 
 class _FakePlayGamesService extends EntropyDriftPlayGamesService {

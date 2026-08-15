@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <!--
-    Replaced by the `--base-href` argument of `flutter build web`. GitHub Pages
-    serves this app at the custom-domain hostname root
-    (`https://coin.hugojava.dev/`), so the deploy workflow passes
-    `--base-href "/"` and every relative asset, icon and manifest URL below
-    resolves against the root.
+    Replaced by the `--base-href` argument of `flutter build web`. The deploy
+    workflow reads the path GitHub Pages actually publishes to — `/` for the
+    `coin.hugojava.dev` custom domain, or the project path
+    `/the_universe_decides/` while that registration is pending — and passes it
+    here, so every relative asset, icon and manifest URL below resolves on
+    either host.
   -->
   <base href="$FLUTTER_BASE_HREF">
 

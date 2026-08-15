@@ -41,6 +41,7 @@
   "listChooseButton": "ब्रह्मांड को चुनने दें",
   "listEmptyState": "शुरू करने के लिए कम से कम दो विकल्प जोड़ें।",
   "listChosenByUniverse": "ब्रह्मांड द्वारा चुना गया",
+  "listReadyHint": "आपकी सूची तैयार है। चुनने के लिए ऊपर दिया गया बटन दबाएं।",
   "listModeClassic": "सूची",
   "listModeWheel": "पहिया",
   "listWheelSpinButton": "पहिया घुमाएं",

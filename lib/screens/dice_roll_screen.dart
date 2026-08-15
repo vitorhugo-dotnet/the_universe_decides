@@ -10,6 +10,7 @@ import 'package:theuniversedecides/dice/dice_bridge_message.dart';
 import 'package:theuniversedecides/dice/dice_roll_request.dart';
 import 'package:theuniversedecides/dice/dice_web_view.dart';
 import 'package:theuniversedecides/l10n/generated/app_localizations.dart';
+import 'package:theuniversedecides/layout/ritual_screen_frame.dart';
 import 'package:theuniversedecides/services/results_history_service.dart';
 import 'package:theuniversedecides/theme/app_colors.dart';
 import 'package:theuniversedecides/widgets/ritual_button.dart';
@@ -147,9 +148,10 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
       }
     });
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
-      child: Column(
+    return RitualScreenFrame(
+      stageSpacing: 22,
+      stageSpacingAfter: 0,
+      header: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           RitualHeader(
@@ -204,12 +206,23 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
             label: l10n.diceRollButton,
             onPressed: isBusy ? null : _startRoll,
           ),
-          const SizedBox(height: 22),
-          _DiceAnimationRegion(
-            child:
-                widget.diceWebViewBuilder?.call(_diceWebViewController) ??
-                DiceWebView(controller: _diceWebViewController),
-          ),
+        ],
+      ),
+      // The frame centers `stage` by default (matching cards/tarot, whose
+      // original arenas were centered too), but the dice arena was flush
+      // left in a `Column(crossAxisAlignment: start)` before this frame
+      // existed. `stageAlignment` only applies in the stacked (compact /
+      // medium) arrangement — the expanded two-pane band always centers the
+      // stage in its fixed-width pane, which is correct for dice too.
+      stageAlignment: Alignment.centerLeft,
+      stage: _DiceAnimationRegion(
+        child:
+            widget.diceWebViewBuilder?.call(_diceWebViewController) ??
+            DiceWebView(controller: _diceWebViewController),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           if (state.animationError != null) ...[
             const SizedBox(height: 12),
             Text(
