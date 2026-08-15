@@ -96,7 +96,7 @@ void main() {
         const RitualScreenFrame(
           header: _header,
           body: _body,
-          compactPadding: padding,
+          framePadding: padding,
         ),
         width: 400,
       );
@@ -108,7 +108,7 @@ void main() {
         scrollView.padding,
         padding,
         reason:
-            'compactPadding must be passed to SingleChildChildScrollView so '
+            'framePadding must be passed to SingleChildChildScrollView so '
             'it scrolls away with the content, exactly like the pre-plan '
             '`SingleChildScrollView(padding: ...)`. An enclosing Padding '
             'around the scroll view instead leaves scrollView.padding null '
@@ -153,7 +153,7 @@ void main() {
         const RitualScreenFrame(
           header: _header,
           body: _body,
-          compactPadding: padding,
+          framePadding: padding,
         ),
         width: 800,
       );
@@ -182,13 +182,13 @@ void main() {
           body: _body,
           stage: _stage,
           stageFlexes: true,
-          compactPadding: padding,
+          framePadding: padding,
         ),
         width: 400,
       );
 
       // The flexing path never scrolls, so there is nothing to fix here:
-      // the compactPadding must still enclose the arrangement as a Padding.
+      // the framePadding must still enclose the arrangement as a Padding.
       expect(find.byType(SingleChildScrollView), findsNothing);
       expect(
         find.byWidgetPredicate(
@@ -296,7 +296,7 @@ void main() {
     'arrangement',
     (tester) async {
       // Content width in compact at 400px = 400 - 22 - 22 (default
-      // compactPadding) = 356. _stage is 100 wide, so centered vs
+      // framePadding) = 356. _stage is 100 wide, so centered vs
       // centerLeft land at visibly different x positions.
       const contentWidth = 400.0 - 22 - 22;
       const stageWidth = 100.0;
@@ -319,7 +319,7 @@ void main() {
         centerLeftStage.left,
         22.0,
         reason: 'Alignment.centerLeft must put the stage flush against the '
-            "column's start edge (just past compactPadding.left), not "
+            "column's start edge (just past framePadding.left), not "
             'centered — a frame that ignores stageAlignment and always '
             'centers would put it at ${22 + (contentWidth - stageWidth) / 2} '
             'instead',

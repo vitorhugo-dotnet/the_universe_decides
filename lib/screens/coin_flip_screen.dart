@@ -560,7 +560,7 @@ class _CoinFlipScreenState extends ConsumerState<CoinFlipScreen>
       bottom: false,
       child: RitualScreenFrame(
         stageFlexes: true,
-        compactPadding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
+        framePadding: const EdgeInsets.fromLTRB(24, 24, 24, 6),
         header: RitualHeader(
           eyebrow: l10n.coinEyebrow,
           title: l10n.coinTitle,

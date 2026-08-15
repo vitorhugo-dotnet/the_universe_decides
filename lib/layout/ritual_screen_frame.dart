@@ -26,7 +26,7 @@ class RitualScreenFrame extends StatelessWidget {
     required this.body,
     this.stage,
     this.stageFlexes = false,
-    this.compactPadding = const EdgeInsets.fromLTRB(22, 20, 22, 18),
+    this.framePadding = const EdgeInsets.fromLTRB(22, 20, 22, 18),
     this.stageSpacing = 24,
     this.stageSpacingAfter,
     this.stageAlignment = Alignment.center,
@@ -47,7 +47,15 @@ class RitualScreenFrame extends StatelessWidget {
   /// false for screens that scroll.
   final bool stageFlexes;
 
-  final EdgeInsets compactPadding;
+  /// Padding around the arrangement in [RitualBand.compact] and
+  /// [RitualBand.medium] alike.
+  ///
+  /// There is one value, not two, because both bands share `_stacked()`: the
+  /// stacked column simply grows a centred max-width wrapper once the window
+  /// crosses into medium, and the padding inside it does not change with it.
+  /// A screen author reading only the parameter name might expect medium to
+  /// fall back to some other spacing; it does not, and this is why.
+  final EdgeInsets framePadding;
 
   /// Vertical space between the stage and the header above it / body below
   /// it, in the non-flexing (scrolling) stacked arrangement.
@@ -96,9 +104,9 @@ class RitualScreenFrame extends StatelessWidget {
         // as the pre-plan `SingleChildScrollView(padding: ...)` did. Flexing
         // screens (the coin) don't scroll, so the padding stays as an
         // enclosing Padding around the whole arrangement.
-        final content = _stacked(scrollPadding: compactPadding);
+        final content = _stacked(scrollPadding: framePadding);
         return stageFlexes
-            ? Padding(padding: compactPadding, child: content)
+            ? Padding(padding: framePadding, child: content)
             : content;
       case RitualBand.medium:
         final content = Center(
@@ -106,11 +114,11 @@ class RitualScreenFrame extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: kRitualMediumMaxWidth,
             ),
-            child: _stacked(scrollPadding: compactPadding),
+            child: _stacked(scrollPadding: framePadding),
           ),
         );
         return stageFlexes
-            ? Padding(padding: compactPadding, child: content)
+            ? Padding(padding: framePadding, child: content)
             : content;
       case RitualBand.expanded:
         return Padding(
