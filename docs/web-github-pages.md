@@ -230,18 +230,44 @@ the browser keeps selecting the single-threaded `skwasm.wasm` rather than
 `skwasm_heavy`. The multi-threaded renderer remains unavailable on this host
 regardless of the `--wasm` switch.
 
-### Before enabling `skwasm_heavy`
+### Unlocking `skwasm_heavy` without leaving GitHub Pages
 
-Unlocking the multi-threaded renderer needs a host that can set
-`Cross-Origin-Opener-Policy: same-origin` and
-`Cross-Origin-Embedder-Policy: require-corp`, which GitHub Pages cannot do.
-Revisit only if the app moves to a host that can, and only after also
-confirming:
+The headers do not require a different host. `coin.hugojava.dev` already
+resolves through Cloudflare, so switching that record from DNS-only to
+proxied puts Cloudflare in front of Pages, and a Response Header Transform
+Rule can add what Pages cannot:
+
+```text
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: credentialless
+```
+
+GitHub Pages keeps serving the bundle; only the edge changes. Nothing in this
+repository configures it — the DNS mode and the transform rule live in the
+Cloudflare dashboard.
+
+`credentialless` rather than `require-corp` is deliberate. Under
+`require-corp` every cross-origin subresource must opt in with its own
+`Cross-Origin-Resource-Policy` header, and this app fetches Roboto from
+`fonts.gstatic.com`, which does not. `credentialless` loads such resources
+without credentials instead of blocking them, which is what this app needs.
+
+Two things must be checked **after** enabling it, because cross-origin
+isolation changes embedding rules rather than just adding headers:
+
+1. **The dice bridge.** `assets/dice/index.html` is embedded in a same-origin
+   `<iframe>` and talks to Dart over `window.DiceBridge`. Same-origin frames
+   inherit the isolation, so this should hold — but a roll must be driven
+   end-to-end to confirm it, not assumed.
+2. **The Roboto fetch.** Confirm text still renders as expected, and that the
+   font request is not blocked outright.
+
+If either breaks, remove the transform rule: the app returns to the
+single-threaded `skwasm.wasm` path, which is what ships today and works.
+
+Worth measuring rather than assuming a win, once enabled:
 
 1. First-frame and time-to-interactive on real hardware, cable and mobile.
 2. Animation smoothness for the wheel, the coin and the dice physics.
 3. Chrome, Edge, Firefox, Safari desktop and Safari on iOS under real
    cross-origin isolation.
-4. That cross-origin isolation does not break the dice `<iframe>` embedding,
-   which is same-origin today but would need `Cross-Origin-Embedder-Policy`
-   compliance from every embedded resource.

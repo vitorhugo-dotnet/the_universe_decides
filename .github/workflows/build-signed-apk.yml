@@ -29,6 +29,14 @@ on:
       - "analysis_options.yaml"
       - "l10n.yaml"
       - "flutter_native_splash.yaml"
+  workflow_dispatch:
+    inputs:
+      release:
+        description: >-
+          Publish a release from the current master head. Leave off to only run
+          analysis, tests and the Android builds.
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -61,6 +69,7 @@ jobs:
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          RELEASE_INPUT: ${{ inputs.release }}
         run: |
           VERSION_DECLARATION=$(sed -nE 's/^version:[[:space:]]*//p' pubspec.yaml | head -n 1)
 
@@ -106,6 +115,21 @@ jobs:
 
           TAG="v${VERSION_NAME}+${VERSION_CODE}"
           SHOULD_RELEASE=false
+
+          # A release is normally earned by pushing application code. That
+          # leaves no way to recover one that was lost: the publish step
+          # refuses to tag a commit once master has moved past it, so a push
+          # landing mid-release drops that release on the floor, and if the
+          # superseding commit touches no application path nothing ever
+          # retries. This dispatch is that recovery path, and the only way to
+          # release without a code change.
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$RELEASE_INPUT" == "true" ]]; then
+            if [[ "$GITHUB_REF" != "refs/heads/master" ]]; then
+              echo "A dispatched release must run on master, got '$GITHUB_REF'." >&2
+              exit 1
+            fi
+            SHOULD_RELEASE=true
+          fi
 
           if [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == "refs/heads/master" ]]; then
             if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
