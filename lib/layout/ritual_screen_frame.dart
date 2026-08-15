@@ -27,6 +27,7 @@ class RitualScreenFrame extends StatelessWidget {
     this.stage,
     this.stageFlexes = false,
     this.compactPadding = const EdgeInsets.fromLTRB(22, 20, 22, 18),
+    this.stageSpacing = 24,
   });
 
   /// The screen's [RitualHeader].
@@ -45,6 +46,15 @@ class RitualScreenFrame extends StatelessWidget {
   final bool stageFlexes;
 
   final EdgeInsets compactPadding;
+
+  /// Vertical space between the stage and the header above it / body below
+  /// it, in the non-flexing (scrolling) stacked arrangement.
+  ///
+  /// Screens had differing spacing around their ritual object before this
+  /// frame existed, and a single hardcoded value silently shifts the ones
+  /// that differ from it. Defaults to 24, the value every screen converted
+  /// so far happened to use.
+  final double stageSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -103,9 +113,9 @@ class RitualScreenFrame extends StatelessWidget {
         children: [
           header,
           if (stage != null) ...[
-            const SizedBox(height: 24),
+            SizedBox(height: stageSpacing),
             Center(child: stage),
-            const SizedBox(height: 24),
+            SizedBox(height: stageSpacing),
           ],
           body,
         ],

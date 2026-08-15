@@ -172,6 +172,41 @@ void main() {
     },
   );
 
+  testWidgets(
+    'stageSpacing controls the gap around the stage in compact',
+    (tester) async {
+      for (final spacing in const [24.0, 11.0]) {
+        await pumpAtWidth(
+          tester,
+          RitualScreenFrame(
+            header: _header,
+            body: _body,
+            stage: _stage,
+            stageSpacing: spacing,
+          ),
+          width: 400,
+        );
+
+        final header = tester.getRect(find.text('HEADER'));
+        final stage = tester.getRect(find.byKey(const ValueKey('stage')));
+        final body = tester.getRect(find.text('BODY'));
+
+        expect(
+          stage.top - header.bottom,
+          spacing,
+          reason: 'the gap above the stage must equal stageSpacing '
+              '($spacing), not a hardcoded value',
+        );
+        expect(
+          body.top - stage.bottom,
+          spacing,
+          reason: 'the gap below the stage must equal stageSpacing '
+              '($spacing), not a hardcoded value',
+        );
+      }
+    },
+  );
+
   testWidgets('no band overflows', (tester) async {
     for (final width in const [400.0, 600.0, 1023.0, 1024.0, 1400.0]) {
       await pumpAtWidth(
