@@ -29,6 +29,7 @@ class RitualScreenFrame extends StatelessWidget {
     this.compactPadding = const EdgeInsets.fromLTRB(22, 20, 22, 18),
     this.stageSpacing = 24,
     this.stageSpacingAfter,
+    this.stageAlignment = Alignment.center,
   });
 
   /// The screen's [RitualHeader].
@@ -67,6 +68,24 @@ class RitualScreenFrame extends StatelessWidget {
   /// 12px gaps that followed belong to conditional result text, not to the
   /// stage itself.
   final double? stageSpacingAfter;
+
+  /// How the stage sits inside the stacked (`_stacked()`) arrangement's full
+  /// width, in [RitualBand.compact] and [RitualBand.medium].
+  ///
+  /// Defaults to [Alignment.center], reproducing the plain `Center(child:
+  /// stage)` every screen converted before this parameter existed relied on
+  /// (they never pass it). Screens differed in how their ritual object sat
+  /// in the original stacked column before this frame existed — cards' and
+  /// tarot's arenas were centered, but dice's was flush left in a
+  /// `Column(crossAxisAlignment: start)` — so a single hardcoded `Center`
+  /// silently shifted the ones that differ from it, exactly as a hardcoded
+  /// `stageSpacing` once did.
+  ///
+  /// Deliberately **not** honoured by [_twoPane]: inside a fixed-width pane
+  /// there is one correct answer (centered), so every screen — dice
+  /// included — keeps `_twoPane()`'s own `Center(child: stage)` regardless
+  /// of this value.
+  final Alignment stageAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +145,7 @@ class RitualScreenFrame extends StatelessWidget {
           header,
           if (stage != null) ...[
             SizedBox(height: stageSpacing),
-            Center(child: stage),
+            Align(alignment: stageAlignment, child: stage),
             SizedBox(height: stageSpacingAfter ?? stageSpacing),
           ],
           body,

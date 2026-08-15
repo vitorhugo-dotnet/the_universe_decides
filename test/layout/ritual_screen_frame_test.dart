@@ -264,6 +264,98 @@ void main() {
     },
   );
 
+  testWidgets(
+    'stageAlignment controls where the stage sits in the stacked (compact) '
+    'arrangement',
+    (tester) async {
+      // Content width in compact at 400px = 400 - 22 - 22 (default
+      // compactPadding) = 356. _stage is 100 wide, so centered vs
+      // centerLeft land at visibly different x positions.
+      const contentWidth = 400.0 - 22 - 22;
+      const stageWidth = 100.0;
+
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(
+          header: _header,
+          body: _body,
+          stage: _stage,
+          stageAlignment: Alignment.centerLeft,
+        ),
+        width: 400,
+      );
+      final centerLeftStage = tester.getRect(
+        find.byKey(const ValueKey('stage')),
+      );
+
+      expect(
+        centerLeftStage.left,
+        22.0,
+        reason: 'Alignment.centerLeft must put the stage flush against the '
+            "column's start edge (just past compactPadding.left), not "
+            'centered — a frame that ignores stageAlignment and always '
+            'centers would put it at ${22 + (contentWidth - stageWidth) / 2} '
+            'instead',
+      );
+    },
+  );
+
+  testWidgets(
+    'omitting stageAlignment keeps the stage centered, matching every '
+    'existing call site',
+    (tester) async {
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(header: _header, body: _body, stage: _stage),
+        width: 400,
+      );
+
+      const contentWidth = 400.0 - 22 - 22;
+      const stageWidth = 100.0;
+      final stage = tester.getRect(find.byKey(const ValueKey('stage')));
+
+      expect(stage.left, 22.0 + (contentWidth - stageWidth) / 2);
+    },
+  );
+
+  testWidgets(
+    'the expanded two-pane band always centers the stage in its pane, '
+    'regardless of stageAlignment',
+    (tester) async {
+      // Expanded padding is fromLTRB(32, 28, 32, 24); the stage pane is
+      // kRitualStagePaneWidth (420) wide. _stage is 100 wide, so a centered
+      // arena and a flush-left arena land at visibly different x positions.
+      const paneLeft = 32.0;
+      const expectedCenteredLeft =
+          paneLeft + (kRitualStagePaneWidth - 100) / 2;
+
+      for (final alignment in const [
+        Alignment.center,
+        Alignment.centerLeft,
+      ]) {
+        await pumpAtWidth(
+          tester,
+          RitualScreenFrame(
+            header: _header,
+            body: _body,
+            stage: _stage,
+            stageAlignment: alignment,
+          ),
+          width: 1400,
+        );
+
+        final stage = tester.getRect(find.byKey(const ValueKey('stage')));
+        expect(
+          stage.left,
+          expectedCenteredLeft,
+          reason: '_twoPane must center the stage in its fixed-width pane '
+              'no matter what stageAlignment ($alignment) says; only the '
+              'stacked (compact/medium) arrangement should ever honour it',
+        );
+      }
+    },
+  );
+
   testWidgets('no band overflows', (tester) async {
     for (final width in const [400.0, 600.0, 1023.0, 1024.0, 1400.0]) {
       await pumpAtWidth(

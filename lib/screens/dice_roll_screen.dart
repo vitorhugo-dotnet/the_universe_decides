@@ -208,23 +208,17 @@ class _DiceRollScreenState extends ConsumerState<DiceRollScreen>
           ),
         ],
       ),
-      // The frame centers `stage` horizontally (matching cards/tarot, whose
+      // The frame centers `stage` by default (matching cards/tarot, whose
       // original arenas were centered too), but the dice arena was flush
       // left in a `Column(crossAxisAlignment: start)` before this frame
-      // existed — it is fixed-width (280) and narrower than the column, so
-      // naively centering it would shift it ~43px right of its original
-      // position. Force the stage slot to the column's full width and align
-      // the arena to its start edge to reproduce that exactly.
-      stage: SizedBox(
-        width: double.infinity,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: _DiceAnimationRegion(
-            child:
-                widget.diceWebViewBuilder?.call(_diceWebViewController) ??
-                DiceWebView(controller: _diceWebViewController),
-          ),
-        ),
+      // existed. `stageAlignment` only applies in the stacked (compact /
+      // medium) arrangement — the expanded two-pane band always centers the
+      // stage in its fixed-width pane, which is correct for dice too.
+      stageAlignment: Alignment.centerLeft,
+      stage: _DiceAnimationRegion(
+        child:
+            widget.diceWebViewBuilder?.call(_diceWebViewController) ??
+            DiceWebView(controller: _diceWebViewController),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
