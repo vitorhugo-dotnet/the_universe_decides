@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:theuniversedecides/controllers/list_picker_controller.dart';
+import 'package:theuniversedecides/layout/ritual_breakpoint.dart';
 import 'package:theuniversedecides/layout/ritual_screen_frame.dart';
 import 'package:theuniversedecides/screens/list_picker_wheel_view.dart';
 import 'package:theuniversedecides/services/results_history_service.dart';
@@ -165,6 +166,10 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
         !showsLoadingStage &&
         state.items.isNotEmpty &&
         state.selectedIndex != null;
+    // Only `expanded` has a reveal pane to fill; compact and medium share the
+    // stacked layout the original screen always used, where this in-between
+    // state (items added, nothing drawn yet) rendered nothing at all.
+    final isExpandedBand = ritualBandOf(context).isExpanded;
 
     return RitualScreenFrame(
       header: header,
@@ -185,7 +190,13 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
       // screen, whose spinner sat at the identical x-offset. So the default
       // `stageAlignment` (center) already reproduces the original exactly
       // and needs no override.
-      stage: _buildStage(l10n, state, showsLoadingStage, showsSelectedBanner),
+      stage: _buildStage(
+        l10n,
+        state,
+        showsLoadingStage,
+        showsSelectedBanner,
+        isExpandedBand,
+      ),
       body: _mode == _ListPickerMode.classic
           ? _buildClassicItems(state, controller, showsLoadingStage)
           : _buildWheelItems(state, controller),
@@ -197,18 +208,22 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
   /// Wheel mode has a real visual object (the wheel, which already carries
   /// its own spin button and hint/result banner). Classic mode has none in
   /// the original screen — the loading spinner, the "add two options" empty
-  /// state, and the drawn-result banner are the only candidates, and only
-  /// one of those is a genuine "nothing to show yet" gap: items already
-  /// added but not yet picked. That state renders nothing here (both in
-  /// compact, where the original had nothing between the button and the
-  /// item list, and in expanded, where the pane briefly shows no reveal
-  /// rather than a misleading "add options" message the moment the list
-  /// already has two).
+  /// state, and the drawn-result banner are the only candidates. The
+  /// remaining case — items already added but nothing picked yet — has no
+  /// original widget to reuse either, but review established it is not a
+  /// transient gap to leave blank: it is a normal steady state a user sits
+  /// in while building their list, and the wheel's own hint container
+  /// (`list_picker_wheel_view.dart`) already sets the app's convention for
+  /// it — show a "ready to draw" hint rather than nothing. That hint only
+  /// belongs in `expanded`, which is the only band with a reveal pane to
+  /// fill; compact and medium keep rendering nothing here, exactly as the
+  /// original always did (it had no concept of a reveal pane at all).
   Widget _buildStage(
     AppLocalizations l10n,
     ListPickerState state,
     bool showsLoadingStage,
     bool showsSelectedBanner,
+    bool isExpandedBand,
   ) {
     if (_mode == _ListPickerMode.wheel) {
       return const ListPickerWheelView();
@@ -224,13 +239,15 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
               child: Center(child: CircularProgressIndicator()),
             )
           : state.items.isEmpty
-          ? _EmptyState(text: l10n.listEmptyState)
+          ? _EmptyState(key: const ValueKey('empty'), text: l10n.listEmptyState)
           : showsSelectedBanner
           ? _SelectedBanner(
               key: ValueKey('banner-$selectedIndex'),
               label: l10n.listChosenByUniverse,
               value: state.items[selectedIndex!],
             )
+          : isExpandedBand
+          ? _EmptyState(key: const ValueKey('ready'), text: l10n.listReadyHint)
           : const SizedBox.shrink(key: ValueKey('none')),
     );
   }
@@ -239,6 +256,15 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
   /// reveal banner can live in the stage pane on its own in `expanded`. The
   /// original hid the whole item list — not just the banner — while the
   /// spinner stood in for it, so this stays hidden under the same guard.
+  ///
+  /// The original crossfaded the banner *and* the item rows as one unit on
+  /// every add, remove and pick — keyed on
+  /// `'${items.length}-${selectedIndex}'`. Splitting the banner into `stage`
+  /// makes a single shared switcher impossible (the two now live in
+  /// different frame slots), but wrapping this Column in its own
+  /// `AnimatedSwitcher` with the identical key formula restores a crossfade
+  /// for list changes — independent of the banner's fade rather than
+  /// combined with it, but present instead of silently lost.
   Widget _buildClassicItems(
     ListPickerState state,
     ListPickerController controller,
@@ -247,20 +273,24 @@ class _ListPickerScreenState extends ConsumerState<ListPickerScreen> {
     if (showsLoadingStage) {
       return const SizedBox.shrink();
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var i = 0; i < state.items.length; i++) ...[
-          if (i > 0) const SizedBox(height: 9),
-          _ItemRow(
-            index: i,
-            label: state.items[i],
-            selected: state.selectedIndex == i,
-            scanning: state.isScanning && state.scanIndex == i,
-            onRemove: state.isLoading ? null : () => controller.removeItem(i),
-          ),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      child: Column(
+        key: ValueKey('${state.items.length}-${state.selectedIndex ?? -1}'),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < state.items.length; i++) ...[
+            if (i > 0) const SizedBox(height: 9),
+            _ItemRow(
+              index: i,
+              label: state.items[i],
+              selected: state.selectedIndex == i,
+              scanning: state.isScanning && state.scanIndex == i,
+              onRemove: state.isLoading ? null : () => controller.removeItem(i),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 
@@ -412,14 +442,13 @@ class _AddButton extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.text});
+  const _EmptyState({super.key, required this.text});
 
   final String text;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: const ValueKey('empty'),
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(

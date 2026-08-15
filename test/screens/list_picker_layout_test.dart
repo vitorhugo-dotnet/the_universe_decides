@@ -122,8 +122,14 @@ void main() {
     // Before a pick, items exist but nothing is drawn yet: the stage pane
     // must not show the "add options" placeholder (that would be a lie —
     // there already are enough options) nor a second copy of the item
-    // list that already lives in the body pane.
+    // list that already lives in the body pane. It shows the ready-to-draw
+    // hint instead (see the dedicated test below for the failure mode this
+    // guards against).
     expect(find.text('Add at least two options to begin.'), findsNothing);
+    expect(
+      find.text('Your list is ready. Tap the button above to choose.'),
+      findsOneWidget,
+    );
     expect(find.text('Pizza'), findsOneWidget);
     expect(find.text('Sushi'), findsOneWidget);
 
@@ -170,6 +176,76 @@ void main() {
         findsNothing,
         reason: 'items already exist, so the empty-state copy must not show',
       );
+      // Review finding: the stage pane must not sit blank in `expanded`
+      // (see the dedicated hint tests below); but this is `compact`, where
+      // the original never showed anything at all in this state, and the
+      // hint is expanded-only.
+      expect(
+        find.text('Your list is ready. Tap the button above to choose.'),
+        findsNothing,
+        reason:
+            'the ready-to-draw hint is expanded-only, matching compact '
+            'fidelity with the pre-refactor screen',
+      );
     },
   );
+
+  testWidgets(
+    'expanded classic mode shows a ready-to-draw hint, not a blank pane, '
+    'once items exist but nothing has been picked',
+    (tester) async {
+      // Review finding 1: leaving the pane blank in this state (a normal
+      // steady state a user sits in while building their list, not a
+      // transient one) is exactly the "looks broken" outcome the spec's own
+      // rationale for the classic-mode stage warns against.
+      await pumpAtWidth(
+        tester,
+        const ProviderScope(child: ListPickerScreen()),
+        width: 1400,
+        height: 900,
+      );
+
+      await tester.enterText(find.byType(TextField), 'Pizza');
+      await tester.tap(find.text('+'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Sushi');
+      await tester.tap(find.text('+'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Your list is ready. Tap the button above to choose.'),
+        findsOneWidget,
+        reason:
+            'a wrong implementation that renders SizedBox.shrink() in this '
+            'state (the previous, blank-pane behaviour) finds nothing here',
+      );
+      // Still not the "add options" copy — the list already has enough.
+      expect(find.text('Add at least two options to begin.'), findsNothing);
+    },
+  );
+
+  testWidgets('medium windows keep the reveal pane blank too — the hint is '
+      'expanded-only, not "wider than compact"', (tester) async {
+    await pumpAtWidth(
+      tester,
+      const ProviderScope(child: ListPickerScreen()),
+      width: 800,
+      height: 900,
+    );
+
+    await tester.enterText(find.byType(TextField), 'Pizza');
+    await tester.tap(find.text('+'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Sushi');
+    await tester.tap(find.text('+'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Your list is ready. Tap the button above to choose.'),
+      findsNothing,
+      reason:
+          'medium shares compact\'s stacked layout, which has no '
+          'reveal pane to fill',
+    );
+  });
 }

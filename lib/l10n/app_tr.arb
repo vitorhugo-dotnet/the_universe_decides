@@ -41,6 +41,7 @@
   "listChooseButton": "Evrenin seçmesine izin ver",
   "listEmptyState": "Başlamak için en az iki seçenek ekle.",
   "listChosenByUniverse": "Evren tarafından seçildi",
+  "listReadyHint": "Listen hazır. Seçmek için yukarıdaki düğmeye dokun.",
   "listModeClassic": "Liste",
   "listModeWheel": "Çark",
   "listWheelSpinButton": "Çarkı çevir",

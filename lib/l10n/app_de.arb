@@ -41,6 +41,7 @@
   "listChooseButton": "Das Universum entscheiden lassen",
   "listEmptyState": "Füge mindestens zwei Optionen hinzu, um zu beginnen.",
   "listChosenByUniverse": "Vom Universum gewählt",
+  "listReadyHint": "Deine Liste ist bereit. Tippe oben auf die Schaltfläche, um zu wählen.",
   "listModeClassic": "Liste",
   "listModeWheel": "Glücksrad",
   "listWheelSpinButton": "Rad drehen",

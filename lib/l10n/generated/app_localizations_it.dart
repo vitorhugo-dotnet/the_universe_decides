@@ -116,6 +116,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get listChosenByUniverse => 'Scelto dall\'universo';
 
   @override
+  String get listReadyHint =>
+      'La tua lista è pronta. Tocca il pulsante sopra per scegliere.';
+
+  @override
   String get listModeClassic => 'Lista';
 
   @override

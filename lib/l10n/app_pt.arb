@@ -41,6 +41,7 @@
   "listChooseButton": "Deixar o universo escolher",
   "listEmptyState": "Adicione ao menos duas opções para começar.",
   "listChosenByUniverse": "Escolhido pelo universo",
+  "listReadyHint": "Sua lista está pronta. Toque no botão acima para escolher.",
   "listModeClassic": "Lista",
   "listModeWheel": "Roleta",
   "listWheelSpinButton": "Girar a roleta",
