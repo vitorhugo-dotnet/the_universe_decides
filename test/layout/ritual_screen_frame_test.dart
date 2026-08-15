@@ -207,6 +207,63 @@ void main() {
     },
   );
 
+  testWidgets(
+    'stageSpacingAfter overrides the gap below the stage independently of '
+    'stageSpacing above it',
+    (tester) async {
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(
+          header: _header,
+          body: _body,
+          stage: _stage,
+          stageSpacing: 22,
+          stageSpacingAfter: 0,
+        ),
+        width: 400,
+      );
+
+      final header = tester.getRect(find.text('HEADER'));
+      final stage = tester.getRect(find.byKey(const ValueKey('stage')));
+      final body = tester.getRect(find.text('BODY'));
+
+      expect(
+        stage.top - header.bottom,
+        22.0,
+        reason: 'the gap above the stage must still use stageSpacing',
+      );
+      expect(
+        body.top - stage.bottom,
+        0.0,
+        reason: 'stageSpacingAfter must override the gap below the stage; '
+            'a frame that ignores it and falls back to stageSpacing would '
+            'leave a 22px gap here instead of 0',
+      );
+    },
+  );
+
+  testWidgets(
+    'omitting stageSpacingAfter keeps the gap below the stage equal to '
+    'stageSpacing, matching every existing call site',
+    (tester) async {
+      await pumpAtWidth(
+        tester,
+        const RitualScreenFrame(
+          header: _header,
+          body: _body,
+          stage: _stage,
+          stageSpacing: 11,
+        ),
+        width: 400,
+      );
+
+      final stage = tester.getRect(find.byKey(const ValueKey('stage')));
+      final body = tester.getRect(find.text('BODY'));
+
+      expect(body.top - stage.bottom, 11.0);
+    },
+  );
+
   testWidgets('no band overflows', (tester) async {
     for (final width in const [400.0, 600.0, 1023.0, 1024.0, 1400.0]) {
       await pumpAtWidth(

@@ -28,6 +28,7 @@ class RitualScreenFrame extends StatelessWidget {
     this.stageFlexes = false,
     this.compactPadding = const EdgeInsets.fromLTRB(22, 20, 22, 18),
     this.stageSpacing = 24,
+    this.stageSpacingAfter,
   });
 
   /// The screen's [RitualHeader].
@@ -55,6 +56,17 @@ class RitualScreenFrame extends StatelessWidget {
   /// that differ from it. Defaults to 24, the value every screen converted
   /// so far happened to use.
   final double stageSpacing;
+
+  /// Vertical space below the stage, in the non-flexing (scrolling) stacked
+  /// arrangement, when it must differ from the space above it.
+  ///
+  /// Null (the default) means "same as [stageSpacing]", so every screen
+  /// converted before this parameter existed keeps behaving exactly as it
+  /// did: they never pass it. Dice needs a real override, because its
+  /// original layout put 22px above the arena and nothing below it — the
+  /// 12px gaps that followed belong to conditional result text, not to the
+  /// stage itself.
+  final double? stageSpacingAfter;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +127,7 @@ class RitualScreenFrame extends StatelessWidget {
           if (stage != null) ...[
             SizedBox(height: stageSpacing),
             Center(child: stage),
-            SizedBox(height: stageSpacing),
+            SizedBox(height: stageSpacingAfter ?? stageSpacing),
           ],
           body,
         ],
