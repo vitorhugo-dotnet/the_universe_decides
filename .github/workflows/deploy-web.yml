@@ -75,6 +75,13 @@ jobs:
           test -f build/web/index.html
           grep -Fq '<base href="/">' build/web/index.html
 
+      - name: Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: build/web
+          if-no-files-found: error
+
   deploy:
     name: Deploy to Cloudflare Workers
     needs: build
@@ -83,8 +90,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
+      - name: Download web artifact
+        uses: actions/download-artifact@v4
         with:
+          name: web-dist
+          path: build/web
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: "4"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
