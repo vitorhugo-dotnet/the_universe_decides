@@ -98,7 +98,8 @@ void main() {
     expect(workflow, contains('flutter test'));
     expect(workflow, contains(r'--base-href /'));
     expect(workflow, contains('--wasm'));
-    expect(workflow, contains('cloudflare/wrangler-action@v3'));
+    expect(workflow, contains('cloudflare/wrangler-action@v4'));
+    expect(workflow, contains('wranglerVersion: "4"'));
     expect(workflow, contains('CLOUDFLARE_API_TOKEN'));
     expect(workflow, contains('CLOUDFLARE_ACCOUNT_ID'));
     expect(workflow, isNot(contains('actions/configure-pages')));
