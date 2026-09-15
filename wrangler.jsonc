@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "the-universe-decides",
+  "compatibility_date": "2026-09-15",
+  "assets": {
+    "directory": "./build/web",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [
+    {
+      "pattern": "coin.hugojava.dev",
+      "custom_domain": true
+    }
+  ]
+}

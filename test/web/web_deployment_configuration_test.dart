@@ -87,72 +87,47 @@ void main() {
     expect(File('web/favicon.png').existsSync(), isTrue);
   });
 
-  test('the deploy workflow validates before it publishes', () {
+  test('the deploy workflow validates and publishes static assets through Workers', () {
     final workflow = File(
       '.github/workflows/deploy-web.yml',
     ).readAsStringSync();
+    final wrangler = jsonDecode(File('wrangler.jsonc').readAsStringSync())
+        as Map<String, dynamic>;
 
     expect(workflow, contains('flutter analyze'));
     expect(workflow, contains('flutter test'));
+    expect(workflow, contains(r'--base-href /'));
+    expect(workflow, contains('--wasm'));
+    expect(workflow, contains('cloudflare/wrangler-action@v4'));
+    expect(workflow, contains('wranglerVersion: "4"'));
+    expect(workflow, contains('CLOUDFLARE_API_TOKEN'));
+    expect(workflow, contains('CLOUDFLARE_ACCOUNT_ID'));
+    expect(workflow, isNot(contains('actions/configure-pages')));
+    expect(workflow, isNot(contains('actions/upload-pages-artifact')));
+    expect(workflow, isNot(contains('actions/deploy-pages')));
+    expect(workflow, isNot(contains('404.html')));
+
+    expect(wrangler['name'], 'the-universe-decides');
     expect(
-      workflow,
-      contains('actions/configure-pages@v5'),
-      reason:
-          'A hardcoded base href is wrong on whichever host the site is not '
-          'currently served from, and every asset 404s there. The published '
-          'path must be read from the live Pages configuration instead.',
+      wrangler['assets'],
+      equals({
+        'directory': './build/web',
+        'not_found_handling': 'single-page-application',
+      }),
     );
     expect(
-      workflow,
-      contains(r'--base-href "${{ steps.base.outputs.href }}"'),
-      reason: 'The build must consume the resolved base href, not a literal.',
+      wrangler['routes'],
+      equals([
+        {'pattern': 'coin.hugojava.dev', 'custom_domain': true},
+      ]),
     );
-    expect(
-      workflow,
-      isNot(contains(r'--base-href "/"')),
-      reason:
-          'Pinning the root base href is what left the project-path deploy '
-          'stuck on the loading placeholder.',
-    );
-    expect(
-      workflow,
-      contains(r'''
-          flutter build web \
-            --release \
-            --wasm \
-            --base-href "${{ steps.base.outputs.href }}"'''),
-      reason:
-          'The browser build ships WebAssembly. Dropping the flag from the '
-          'build invocation silently returns every visitor to the larger '
-          'JavaScript-only payload — an explanatory comment mentioning '
-          '"--wasm" is not enough to keep this passing, and must not be.',
-    );
-    expect(workflow, contains("cp build/web/index.html build/web/404.html"));
-    expect(
-      workflow,
-      contains(r'grep -Fq "<base href=\"$BASE_HREF\">" build/web/index.html'),
-      reason: 'The artifact check must assert the resolved base href.',
-    );
-    expect(workflow, contains('cmp --silent build/web/index.html build/web/404.html'));
-    expect(workflow, contains('actions/upload-pages-artifact@v3'));
-    expect(workflow, contains('actions/deploy-pages@v4'));
     expect(
       workflow,
       contains('needs: build'),
-      reason: 'A failed analyze, test or build must never reach Pages.',
+      reason: 'A failed analyze, test or build must never deploy.',
     );
-    expect(
-      workflow,
-      contains('cancel-in-progress: true'),
-      reason: 'Superseded deploys must be cancelled, not queued.',
-    );
-    expect(
-      workflow,
-      isNot(contains('android/**')),
-      reason:
-          'Android-only changes must not redeploy the site, and the Android '
-          'release pipeline must stay independent of this workflow.',
-    );
+    expect(workflow, contains('cancel-in-progress: true'));
+    expect(workflow, isNot(contains('android/**')));
   });
 
   test('the deploy workflow is callable and skips validation only when the '
