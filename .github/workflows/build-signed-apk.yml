@@ -239,6 +239,7 @@ jobs:
     uses: ./.github/workflows/deploy-web.yml
     with:
       validated: true
+    secrets: inherit
 
   build-android:
     name: Build ${{ matrix.name }}
