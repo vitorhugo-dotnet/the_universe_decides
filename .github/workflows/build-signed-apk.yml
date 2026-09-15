@@ -234,8 +234,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
       contents: read
-      pages: write
-      id-token: write
+      deployments: write
     uses: ./.github/workflows/deploy-web.yml
     with:
       validated: true
